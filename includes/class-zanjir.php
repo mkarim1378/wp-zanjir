@@ -36,15 +36,33 @@ class Zanjir {
 	 */
 	private function __construct() {
 		$this->loader = new Zanjir_Loader();
+		$this->define_i18n();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+	}
+
+	/**
+	 * Load text domain for i18n.
+	 */
+	private function define_i18n() {
+		$this->loader->add_action( 'plugins_loaded', $this, 'load_textdomain' );
+	}
+
+	/**
+	 * Load the plugin text domain.
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'zanjir', false, dirname( ZANJIR_PLUGIN_BASENAME ) . '/languages' );
 	}
 
 	/**
 	 * Register admin-facing hooks.
 	 */
 	private function define_admin_hooks() {
-		// Placeholder for admin hooks (Phase 3+).
+		if ( is_admin() ) {
+			require_once ZANJIR_PLUGIN_DIR . 'admin/class-zanjir-admin.php';
+			new Zanjir_Admin( $this->loader );
+		}
 	}
 
 	/**
