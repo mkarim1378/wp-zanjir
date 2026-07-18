@@ -69,7 +69,8 @@ class Zanjir {
 	 * Register public-facing hooks.
 	 */
 	private function define_public_hooks() {
-		// Placeholder for public hooks (Phase 8+).
+		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-registration.php';
+		new Zanjir_Registration( $this->loader );
 	}
 
 	/**
