@@ -238,21 +238,25 @@
 
 ---
 
-## گراف وابستگی
+## Dependency Graph
 
 ```
-1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12 → 13
-                          │              │
-                   14 (پس از ۹) ┘              │
-                   15 → 16 → 17 ┘
-                   18 (پس از ۹/۷) ─┐
-                   19 (پس از ۷/۱۱) ┤→ 20
-                                   ┘
+Phase 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12 → 13
+                                     │    │
+                              14 (after 9)┘
+                              15 → 16 → 17
+                              18 (after 7, 9)
+                              19 (after 7, 11)
+                                    │
+                              20 (after 17, 18, 19)
 ```
 
-## گروه‌بندی تحویل (Milestones کلان)
-M1 — پایه (فاز ۱–۴): نصب، داده، تنظیمات، دسترسی.
-M2 — هویت و درخت (فاز ۵–۸): ثبت‌نام، زنجیره، کد معرف.
-M3 — هسته‌ی مالی (فاز ۹–۱۴): اسنپ‌شات، ماتریس، پورسانت، عودت، تخفیف.
-M4 — کیف پول و تسویه (فاز ۱۵–۱۷): ledger، تسویه، برداشت.
-M5 — ضدتقلب و تکمیل (فاز ۱۸–۲۰): کنترل‌ها، پاداش، رابط‌ها، انتشار.
+## Milestone Grouping
+
+| Milestone | Phases | Scope |
+|---|---|---|
+| **M1** | 1–4 | Foundation: install, database, settings, roles |
+| **M2** | 5–8 | Identity & tree: registration, referral chain, codes |
+| **M3** | 9–14 | Commission core: snapshot, matrix, commission, refunds, discounts |
+| **M4** | 15–17 | Wallet & settlement: ledger, monthly settlement, withdrawals |
+| **M5** | 18–20 | Anti-fraud & release: controls, bonus pool, UI, hardening |
