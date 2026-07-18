@@ -10,7 +10,7 @@ global $wpdb;
 $prefix = $wpdb->prefix . 'zanjir_';
 
 $tables = array(
-	'affiliate_tree',
+	'tree',
 	'fraud_logs',
 	'bonus_plans',
 	'withdrawals',
