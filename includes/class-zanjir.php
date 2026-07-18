@@ -74,6 +74,7 @@ class Zanjir {
 	 * Plugin activation callback.
 	 */
 	public static function activate() {
+		Zanjir_DB::maybe_upgrade();
 		flush_rewrite_rules();
 	}
 
