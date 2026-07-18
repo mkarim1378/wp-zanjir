@@ -132,14 +132,9 @@ class Zanjir_Order_Observer {
 	 * @return int Rate in basis-10000.
 	 */
 	private static function get_tier_rate( $tier_index, $depth ) {
-		$defaults = array(
-			1 => array( 2000 ),
-			2 => array( 1250, 750 ),
-			3 => array( 1000, 750, 250 ),
-		);
-
-		if ( isset( $defaults[ $depth ] ) && isset( $defaults[ $depth ][ $tier_index ] ) ) {
-			return (int) $defaults[ $depth ][ $tier_index ];
+		$rates = Zanjir_Matrix::get_rates( $depth );
+		if ( isset( $rates[ $tier_index ] ) ) {
+			return (int) $rates[ $tier_index ];
 		}
 
 		$cap   = (int) Zanjir_Settings::get( 'tree_cap', 2000 );
