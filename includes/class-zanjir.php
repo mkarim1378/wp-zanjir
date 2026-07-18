@@ -93,6 +93,7 @@ class Zanjir {
 	 */
 	public static function activate() {
 		Zanjir_DB::maybe_upgrade();
+		Zanjir_Roles::activate();
 		flush_rewrite_rules();
 	}
 
@@ -100,6 +101,7 @@ class Zanjir {
 	 * Plugin deactivation callback.
 	 */
 	public static function deactivate() {
+		Zanjir_Roles::deactivate();
 		flush_rewrite_rules();
 	}
 }

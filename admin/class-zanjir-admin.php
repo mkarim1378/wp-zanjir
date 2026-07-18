@@ -26,7 +26,7 @@ class Zanjir_Admin {
 		add_menu_page(
 			__( 'Zanjir', 'zanjir' ),
 			__( 'Zanjir', 'zanjir' ),
-			'manage_options',
+			Zanjir_Roles::CAP_MANAGE,
 			'zanjir',
 			array( $this, 'render_settings_page' ),
 			'dashicons-share',
