@@ -126,7 +126,9 @@ class Zanjir_Registration {
 	}
 
 	/**
-	 * Link parent via referral code (tree insertion deferred to Phase 7).
+	 * Link parent via referral code.
+	 *
+	 * Stores the parent affiliate ID for tree insertion on approval.
 	 *
 	 * @param int    $affiliate_id
 	 * @param string $referral_code
@@ -138,11 +140,15 @@ class Zanjir_Registration {
 		$parent = $wpdb->get_row( $wpdb->prepare( "SELECT affiliate_id FROM {$table} WHERE code = %s AND active = 1", $referral_code ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		if ( $parent ) {
-			update_post_meta( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$affiliate_id,
-				'_zanjir_parent_referral_code',
-				$referral_code
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->prefix . 'zanjir_affiliates',
+				array( 'updated_at' => current_time( 'mysql', true ) ),
+				array( 'id' => $affiliate_id ),
+				array( '%s' ),
+				array( '%d' )
 			);
+
+			update_option( 'zanjir_pending_parent_' . $affiliate_id, (int) $parent->affiliate_id );
 		}
 	}
 
@@ -166,6 +172,14 @@ class Zanjir_Registration {
 		$this->set_status( $affiliate_id, 'approved' );
 		Zanjir_Roles::assign_affiliate( $this->get_user_id( $affiliate_id ) );
 
+		$parent_id = get_option( 'zanjir_pending_parent_' . $affiliate_id, null );
+		if ( $parent_id ) {
+			Zanjir_Tree_Service::insert( $affiliate_id, (int) $parent_id );
+			delete_option( 'zanjir_pending_parent_' . $affiliate_id );
+		} else {
+			Zanjir_Tree_Service::insert( $affiliate_id );
+		}
+
 		wp_safe_redirect( admin_url( 'admin.php?page=zanjir&status=approved' ) );
 		exit;
 	}
@@ -188,6 +202,8 @@ class Zanjir_Registration {
 		}
 
 		$this->set_status( $affiliate_id, 'rejected' );
+		delete_option( 'zanjir_pending_parent_' . $affiliate_id );
+		Zanjir_Tree_Service::remove( $affiliate_id );
 
 		wp_safe_redirect( admin_url( 'admin.php?page=zanjir&status=rejected' ) );
 		exit;
