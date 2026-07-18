@@ -71,6 +71,10 @@ class Zanjir {
 	private function define_public_hooks() {
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-registration.php';
 		new Zanjir_Registration( $this->loader );
+
+		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-referral-code.php';
+		$this->loader->add_action( 'template_redirect', 'Zanjir_Referral_Code', 'maybe_capture_referral' );
+		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Referral_Code', 'attach_to_order' );
 	}
 
 	/**
