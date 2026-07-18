@@ -63,6 +63,21 @@ class Zanjir_Order_Observer {
 			array( '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s' )
 		);
 
+		$snapshot_id = $wpdb->insert_id;
+
+		$commissions = Zanjir_Commission_Engine::calculate( (object) array(
+			'base_amount'         => $base,
+			'tree_cap_rate'       => $tree_cap,
+			'staff_rate'          => $staff_rate,
+			'chain_json'          => wp_json_encode( $chain ),
+			'matrix_json'         => wp_json_encode( $matrix ),
+			'seller_affiliate_id' => (int) $seller_id,
+		) );
+
+		if ( ! empty( $commissions ) ) {
+			Zanjir_Commission_Engine::save( $order_id, $snapshot_id, $commissions );
+		}
+
 		/**
 		 * Fires after order snapshot is captured.
 		 *
