@@ -3,7 +3,7 @@
  * Plugin Name: Zanjir
  * Plugin URI:  https://github.com/mkarim1378/wp-zanjir
  * Description: Multi-tier affiliate marketing plugin for WooCommerce with matrix-based commissions, anti-fraud suite, and internal wallet.
- * Version:     0.8.0
+ * Version:     0.9.0
  * Author:      محمد کریم قصبه
  * Author-URI:  https://m-karim.ir
  * License:     GPL-2.0-or-later
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ZANJIR_VERSION', '0.8.0' );
+define( 'ZANJIR_VERSION', '0.9.0' );
 define( 'ZANJIR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

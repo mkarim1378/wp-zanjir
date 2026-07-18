@@ -75,6 +75,9 @@ class Zanjir {
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-referral-code.php';
 		$this->loader->add_action( 'template_redirect', 'Zanjir_Referral_Code', 'maybe_capture_referral' );
 		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Referral_Code', 'attach_to_order' );
+
+		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-order-observer.php';
+		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Order_Observer', 'capture_snapshot' );
 	}
 
 	/**
