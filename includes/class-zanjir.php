@@ -81,6 +81,9 @@ class Zanjir {
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-commission-lifecycle.php';
 		new Zanjir_Commission_Lifecycle( $this->loader );
+
+		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-refund-handler.php';
+		new Zanjir_Refund_Handler( $this->loader );
 	}
 
 	/**
