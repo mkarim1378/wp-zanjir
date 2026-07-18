@@ -22,12 +22,16 @@ class Zanjir_Order_Observer {
 	/**
 	 * Hook: capture snapshot when order is processed at checkout.
 	 *
-	 * @param WC_Order $order
+	 * @param int $order_id Order ID (passed by woocommerce_checkout_order_processed).
 	 */
-	public static function capture_snapshot( $order ) {
-		$order_id    = $order->get_id();
-		$referral    = get_post_meta( $order_id, '_zanjir_referral_code', true ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$seller_id   = get_post_meta( $order_id, '_zanjir_seller_id', true ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	public static function capture_snapshot( $order_id ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return;
+		}
+
+		$referral  = get_post_meta( $order_id, '_zanjir_referral_code', true ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$seller_id = get_post_meta( $order_id, '_zanjir_seller_id', true ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		if ( ! $referral || ! $seller_id ) {
 			return;
