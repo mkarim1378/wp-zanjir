@@ -238,7 +238,7 @@ class Zanjir_Registration {
 			$wpdb->prefix . 'zanjir_affiliates',
 			$data,
 			array( 'id' => $affiliate_id ),
-			array( '%s', '%s', '%s' ),
+			array_fill( 0, count( $data ), '%s' ),
 			array( '%d' )
 		);
 
