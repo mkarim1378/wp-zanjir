@@ -37,6 +37,10 @@ class Zanjir_Order_Observer {
 			return;
 		}
 
+		if ( self::get_snapshot( $order_id ) ) {
+			return;
+		}
+
 		$base = self::calculate_base( $order );
 		if ( $base <= 0 ) {
 			return;
