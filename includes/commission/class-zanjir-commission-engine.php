@@ -160,7 +160,7 @@ class Zanjir_Commission_Engine {
 	 * @return int
 	 */
 	private static function floor_divide( $base, $rate ) {
-		return (int) floor( ( $base * $rate ) / 10000 );
+		return (int) floor( (float) $base * $rate / 10000 );
 	}
 
 	/**

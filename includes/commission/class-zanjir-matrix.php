@@ -16,9 +16,9 @@ class Zanjir_Matrix {
 	 */
 	public static function defaults() {
 		return array(
-			array( 'depth' => 1, 'rates' => array( 2000 ) ),
-			array( 'depth' => 2, 'rates' => array( 1250, 750 ) ),
-			array( 'depth' => 3, 'rates' => array( 1000, 750, 250 ) ),
+			array( 'depth' => 1, 'rates' => array( 2000 ), 'tree_cap' => 2000 ),
+			array( 'depth' => 2, 'rates' => array( 1250, 750 ), 'tree_cap' => 2000 ),
+			array( 'depth' => 3, 'rates' => array( 1000, 750, 250 ), 'tree_cap' => 2000 ),
 		);
 	}
 
@@ -68,15 +68,16 @@ class Zanjir_Matrix {
 			return new WP_Error( 'empty_matrix', __( 'Matrix must have at least one row.', 'zanjir' ) );
 		}
 
-		$tree_cap = (int) Zanjir_Settings::get( 'tree_cap', 2000 );
+		$global_cap = (int) Zanjir_Settings::get( 'tree_cap', 2000 );
 
 		foreach ( $rows as $i => $row ) {
 			if ( ! isset( $row['depth'], $row['rates'] ) || ! is_array( $row['rates'] ) ) {
 				return new WP_Error( 'invalid_row', sprintf( __( 'Row %d is invalid.', 'zanjir' ), $i + 1 ) );
 			}
 
-			$depth = (int) $row['depth'];
-			$rates = array_map( 'intval', $row['rates'] );
+			$depth   = (int) $row['depth'];
+			$rates   = array_map( 'intval', $row['rates'] );
+			$row_cap = isset( $row['tree_cap'] ) ? (int) $row['tree_cap'] : $global_cap;
 
 			if ( count( $rates ) !== $depth ) {
 				return new WP_Error(
@@ -86,7 +87,7 @@ class Zanjir_Matrix {
 			}
 
 			$sum = array_sum( $rates );
-			if ( $sum !== $tree_cap ) {
+			if ( $sum !== $row_cap ) {
 				return new WP_Error(
 					'sum_mismatch',
 					sprintf(
@@ -94,7 +95,7 @@ class Zanjir_Matrix {
 						__( 'Row %d: rates sum to %d but tree cap is %d.', 'zanjir' ),
 						$i + 1,
 						$sum,
-						$tree_cap
+						$row_cap
 					)
 				);
 			}
