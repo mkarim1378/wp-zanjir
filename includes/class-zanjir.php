@@ -119,14 +119,3 @@ class Zanjir {
 		flush_rewrite_rules();
 	}
 }
-
-/**
- * Initialize the plugin.
- *
- * @return Zanjir
- */
-function zanjir() {
-	$plugin = Zanjir::instance();
-	$plugin->run();
-	return $plugin;
-}
