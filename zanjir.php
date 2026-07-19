@@ -34,6 +34,12 @@ require_once ZANJIR_PLUGIN_DIR . 'includes/commission/class-zanjir-commission-en
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-order-observer.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir.php';
 
+function zanjir() {
+    $plugin = Zanjir::instance();
+    $plugin->run();
+    return $plugin;
+}
+
 register_activation_hook( __FILE__, array( 'Zanjir', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'Zanjir', 'deactivate' ) );
 
