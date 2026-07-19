@@ -127,26 +127,14 @@ class Zanjir_Referral_Code {
 			return;
 		}
 
-		setcookie( self::COOKIE_NAME, sanitize_text_field( $code ), time() + self::COOKIE_EXPIRY, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
-	}
-
-	/**
-	 * Get the tracked affiliate ID from cookie or current user.
-	 *
-	 * @return int|false
-	 */
-	public static function get_tracked_affiliate() {
-		if ( is_user_logged_in() ) {
-			$row = Zanjir_Registration::get_affiliate_by_user( get_current_user_id() );
-			return $row ? (int) $row->id : false;
-		}
-
-		if ( isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-			$code = sanitize_text_field( wp_unslash( $_COOKIE[ self::COOKIE_NAME ] ) );
-			return self::lookup_affiliate( $code );
-		}
-
-		return false;
+		setcookie( self::COOKIE_NAME, sanitize_text_field( $code ), array(
+			'expires'  => time() + self::COOKIE_EXPIRY,
+			'path'     => COOKIEPATH,
+			'domain'   => COOKIE_DOMAIN,
+			'secure'   => is_ssl(),
+			'httponly'  => true,
+			'samesite' => 'Lax',
+		) );
 	}
 
 	/**

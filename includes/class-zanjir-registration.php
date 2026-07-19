@@ -145,14 +145,6 @@ class Zanjir_Registration {
 		$parent = $wpdb->get_row( $wpdb->prepare( "SELECT affiliate_id FROM {$table} WHERE code = %s AND active = 1", $referral_code ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		if ( $parent ) {
-			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'zanjir_affiliates',
-				array( 'updated_at' => current_time( 'mysql', true ) ),
-				array( 'id' => $affiliate_id ),
-				array( '%s' ),
-				array( '%d' )
-			);
-
 			update_option( 'zanjir_pending_parent_' . $affiliate_id, (int) $parent->affiliate_id );
 		}
 	}
