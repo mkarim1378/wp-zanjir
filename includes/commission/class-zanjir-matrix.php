@@ -10,15 +10,6 @@ defined( 'ABSPATH' ) || exit;
 class Zanjir_Matrix {
 
 	/**
-	 * Get the matrix table name (stored in options).
-	 *
-	 * @return string
-	 */
-	private static function option_key() {
-		return 'zanjir_matrix';
-	}
-
-	/**
 	 * Get the default matrix.
 	 *
 	 * @return array<int, array{depth: int, rates: array<int, int>}>
@@ -32,20 +23,20 @@ class Zanjir_Matrix {
 	}
 
 	/**
-	 * Load the active matrix from options.
+	 * Get the matrix from settings.
 	 *
 	 * @return array
 	 */
 	public static function load() {
-		$stored = get_option( self::option_key(), null );
-		if ( null === $stored || ! is_array( $stored ) ) {
-			return self::defaults();
+		$all = Zanjir_Settings::all();
+		if ( isset( $all['matrix'] ) && is_array( $all['matrix'] ) ) {
+			return $all['matrix'];
 		}
-		return $stored;
+		return self::defaults();
 	}
 
 	/**
-	 * Save the matrix after validation.
+	 * Save the matrix into settings after validation.
 	 *
 	 * @param array $rows Matrix rows.
 	 * @return true|WP_Error
@@ -56,7 +47,7 @@ class Zanjir_Matrix {
 			return $error;
 		}
 
-		update_option( self::option_key(), $rows );
+		Zanjir_Settings::update( array( 'matrix' => $rows ) );
 		return true;
 	}
 

@@ -171,11 +171,16 @@ class Zanjir_Referral_Code {
 	 * @param int $order_id
 	 */
 	public static function attach_to_order( $order_id ) {
-		$affiliate_id = self::get_tracked_affiliate();
-		if ( ! $affiliate_id ) {
+		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
+		$buyer_affiliate = Zanjir_Registration::get_affiliate_by_user( get_current_user_id() );
+		if ( ! $buyer_affiliate || 'approved' !== $buyer_affiliate->status ) {
+			return;
+		}
+
+		$affiliate_id = (int) $buyer_affiliate->id;
 		$row = self::get_by_affiliate( $affiliate_id );
 		if ( $row ) {
 			update_post_meta( $order_id, '_zanjir_referral_code', $row->code ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
