@@ -10,6 +10,11 @@ defined( 'ABSPATH' ) || exit;
 class Zanjir_Registration {
 
 	/**
+	 * Registration form nonce field name.
+	 */
+	const NONCE_FIELD = 'zanjir_nonce';
+
+	/**
 	 * Registration form action nonce.
 	 */
 	const NONCE_ACTION = 'zanjir_register';
@@ -34,7 +39,7 @@ class Zanjir_Registration {
 	 * Handle registration form submission on frontend.
 	 */
 	public function handle_registration() {
-		if ( ! isset( $_POST['zanjir_register'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['zanjir_register'] ) ), self::NONCE_ACTION ) ) {
+		if ( ! isset( $_POST[ self::NONCE_FIELD ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ self::NONCE_FIELD ] ) ), self::NONCE_ACTION ) ) {
 			return;
 		}
 
