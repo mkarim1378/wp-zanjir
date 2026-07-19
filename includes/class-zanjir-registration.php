@@ -176,6 +176,7 @@ class Zanjir_Registration {
 
 		$this->set_status( $affiliate_id, 'approved' );
 		Zanjir_Roles::assign_affiliate( $this->get_user_id( $affiliate_id ) );
+		Zanjir_Referral_Code::generate( $affiliate_id );
 
 		$parent_id = get_option( 'zanjir_pending_parent_' . $affiliate_id, null );
 		if ( $parent_id ) {
