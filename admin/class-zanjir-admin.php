@@ -84,6 +84,49 @@ class Zanjir_Admin {
 			'zanjir_commission',
 			array( 'key' => 'bonus_pool', 'min' => 0, 'max' => 10000 )
 		);
+
+		add_settings_section(
+			'zanjir_discount',
+			__( 'Discount & Double-Dip', 'zanjir' ),
+			array( $this, 'discount_section' ),
+			'zanjir-settings'
+		);
+
+		add_settings_field(
+			'discount_enabled',
+			__( 'Enable Referral Discount', 'zanjir' ),
+			array( $this, 'render_checkbox_field' ),
+			'zanjir-settings',
+			'zanjir_discount',
+			array( 'key' => 'discount_enabled' )
+		);
+
+		add_settings_field(
+			'coupon_compat',
+			__( 'Coupon Compatibility', 'zanjir' ),
+			array( $this, 'render_checkbox_field' ),
+			'zanjir-settings',
+			'zanjir_discount',
+			array( 'key' => 'coupon_compat' )
+		);
+
+		add_settings_field(
+			'max_discount',
+			__( 'Max Total Discount (basis-10000)', 'zanjir' ),
+			array( $this, 'render_number_field' ),
+			'zanjir-settings',
+			'zanjir_discount',
+			array( 'key' => 'max_discount', 'min' => 0, 'max' => 10000 )
+		);
+
+		add_settings_field(
+			'double_dip',
+			__( 'Double-Dip (Discount + Commission)', 'zanjir' ),
+			array( $this, 'render_checkbox_field' ),
+			'zanjir-settings',
+			'zanjir_discount',
+			array( 'key' => 'double_dip', 'description' => __( 'WARNING: When disabled, orders with referral discount will NOT generate commissions.', 'zanjir' ) )
+		);
 	}
 
 	/**
@@ -112,6 +155,13 @@ class Zanjir_Admin {
 	}
 
 	/**
+	 * Discount section description.
+	 */
+	public function discount_section() {
+		echo '<p>' . esc_html__( 'Configure referral discount and double-dip behavior.', 'zanjir' ) . '</p>';
+	}
+
+	/**
 	 * Render a number input field.
 	 *
 	 * @param array $args Field arguments.
@@ -126,6 +176,24 @@ class Zanjir_Admin {
 			intval( $args['min'] ),
 			intval( $args['max'] )
 		);
+	}
+
+	/**
+	 * Render a checkbox field.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	public function render_checkbox_field( $args ) {
+		$value = Zanjir_Settings::get( $args['key'], 0 );
+		printf(
+			'<input type="checkbox" name="%s[%s]" value="1" %s />',
+			esc_attr( Zanjir_Settings::OPTION_KEY ),
+			esc_attr( $args['key'] ),
+			checked( 1, $value, false )
+		);
+		if ( ! empty( $args['description'] ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
+		}
 	}
 
 	/**

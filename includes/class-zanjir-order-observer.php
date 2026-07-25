@@ -73,6 +73,11 @@ class Zanjir_Order_Observer {
 
 		$snapshot_id = $wpdb->insert_id;
 
+		if ( Zanjir_Discount::should_skip_commission( $order_id ) ) {
+			do_action( 'zanjir_after_snapshot', $order_id, $seller_id, $base );
+			return;
+		}
+
 		$commissions = Zanjir_Commission_Engine::calculate( (object) array(
 			'base_amount'         => $base,
 			'tree_cap_rate'       => $tree_cap,
