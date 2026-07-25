@@ -104,6 +104,8 @@ class Zanjir_Commission_Lifecycle {
 			) );
 
 			foreach ( $rows as $row ) {
+				Zanjir_Ledger::transfer( (int) $row->beneficiary_id, 'pending', 'payable', (int) $row->amount, 'commission', (int) $row->id );
+
 				/**
 				 * Fires when a commission transitions to payable.
 				 *
@@ -152,6 +154,8 @@ class Zanjir_Commission_Lifecycle {
 			) );
 
 			foreach ( $rows as $row ) {
+				Zanjir_Ledger::debit( (int) $row->beneficiary_id, 'pending', (int) $row->amount, 'commission', (int) $row->id, 'void' );
+
 				/**
 				 * Fires when a commission is voided.
 				 *

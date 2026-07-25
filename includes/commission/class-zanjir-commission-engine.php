@@ -195,6 +195,11 @@ class Zanjir_Commission_Engine {
 				),
 				array( '%d', '%d', '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s' )
 			);
+
+			$commission_id = $wpdb->insert_id;
+			if ( $commission_id ) {
+				Zanjir_Ledger::credit( (int) $row['beneficiary_id'], 'pending', (int) $row['amount'], 'commission', $commission_id );
+			}
 		}
 
 		return true;
