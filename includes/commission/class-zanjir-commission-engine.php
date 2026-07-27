@@ -64,7 +64,7 @@ class Zanjir_Commission_Engine {
 				continue;
 			}
 
-			$amount = self::floor_divide( $base, $rate );
+			$amount = Zanjir_Money::amount_from_rate( $base, $rate );
 
 			$rows[] = array(
 				'beneficiary_id' => $aff_id,
@@ -97,7 +97,7 @@ class Zanjir_Commission_Engine {
 			return null;
 		}
 
-		$amount = self::floor_divide( $base, $staff_rate );
+		$amount = Zanjir_Money::amount_from_rate( $base, $staff_rate );
 
 		return array(
 			'beneficiary_id' => $staff_id,
@@ -150,17 +150,6 @@ class Zanjir_Commission_Engine {
 		);
 
 		return $admin ? (int) $admin : false;
-	}
-
-	/**
-	 * floor(base * rate / 10000) using integer math.
-	 *
-	 * @param int $base
-	 * @param int $rate Basis-10000 rate.
-	 * @return int
-	 */
-	private static function floor_divide( $base, $rate ) {
-		return (int) intdiv( (int) $base * (int) $rate, 10000 );
 	}
 
 	/**

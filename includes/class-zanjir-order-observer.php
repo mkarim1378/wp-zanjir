@@ -112,9 +112,7 @@ class Zanjir_Order_Observer {
 		$referral_discount = (int) $order->get_meta( '_zanjir_referral_discount' );
 		$coupon_discount   = (int) round( (float) $order->get_discount_total() );
 
-		$base = $total - $referral_discount - $coupon_discount;
-
-		return max( 0, $base );
+		return Zanjir_Money::commission_base( $total, $referral_discount, $coupon_discount );
 	}
 
 	/**

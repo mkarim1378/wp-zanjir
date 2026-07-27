@@ -5,6 +5,21 @@ All notable changes to the Zanjir plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-07-27
+
+### Added
+- PHPUnit suite (`composer test`) covering money math, matrix invariants, national ID, and loader signature.
+- `Zanjir_Money` pure helpers for rate amounts, discount caps, and commission base.
+- Admin **Make staff / Make affiliate** toggle so staff override can resolve.
+- Manual QA checklist: `docs/QA_CHECKLIST.md`.
+
+### Fixed
+- Refunds inside the return window now void **payable** commissions too and debit the payable ledger bucket (clawback).
+- National ID uniqueness hashing uses HMAC when `ZANJIR_NID_KEY` / option / `wp_salt` is available; encrypt uses `OPENSSL_RAW_DATA` with legacy decrypt fallback.
+
+### Changed
+- Patch version `2.0.0` → `2.0.1` (harden / QA).
+
 ## [2.0.0] - 2026-07-27
 
 ### Added

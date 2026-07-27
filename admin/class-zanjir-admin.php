@@ -22,6 +22,7 @@ class Zanjir_Admin {
 		$loader->add_action( 'admin_post_zanjir_settlement_approve', $this, 'handle_settlement_approve' );
 		$loader->add_action( 'admin_post_zanjir_fraud_review', $this, 'handle_fraud_review' );
 		$loader->add_action( 'admin_post_zanjir_bonus_create', $this, 'handle_bonus_create' );
+		$loader->add_action( 'admin_post_zanjir_set_affiliate_type', $this, 'handle_set_affiliate_type' );
 	}
 
 	/**
@@ -527,6 +528,14 @@ class Zanjir_Admin {
 									<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=zanjir_reject_affiliate&affiliate_id=' . (int) $row->id ), Zanjir_Registration::ADMIN_NONCE . (int) $row->id ) ); ?>">
 										<?php esc_html_e( 'Reject', 'zanjir' ); ?>
 									</a>
+								<?php elseif ( 'approved' === $row->status ) : ?>
+									<?php
+									$next_type = ( 'staff' === $row->type ) ? 'affiliate' : 'staff';
+									$label     = ( 'staff' === $row->type ) ? __( 'Make affiliate', 'zanjir' ) : __( 'Make staff', 'zanjir' );
+									?>
+									<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=zanjir_set_affiliate_type&affiliate_id=' . (int) $row->id . '&type=' . rawurlencode( $next_type ) ), 'zanjir_type_' . (int) $row->id ) ); ?>">
+										<?php echo esc_html( $label ); ?>
+									</a>
 								<?php else : ?>
 									—
 								<?php endif; ?>
@@ -702,6 +711,23 @@ class Zanjir_Admin {
 		);
 
 		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-bonus&done=created' ) );
+		exit;
+	}
+
+	/**
+	 * Toggle affiliate/staff type.
+	 */
+	public function handle_set_affiliate_type() {
+		if ( ! Zanjir_Roles::can_manage() ) {
+			wp_die( esc_html__( 'Unauthorized.', 'zanjir' ) );
+		}
+
+		$id   = isset( $_GET['affiliate_id'] ) ? absint( $_GET['affiliate_id'] ) : 0;
+		$type = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : '';
+		check_admin_referer( 'zanjir_type_' . $id );
+
+		Zanjir_Registration::set_type( $id, $type );
+		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-affiliates&done=type' ) );
 		exit;
 	}
 }

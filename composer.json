@@ -1,0 +1,23 @@
+{
+  "name": "mkarim1378/wp-zanjir",
+  "description": "Multi-tier affiliate marketing plugin for WooCommerce",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6"
+  },
+  "autoload-dev": {
+    "classmap": [
+      "includes/commission/class-zanjir-money.php",
+      "includes/commission/class-zanjir-matrix.php",
+      "includes/class-zanjir-national-id-validator.php",
+      "includes/class-zanjir-settings.php"
+    ]
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
+}

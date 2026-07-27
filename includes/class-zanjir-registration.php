@@ -294,6 +294,47 @@ class Zanjir_Registration {
 	}
 
 	/**
+	 * Update affiliate type (affiliate|staff).
+	 *
+	 * @param int    $affiliate_id
+	 * @param string $type
+	 * @return bool
+	 */
+	public static function set_type( $affiliate_id, $type ) {
+		global $wpdb;
+
+		if ( ! in_array( $type, array( 'affiliate', 'staff' ), true ) ) {
+			return false;
+		}
+
+		$row = self::get_affiliate( $affiliate_id );
+		if ( ! $row || 'approved' !== $row->status ) {
+			return false;
+		}
+
+		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prefix . 'zanjir_affiliates',
+			array(
+				'type'       => $type,
+				'updated_at' => current_time( 'mysql', true ),
+			),
+			array( 'id' => (int) $affiliate_id ),
+			array( '%s', '%s' ),
+			array( '%d' )
+		);
+
+		if ( $updated ) {
+			if ( 'staff' === $type ) {
+				Zanjir_Roles::assign_staff( (int) $row->user_id );
+			} else {
+				Zanjir_Roles::remove_staff( (int) $row->user_id );
+			}
+		}
+
+		return (bool) $updated;
+	}
+
+	/**
 	 * Get the WordPress user ID for an affiliate.
 	 *
 	 * @param int $affiliate_id

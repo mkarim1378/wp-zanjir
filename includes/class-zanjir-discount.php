@@ -49,18 +49,16 @@ class Zanjir_Discount {
 			$total += (int) round( (float) $item->get_total() );
 		}
 
-		$referral_discount = (int) intdiv( $total * $rate, 10000 );
+		$referral_discount = Zanjir_Money::amount_from_rate( $total, $rate );
 		$coupon_discount   = (int) round( (float) $order->get_discount_total() );
 		$max_discount      = (int) $settings['max_discount'];
 
-		// max_discount is stored as basis-10000 of line total (cap rate).
-		$max_amount = (int) intdiv( $total * $max_discount, 10000 );
-		if ( $max_amount > 0 ) {
-			$total_discount = $referral_discount + $coupon_discount;
-			if ( $total_discount > $max_amount ) {
-				$referral_discount = max( 0, $max_amount - $coupon_discount );
-			}
-		}
+		$referral_discount = Zanjir_Money::cap_referral_discount(
+			$total,
+			$referral_discount,
+			$coupon_discount,
+			$max_discount
+		);
 
 		if ( $referral_discount > 0 ) {
 			$order->update_meta_data( '_zanjir_referral_discount', $referral_discount );

@@ -47,20 +47,27 @@ class Zanjir_National_Id_Validator {
 	}
 
 	/**
-	 * Generate a SHA-256 hash of the national ID (for uniqueness check).
+	 * Generate a SHA-256 / HMAC hash of the national ID (for uniqueness check).
+	 *
+	 * When a pepper is available (ZANJIR_NID_KEY / zanjir_nid_key / wp_salt),
+	 * uses HMAC. Otherwise falls back to legacy unsalted SHA-256 for BC.
 	 *
 	 * @param string $id Raw national ID.
 	 * @return string Hex hash.
 	 */
 	public static function hash( $id ) {
-		return hash( 'sha256', preg_replace( '/\D/', '', $id ) );
+		$clean  = preg_replace( '/\D/', '', $id );
+		$pepper = self::get_pepper();
+
+		if ( $pepper ) {
+			return hash_hmac( 'sha256', $clean, $pepper );
+		}
+
+		return hash( 'sha256', $clean );
 	}
 
 	/**
 	 * Encrypt the national ID for optional storage.
-	 *
-	 * Requires a key defined as ZANJIR_NID_KEY constant or
-	 * a value in wp_options under 'zanjir_nid_key'.
 	 *
 	 * @param string $id Raw national ID.
 	 * @return string|false Base64-encoded encrypted value, or false on failure.
@@ -71,12 +78,12 @@ class Zanjir_National_Id_Validator {
 			return false;
 		}
 
-		$iv       = openssl_random_pseudo_bytes( 16 );
+		$iv        = openssl_random_pseudo_bytes( 16 );
 		$encrypted = openssl_encrypt(
 			$id,
 			'AES-256-CBC',
 			hash( 'sha256', $key, true ),
-			0,
+			OPENSSL_RAW_DATA,
 			$iv
 		);
 
@@ -104,9 +111,22 @@ class Zanjir_National_Id_Validator {
 			return false;
 		}
 
-		$iv        = substr( $decoded, 0, 16 );
+		$iv         = substr( $decoded, 0, 16 );
 		$ciphertext = substr( $decoded, 16 );
 
+		$raw = openssl_decrypt(
+			$ciphertext,
+			'AES-256-CBC',
+			hash( 'sha256', $key, true ),
+			OPENSSL_RAW_DATA,
+			$iv
+		);
+
+		if ( false !== $raw ) {
+			return $raw;
+		}
+
+		// Legacy fallback: ciphertext stored as openssl base64 (options=0).
 		return openssl_decrypt(
 			$ciphertext,
 			'AES-256-CBC',
@@ -120,7 +140,7 @@ class Zanjir_National_Id_Validator {
 	 * Normalize: strip non-digits, validate, and return hash + optional encrypted value.
 	 *
 	 * @param string $id Raw national ID.
-	 * @return array{valid: bool, hash: string, encrypted: string|false}|false
+	 * @return array{valid: bool, hash: string, encrypted: string|false}
 	 */
 	public static function process( $id ) {
 		$clean = preg_replace( '/\D/', '', $id );
@@ -141,6 +161,24 @@ class Zanjir_National_Id_Validator {
 	}
 
 	/**
+	 * Pepper for HMAC uniqueness hashing.
+	 *
+	 * @return string
+	 */
+	private static function get_pepper() {
+		$key = self::get_encryption_key();
+		if ( $key ) {
+			return (string) $key;
+		}
+
+		if ( function_exists( 'wp_salt' ) ) {
+			return (string) wp_salt( 'auth' );
+		}
+
+		return '';
+	}
+
+	/**
 	 * Get the encryption key from constant or options.
 	 *
 	 * @return string|false
@@ -150,7 +188,11 @@ class Zanjir_National_Id_Validator {
 			return ZANJIR_NID_KEY;
 		}
 
-		$key = get_option( 'zanjir_nid_key', '' );
-		return $key ? $key : false;
+		if ( function_exists( 'get_option' ) ) {
+			$key = get_option( 'zanjir_nid_key', '' );
+			return $key ? $key : false;
+		}
+
+		return false;
 	}
 }

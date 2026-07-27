@@ -180,18 +180,43 @@ class Zanjir_Commission_Lifecycle {
 	}
 
 	/**
-	 * Void all pending commissions for an order and debit pending ledger (idempotent).
+	 * Void pending and payable commissions within the return window (idempotent).
+	 *
+	 * Pending → void debits the pending bucket.
+	 * Payable → void debits the payable bucket (clawback after window cron).
 	 *
 	 * @param int $order_id
 	 * @return int Number of rows voided.
 	 */
 	public static function void_commissions( $order_id ) {
+		$count  = self::void_status_bucket( $order_id, 'pending', 'pending' );
+		$count += self::void_status_bucket( $order_id, 'payable', 'payable' );
+		return $count;
+	}
+
+	/**
+	 * Void commissions in a single status and debit the matching ledger bucket.
+	 *
+	 * @param int    $order_id
+	 * @param string $from_status pending|payable
+	 * @param string $ledger_bucket
+	 * @return int
+	 */
+	private static function void_status_bucket( $order_id, $from_status, $ledger_bucket ) {
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'zanjir_commissions';
 		$now   = current_time( 'mysql', true );
-		$rows  = self::get_pending( $order_id );
+		$rows  = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT * FROM {$table} WHERE order_id = %d AND status = %s",
+			$order_id,
+			$from_status
+		) );
+
 		$count = 0;
+		if ( ! $rows ) {
+			return 0;
+		}
 
 		foreach ( $rows as $row ) {
 			$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -202,7 +227,7 @@ class Zanjir_Commission_Lifecycle {
 				),
 				array(
 					'id'     => (int) $row->id,
-					'status' => 'pending',
+					'status' => $from_status,
 				),
 				array( '%s', '%s' ),
 				array( '%d', '%s' )
@@ -214,7 +239,7 @@ class Zanjir_Commission_Lifecycle {
 
 			Zanjir_Ledger::debit(
 				(int) $row->beneficiary_id,
-				'pending',
+				$ledger_bucket,
 				(int) $row->amount,
 				'commission',
 				(int) $row->id,
