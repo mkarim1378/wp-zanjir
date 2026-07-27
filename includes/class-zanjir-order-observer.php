@@ -39,6 +39,14 @@ class Zanjir_Order_Observer {
 			return;
 		}
 
+		$fraud = Zanjir_Fraud_Guard::precheck_order( $order_id, (int) $seller_id );
+		if ( is_wp_error( $fraud ) ) {
+			$order->delete_meta_data( '_zanjir_referral_code' );
+			$order->delete_meta_data( '_zanjir_seller_id' );
+			$order->save();
+			return;
+		}
+
 		if ( self::get_snapshot( $order_id ) ) {
 			return;
 		}

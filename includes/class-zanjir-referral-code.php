@@ -207,6 +207,16 @@ class Zanjir_Referral_Code {
 		// Do not attribute self-purchases to the buyer's own code.
 		$buyer_id = (int) $order->get_user_id();
 		if ( $buyer_id && (int) $affiliate->user_id === $buyer_id ) {
+			if ( class_exists( 'Zanjir_Fraud_Guard' ) ) {
+				Zanjir_Fraud_Guard::log( 'self_buy', 'critical', $order_id, $affiliate_id, array( 'buyer_id' => $buyer_id ) );
+			}
+			return;
+		}
+
+		$check = class_exists( 'Zanjir_Fraud_Guard' )
+			? Zanjir_Fraud_Guard::precheck_order( $order_id, $affiliate_id )
+			: true;
+		if ( is_wp_error( $check ) ) {
 			return;
 		}
 

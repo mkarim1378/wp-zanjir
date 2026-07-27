@@ -86,6 +86,11 @@ class Zanjir_Registration {
 			return new WP_Error( 'invalid_national_id', __( 'Invalid national ID.', 'zanjir' ) );
 		}
 
+		$identity = Zanjir_Recruit_Service::verify_identity( preg_replace( '/\D/', '', $national_id ), $user_id );
+		if ( is_wp_error( $identity ) ) {
+			return $identity;
+		}
+
 		$dup = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$table} WHERE national_id_hash = %s", $nid['hash'] ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		if ( $dup ) {
 			return new WP_Error( 'duplicate_national_id', __( 'This national ID is already registered.', 'zanjir' ) );
@@ -115,6 +120,10 @@ class Zanjir_Registration {
 		$affiliate_id = $wpdb->insert_id;
 
 		if ( $referral_code ) {
+			$parent_aff_id = Zanjir_Referral_Code::lookup_affiliate( $referral_code );
+			if ( $parent_aff_id && ! Zanjir_Recruit_Service::can_recruit( $parent_aff_id ) ) {
+				return new WP_Error( 'recruit_locked', __( 'This referrer is not yet allowed to recruit.', 'zanjir' ) );
+			}
 			$this->link_parent( $affiliate_id, $referral_code );
 		}
 

@@ -5,6 +5,16 @@ All notable changes to the Zanjir plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-07-27
+
+### Added
+- **Phase 18 — Anti-fraud:** `Zanjir_Fraud_Guard` blocks self-buy and own-chain attribution, logs hashed IPs, exposes admin fraud review queue, and supports `zanjir_fraud_rules` filter.
+- **Phase 19 — Recruit & identity:** annual sales tracking, `recruit_enabled` refresh via `zanjir_recalc_annual_cap`, recruit gate on registration parent link, and `zanjir_verify_identity` filter.
+- **Phase 20 — Bonus & UI:** `Zanjir_Bonus_Service` with plans + daily evaluation cron; shortcodes `[zanjir_register]` and `[zanjir_dashboard]`; admin screens for Affiliates, Fraud queue, and Bonus plans.
+
+### Changed
+- Major version bump `1.11.0` → `2.0.0` (M5 anti-fraud / bonus / public surfaces).
+
 ## [1.11.0] - 2026-07-27
 
 ### Added

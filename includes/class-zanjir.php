@@ -91,6 +91,19 @@ class Zanjir {
 		require_once ZANJIR_PLUGIN_DIR . 'includes/wallet/class-zanjir-settlement-service.php';
 		require_once ZANJIR_PLUGIN_DIR . 'includes/wallet/class-zanjir-withdrawal-service.php';
 		new Zanjir_Withdrawal_Service( $this->loader );
+
+		require_once ZANJIR_PLUGIN_DIR . 'includes/fraud/class-zanjir-fraud-guard.php';
+		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-recruit-service.php';
+		new Zanjir_Recruit_Service( $this->loader );
+
+		require_once ZANJIR_PLUGIN_DIR . 'includes/bonus/class-zanjir-bonus-service.php';
+		new Zanjir_Bonus_Service( $this->loader );
+
+		require_once ZANJIR_PLUGIN_DIR . 'public/class-zanjir-public.php';
+		new Zanjir_Public( $this->loader );
+
+		Zanjir_Recruit_Service::maybe_schedule();
+		Zanjir_Bonus_Service::maybe_schedule();
 	}
 
 	/**
@@ -115,6 +128,8 @@ class Zanjir {
 	public static function activate() {
 		Zanjir_DB::maybe_upgrade();
 		Zanjir_Roles::activate();
+		Zanjir_Recruit_Service::maybe_schedule();
+		Zanjir_Bonus_Service::maybe_schedule();
 		flush_rewrite_rules();
 	}
 
@@ -124,6 +139,8 @@ class Zanjir {
 	public static function deactivate() {
 		Zanjir_Roles::deactivate();
 		wp_unschedule_hook( Zanjir_Commission_Lifecycle::CRON_HOOK );
+		Zanjir_Recruit_Service::clear_schedule();
+		Zanjir_Bonus_Service::clear_schedule();
 		flush_rewrite_rules();
 	}
 }
