@@ -87,6 +87,10 @@ class Zanjir {
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-refund-handler.php';
 		new Zanjir_Refund_Handler( $this->loader );
+
+		require_once ZANJIR_PLUGIN_DIR . 'includes/wallet/class-zanjir-settlement-service.php';
+		require_once ZANJIR_PLUGIN_DIR . 'includes/wallet/class-zanjir-withdrawal-service.php';
+		new Zanjir_Withdrawal_Service( $this->loader );
 	}
 
 	/**

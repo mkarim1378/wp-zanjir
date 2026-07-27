@@ -5,6 +5,18 @@ All notable changes to the Zanjir plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-07-27
+
+### Added
+- **Phase 16 — Settlements:** `Zanjir_Settlement_Service` with draft → reviewed → approved flow; payable commissions move to `paid` and ledger `payable → withdrawable` on approve.
+- Admin **Settlements** screen to prepare monthly batches and approve them.
+- **Phase 17 — Withdrawals:** `Zanjir_Withdrawal_Service` with requested → approved → rejected/paid; approve locks funds via withdrawable debit; reject releases when locked.
+- Admin **Withdrawals** screen with approve / reject / mark-paid actions.
+- Affiliate `admin-post` endpoint to submit withdrawal requests (nonce-protected).
+
+### Changed
+- Version bump `1.10.0` → `1.11.0` (wallet settlement & withdrawals).
+
 ## [1.10.0] - 2026-07-27
 
 ### Fixed
