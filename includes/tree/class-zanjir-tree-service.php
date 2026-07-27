@@ -43,7 +43,8 @@ class Zanjir_Tree_Service {
 				return new WP_Error( 'parent_not_found', __( 'Parent affiliate not found in tree.', 'zanjir' ) );
 			}
 
-			if ( self::is_descendant( $affiliate_id, $parent_id ) ) {
+			// Loop if the chosen parent is already under the new node.
+			if ( self::is_descendant( (int) $parent_id, (int) $affiliate_id ) ) {
 				return new WP_Error( 'referral_loop', __( 'Referral loop detected.', 'zanjir' ) );
 			}
 
@@ -75,37 +76,52 @@ class Zanjir_Tree_Service {
 	}
 
 	/**
-	 * Check if candidate_id is an ancestor of target_id (loop detection).
+	 * Check if $descendant_id is under $ancestor_id in the tree.
 	 *
-	 * @param int $candidate_id The potential new node.
-	 * @param int $parent_id    The parent under which we want to insert.
-	 * @return bool True if inserting would create a loop.
+	 * @param int $descendant_id Potential descendant affiliate ID.
+	 * @param int $ancestor_id   Potential ancestor affiliate ID.
+	 * @return bool
 	 */
-	public static function is_descendant( $candidate_id, $parent_id ) {
+	public static function is_descendant( $descendant_id, $ancestor_id ) {
 		global $wpdb;
 
-		$t      = self::table();
-		$parent = $wpdb->get_row( $wpdb->prepare( "SELECT path FROM {$t} WHERE affiliate_id = %d", $parent_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$t = self::table();
 
-		if ( ! $parent ) {
+		$ancestor = $wpdb->get_row( $wpdb->prepare( "SELECT path FROM {$t} WHERE affiliate_id = %d", $ancestor_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		if ( ! $ancestor ) {
 			return false;
 		}
 
-		$candidate = $wpdb->get_row( $wpdb->prepare( "SELECT path FROM {$t} WHERE affiliate_id = %d", $candidate_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-
-		if ( ! $candidate ) {
+		$descendant = $wpdb->get_row( $wpdb->prepare( "SELECT path FROM {$t} WHERE affiliate_id = %d", $descendant_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		if ( ! $descendant ) {
 			return false;
 		}
 
-		return strpos( $candidate->path, $parent->path ) === 0;
+		return strpos( $descendant->path, $ancestor->path ) === 0;
 	}
 
 	/**
-	 * Resolve the full upline chain for an affiliate.
+	 * Get a single tree node by affiliate ID.
+	 *
+	 * @param int $affiliate_id
+	 * @return object|null
+	 */
+	public static function get_node( $affiliate_id ) {
+		global $wpdb;
+
+		$t = self::table();
+
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$t} WHERE affiliate_id = %d", $affiliate_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	}
+
+	/**
+	 * Resolve the full upline chain for an affiliate (parents only).
+	 *
+	 * Ordered from closest parent to root, capped at $max_depth.
 	 *
 	 * @param int $affiliate_id
 	 * @param int $max_depth Maximum ancestors to return.
-	 * @return array<int, object> Ordered from closest parent to root.
+	 * @return array<int, object>
 	 */
 	public static function resolve_upline_chain( $affiliate_id, $max_depth = 3 ) {
 		global $wpdb;
@@ -118,9 +134,13 @@ class Zanjir_Tree_Service {
 		}
 
 		$path = rtrim( $self->path, '/' );
-		$ids  = array_filter( explode( '/', $path ) );
+		$ids  = array_values(
+			array_filter(
+				array_map( 'intval', explode( '/', $path ) )
+			)
+		);
 
-		$self_key = array_search( $affiliate_id, $ids, true );
+		$self_key = array_search( (int) $affiliate_id, $ids, true );
 		if ( false !== $self_key ) {
 			unset( $ids[ $self_key ] );
 		}
@@ -134,7 +154,7 @@ class Zanjir_Tree_Service {
 		}
 
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-		$results = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$results      = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			"SELECT t.*, a.user_id, a.type, a.status
 			 FROM {$t} t
 			 JOIN {$wpdb->prefix}zanjir_affiliates a ON a.id = t.affiliate_id
@@ -143,7 +163,23 @@ class Zanjir_Tree_Service {
 			$ids
 		) );
 
-		return $results ? $results : array();
+		if ( ! $results ) {
+			return array();
+		}
+
+		$by_id = array();
+		foreach ( $results as $row ) {
+			$by_id[ (int) $row->affiliate_id ] = $row;
+		}
+
+		$ordered = array();
+		foreach ( $ids as $id ) {
+			if ( isset( $by_id[ $id ] ) ) {
+				$ordered[] = $by_id[ $id ];
+			}
+		}
+
+		return $ordered;
 	}
 
 	/**
@@ -176,7 +212,7 @@ class Zanjir_Tree_Service {
 	public static function get_depth( $affiliate_id ) {
 		global $wpdb;
 
-		$t    = self::table();
+		$t     = self::table();
 		$depth = $wpdb->get_var( $wpdb->prepare( "SELECT depth FROM {$t} WHERE affiliate_id = %d", $affiliate_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		return false !== $depth ? (int) $depth : false;

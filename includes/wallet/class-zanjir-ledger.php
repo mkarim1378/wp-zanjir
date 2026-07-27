@@ -22,11 +22,11 @@ class Zanjir_Ledger {
 	/**
 	 * Record a credit entry.
 	 *
-	 * @param int    $affiliate_id
-	 * @param string $bucket pending|payable|withdrawable
-	 * @param int    $amount
-	 * @param string $ref_type commission|settlement|withdrawal|adjustment
-	 * @param int|null $ref_id
+	 * @param int         $affiliate_id
+	 * @param string      $bucket pending|payable|withdrawable
+	 * @param int         $amount
+	 * @param string      $ref_type commission|settlement|withdrawal|adjustment
+	 * @param int|null    $ref_id
 	 * @param string|null $note
 	 * @return int|false Insert ID or false.
 	 */
@@ -37,11 +37,11 @@ class Zanjir_Ledger {
 	/**
 	 * Record a debit entry.
 	 *
-	 * @param int    $affiliate_id
-	 * @param string $bucket pending|payable|withdrawable
-	 * @param int    $amount
-	 * @param string $ref_type commission|settlement|withdrawal|adjustment
-	 * @param int|null $ref_id
+	 * @param int         $affiliate_id
+	 * @param string      $bucket pending|payable|withdrawable
+	 * @param int         $amount
+	 * @param string      $ref_type commission|settlement|withdrawal|adjustment
+	 * @param int|null    $ref_id
 	 * @param string|null $note
 	 * @return int|false Insert ID or false.
 	 */
@@ -52,23 +52,36 @@ class Zanjir_Ledger {
 	/**
 	 * Insert a ledger entry.
 	 *
-	 * @param int    $affiliate_id
-	 * @param string $entry_type credit|debit
-	 * @param string $bucket
-	 * @param int    $amount
-	 * @param string $ref_type
-	 * @param int|null $ref_id
+	 * @param int         $affiliate_id
+	 * @param string      $entry_type credit|debit
+	 * @param string      $bucket
+	 * @param int         $amount
+	 * @param string      $ref_type
+	 * @param int|null    $ref_id
 	 * @param string|null $note
 	 * @return int|false
 	 */
 	private static function insert( $affiliate_id, $entry_type, $bucket, $amount, $ref_type, $ref_id, $note ) {
 		global $wpdb;
 
+		$amount = (int) $amount;
+		if ( $amount <= 0 || (int) $affiliate_id <= 0 ) {
+			return false;
+		}
+
+		$allowed_buckets = array( 'pending', 'payable', 'withdrawable' );
+		if ( ! in_array( $bucket, $allowed_buckets, true ) ) {
+			return false;
+		}
+
 		$balance = self::get_balance( $affiliate_id, $bucket );
 
 		if ( 'credit' === $entry_type ) {
 			$balance += $amount;
 		} else {
+			if ( $balance < $amount ) {
+				return false;
+			}
 			$balance -= $amount;
 		}
 
@@ -88,7 +101,7 @@ class Zanjir_Ledger {
 			array( '%d', '%s', '%s', '%d', '%d', '%s', '%d', '%s', '%s' )
 		);
 
-		return $wpdb->insert_id;
+		return $wpdb->insert_id ? (int) $wpdb->insert_id : false;
 	}
 
 	/**
@@ -102,14 +115,14 @@ class Zanjir_Ledger {
 		global $wpdb;
 
 		$balance = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT balance_after FROM " . self::table() . "
+			'SELECT balance_after FROM ' . self::table() . '
 			 WHERE affiliate_id = %d AND bucket = %s
-			 ORDER BY id DESC LIMIT 1",
+			 ORDER BY id DESC LIMIT 1',
 			$affiliate_id,
 			$bucket
 		) );
 
-		return false !== $balance ? (int) $balance : 0;
+		return false !== $balance && null !== $balance ? (int) $balance : 0;
 	}
 
 	/**
@@ -134,10 +147,10 @@ class Zanjir_Ledger {
 		global $wpdb;
 
 		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM " . self::table() . "
+			'SELECT * FROM ' . self::table() . '
 			 WHERE affiliate_id = %d
 			 ORDER BY id DESC
-			 LIMIT %d OFFSET %d",
+			 LIMIT %d OFFSET %d',
 			$affiliate_id,
 			$limit,
 			$offset
@@ -147,21 +160,28 @@ class Zanjir_Ledger {
 	/**
 	 * Transfer balance between buckets.
 	 *
-	 * Creates a debit from source and credit to destination.
-	 *
-	 * @param int    $affiliate_id
-	 * @param string $from_bucket
-	 * @param string $to_bucket
-	 * @param int    $amount
-	 * @param string $ref_type
-	 * @param int|null $ref_id
+	 * @param int         $affiliate_id
+	 * @param string      $from_bucket
+	 * @param string      $to_bucket
+	 * @param int         $amount
+	 * @param string      $ref_type
+	 * @param int|null    $ref_id
 	 * @param string|null $note
 	 * @return bool
 	 */
 	public static function transfer( $affiliate_id, $from_bucket, $to_bucket, $amount, $ref_type, $ref_id = null, $note = null ) {
-		$debit_id  = self::debit( $affiliate_id, $from_bucket, $amount, $ref_type, $ref_id, $note );
-		$credit_id = self::credit( $affiliate_id, $to_bucket, $amount, $ref_type, $ref_id, $note );
+		$debit_id = self::debit( $affiliate_id, $from_bucket, $amount, $ref_type, $ref_id, $note );
+		if ( ! $debit_id ) {
+			return false;
+		}
 
-		return $debit_id && $credit_id;
+		$credit_id = self::credit( $affiliate_id, $to_bucket, $amount, $ref_type, $ref_id, $note );
+		if ( ! $credit_id ) {
+			// Best-effort compensation if credit fails after debit.
+			self::credit( $affiliate_id, $from_bucket, $amount, $ref_type, $ref_id, 'transfer_rollback' );
+			return false;
+		}
+
+		return true;
 	}
 }

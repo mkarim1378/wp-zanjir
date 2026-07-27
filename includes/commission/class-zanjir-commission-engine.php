@@ -1,6 +1,6 @@
 <?php
 /**
- * Commission engine — pure calculation from snapshot.
+ * Commission engine — calculation from snapshot + persistence.
  *
  * @package Zanjir\Commission
  */
@@ -12,7 +12,7 @@ class Zanjir_Commission_Engine {
 	/**
 	 * Calculate commission rows from a snapshot.
 	 *
-	 * Pure function: snapshot in → commission rows out. No I/O.
+	 * Staff resolution may hit the DB when staff_id is not embedded in chain_json.
 	 *
 	 * @param object $snapshot Order snapshot row.
 	 * @return array<int, array{beneficiary_id: int, kind: string, tier_level: int|null, rate: int, amount: int}>
@@ -21,7 +21,6 @@ class Zanjir_Commission_Engine {
 		$rows = array();
 
 		$base       = (int) $snapshot->base_amount;
-		$tree_cap   = (int) $snapshot->tree_cap_rate;
 		$staff_rate = (int) $snapshot->staff_rate;
 		$chain      = json_decode( $snapshot->chain_json, true );
 		$matrix     = json_decode( $snapshot->matrix_json, true );
@@ -30,26 +29,30 @@ class Zanjir_Commission_Engine {
 			return $rows;
 		}
 
-		$rows = array_merge( $rows, self::calculate_tree_commissions( $base, $chain, $matrix, $tree_cap ) );
+		/**
+		 * Filter calculated commission rows before persistence.
+		 *
+		 * @param array  $rows
+		 * @param object $snapshot
+		 */
+		$rows = array_merge( $rows, self::calculate_tree_commissions( $base, $matrix ) );
 
 		$staff_row = self::calculate_staff_override( $base, $staff_rate, $chain, $snapshot );
 		if ( $staff_row ) {
 			$rows[] = $staff_row;
 		}
 
-		return $rows;
+		return apply_filters( 'zanjir_commission_result', $rows, $snapshot );
 	}
 
 	/**
 	 * Calculate tree commissions per tier.
 	 *
 	 * @param int   $base
-	 * @param array $chain
 	 * @param array $matrix
-	 * @param int   $tree_cap
 	 * @return array
 	 */
-	private static function calculate_tree_commissions( $base, $chain, $matrix, $tree_cap ) {
+	private static function calculate_tree_commissions( $base, $matrix ) {
 		$rows = array();
 
 		foreach ( $matrix as $tier ) {
@@ -78,12 +81,9 @@ class Zanjir_Commission_Engine {
 	/**
 	 * Calculate the staff override commission.
 	 *
-	 * Independent from tree cap. Recipient is the staff member who
-	 * recruited the direct seller, or the default admin.
-	 *
-	 * @param int   $base
-	 * @param int   $staff_rate
-	 * @param array $chain
+	 * @param int    $base
+	 * @param int    $staff_rate
+	 * @param array  $chain
 	 * @param object $snapshot
 	 * @return array|null
 	 */
@@ -113,10 +113,10 @@ class Zanjir_Commission_Engine {
 	 *
 	 * @param array  $chain
 	 * @param object $snapshot
-	 * @return int|false Staff affiliate ID or false.
+	 * @return int|false
 	 */
 	private static function resolve_staff_id( $chain, $snapshot ) {
-		if ( ! empty( $chain[0] ) && ! empty( $chain[0]['staff_id'] ) ) {
+		if ( ! empty( $chain[0]['staff_id'] ) ) {
 			return (int) $chain[0]['staff_id'];
 		}
 
@@ -136,7 +136,7 @@ class Zanjir_Commission_Engine {
 	}
 
 	/**
-	 * Get the default staff (admin) for override fallback.
+	 * Get the default staff affiliate for override fallback.
 	 *
 	 * @return int|false
 	 */
@@ -153,51 +153,80 @@ class Zanjir_Commission_Engine {
 	}
 
 	/**
-	 * floor(base * rate / 10000) — integer division, no rounding loss.
+	 * floor(base * rate / 10000) using integer math.
 	 *
 	 * @param int $base
 	 * @param int $rate Basis-10000 rate.
 	 * @return int
 	 */
 	private static function floor_divide( $base, $rate ) {
-		return (int) floor( (float) $base * $rate / 10000 );
+		return (int) intdiv( (int) $base * (int) $rate, 10000 );
 	}
 
 	/**
-	 * Save calculated rows to the commissions table.
+	 * Whether commissions already exist for an order.
 	 *
-	 * @param int   $order_id
-	 * @param int   $snapshot_id
-	 * @param array $rows Calculated commission rows.
+	 * @param int $order_id
 	 * @return bool
 	 */
-	public static function save( $order_id, $snapshot_id, array $rows ) {
+	public static function has_commissions( $order_id ) {
 		global $wpdb;
+
+		$found = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT id FROM {$wpdb->prefix}zanjir_commissions WHERE order_id = %d LIMIT 1",
+			$order_id
+		) );
+
+		return ! empty( $found );
+	}
+
+	/**
+	 * Save calculated rows to the commissions table and credit pending ledger.
+	 *
+	 * @param int         $order_id
+	 * @param int         $snapshot_id
+	 * @param array       $rows
+	 * @param string|null $window_ends_at MySQL DATETIME UTC.
+	 * @return bool
+	 */
+	public static function save( $order_id, $snapshot_id, array $rows, $window_ends_at = null ) {
+		global $wpdb;
+
+		if ( empty( $rows ) ) {
+			return false;
+		}
 
 		$table = $wpdb->prefix . 'zanjir_commissions';
 		$now   = current_time( 'mysql', true );
 
+		if ( null === $window_ends_at ) {
+			$window_ends_at = self::get_return_window_end( $order_id );
+		}
+
 		foreach ( $rows as $row ) {
-			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$table,
-				array(
-					'order_id'              => $order_id,
-					'snapshot_id'           => $snapshot_id,
-					'beneficiary_id'        => $row['beneficiary_id'],
-					'kind'                  => $row['kind'],
-					'tier_level'            => $row['tier_level'],
-					'rate'                  => $row['rate'],
-					'amount'                => $row['amount'],
-					'status'                => 'pending',
-					'return_window_ends_at' => self::get_return_window_end( $order_id ),
-					'created_at'            => $now,
-					'updated_at'            => $now,
-				),
-				array( '%d', '%d', '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s' )
+			$data = array(
+				'order_id'              => $order_id,
+				'snapshot_id'           => $snapshot_id,
+				'beneficiary_id'        => $row['beneficiary_id'],
+				'kind'                  => $row['kind'],
+				'tier_level'            => $row['tier_level'],
+				'rate'                  => $row['rate'],
+				'amount'                => $row['amount'],
+				'status'                => 'pending',
+				'return_window_ends_at' => $window_ends_at,
+				'created_at'            => $now,
+				'updated_at'            => $now,
 			);
 
+			$formats = array( '%d', '%d', '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s' );
+			if ( null === $row['tier_level'] ) {
+				$data['tier_level'] = null;
+			}
+
+			$wpdb->insert( $table, $data, $formats ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
 			$commission_id = $wpdb->insert_id;
-			if ( $commission_id ) {
+			if ( $commission_id && (int) $row['amount'] > 0 ) {
 				Zanjir_Ledger::credit( (int) $row['beneficiary_id'], 'pending', (int) $row['amount'], 'commission', $commission_id );
 			}
 		}
@@ -209,9 +238,9 @@ class Zanjir_Commission_Engine {
 	 * Calculate the return window end time for an order.
 	 *
 	 * @param int $order_id
-	 * @return string|null DATETIME or null if no order found.
+	 * @return string|null DATETIME or null if order not completed.
 	 */
-	private static function get_return_window_end( $order_id ) {
+	public static function get_return_window_end( $order_id ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
 			return null;

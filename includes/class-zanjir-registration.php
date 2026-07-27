@@ -54,9 +54,9 @@ class Zanjir_Registration {
 		$result = $this->register( $user_id, $national_id, $referral );
 
 		if ( is_wp_error( $result ) ) {
-			set_transient( 'zanjir_reg_error', $result->get_error_message(), 30 );
+			set_transient( 'zanjir_reg_error_' . $user_id, $result->get_error_message(), 30 );
 		} else {
-			set_transient( 'zanjir_reg_success', __( 'Registration submitted. Waiting for admin approval.', 'zanjir' ), 30 );
+			set_transient( 'zanjir_reg_success_' . $user_id, __( 'Registration submitted. Waiting for admin approval.', 'zanjir' ), 30 );
 		}
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : home_url() );
@@ -166,8 +166,13 @@ class Zanjir_Registration {
 			wp_die( esc_html__( 'Security check failed.', 'zanjir' ) );
 		}
 
+		$affiliate = self::get_affiliate( $affiliate_id );
+		if ( ! $affiliate || 'pending' !== $affiliate->status ) {
+			wp_die( esc_html__( 'Affiliate cannot be approved from the current status.', 'zanjir' ) );
+		}
+
 		$this->set_status( $affiliate_id, 'approved' );
-		Zanjir_Roles::assign_affiliate( $this->get_user_id( $affiliate_id ) );
+		Zanjir_Roles::assign_affiliate( (int) $affiliate->user_id );
 		Zanjir_Referral_Code::generate( $affiliate_id );
 
 		$parent_id = get_option( 'zanjir_pending_parent_' . $affiliate_id, null );
@@ -222,6 +227,9 @@ class Zanjir_Registration {
 			return false;
 		}
 
+		$current = self::get_affiliate( $affiliate_id );
+		$old     = $current ? (string) $current->status : '';
+
 		$now = current_time( 'mysql', true );
 		$data = array(
 			'status'     => $status,
@@ -247,7 +255,7 @@ class Zanjir_Registration {
 		 * @param string $old_status
 		 * @param string $new_status
 		 */
-		do_action( 'zanjir_affiliate_status_changed', $affiliate_id, '', $status );
+		do_action( 'zanjir_affiliate_status_changed', $affiliate_id, $old, $status );
 
 		return true;
 	}

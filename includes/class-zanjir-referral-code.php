@@ -38,9 +38,14 @@ class Zanjir_Referral_Code {
 	public static function generate( $affiliate_id ) {
 		global $wpdb;
 
-		$len    = (int) Zanjir_Settings::get( 'affiliate_code_len', 8 );
-		$chars  = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-		$table  = self::table();
+		$existing = self::get_by_affiliate( $affiliate_id );
+		if ( $existing ) {
+			return $existing->code;
+		}
+
+		$len   = (int) Zanjir_Settings::get( 'affiliate_code_len', 8 );
+		$chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+		$table = self::table();
 
 		for ( $attempt = 0; $attempt < 10; $attempt++ ) {
 			$code = '';
@@ -80,7 +85,7 @@ class Zanjir_Referral_Code {
 		global $wpdb;
 
 		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM " . self::table() . " WHERE affiliate_id = %d AND active = 1 LIMIT 1",
+			'SELECT * FROM ' . self::table() . ' WHERE affiliate_id = %d AND active = 1 LIMIT 1',
 			$affiliate_id
 		) );
 	}
@@ -95,7 +100,7 @@ class Zanjir_Referral_Code {
 		global $wpdb;
 
 		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT affiliate_id FROM " . self::table() . " WHERE code = %s AND active = 1",
+			'SELECT affiliate_id FROM ' . self::table() . ' WHERE code = %s AND active = 1',
 			sanitize_text_field( $code )
 		) );
 
@@ -123,18 +128,34 @@ class Zanjir_Referral_Code {
 	 * @param string $code
 	 */
 	public static function set_cookie( $code ) {
-		if ( is_user_logged_in() ) {
-			return;
+		setcookie(
+			self::COOKIE_NAME,
+			sanitize_text_field( $code ),
+			array(
+				'expires'  => time() + self::COOKIE_EXPIRY,
+				'path'     => COOKIEPATH ? COOKIEPATH : '/',
+				'domain'   => COOKIE_DOMAIN,
+				'secure'   => is_ssl(),
+				'httponly' => true,
+				'samesite' => 'Lax',
+			)
+		);
+
+		// Available in the same request for checkout that lands with ?ref=.
+		$_COOKIE[ self::COOKIE_NAME ] = sanitize_text_field( $code );
+	}
+
+	/**
+	 * Read the referral code from cookie.
+	 *
+	 * @return string
+	 */
+	public static function get_cookie_code() {
+		if ( empty( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			return '';
 		}
 
-		setcookie( self::COOKIE_NAME, sanitize_text_field( $code ), array(
-			'expires'  => time() + self::COOKIE_EXPIRY,
-			'path'     => COOKIEPATH,
-			'domain'   => COOKIE_DOMAIN,
-			'secure'   => is_ssl(),
-			'httponly'  => true,
-			'samesite' => 'Lax',
-		) );
+		return sanitize_text_field( wp_unslash( $_COOKIE[ self::COOKIE_NAME ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 	}
 
 	/**
@@ -154,25 +175,43 @@ class Zanjir_Referral_Code {
 	}
 
 	/**
-	 * Hook: attach referral code to WooCommerce order at checkout.
+	 * Hook: attach referral code from cookie to WooCommerce order at checkout.
 	 *
 	 * @param int $order_id
 	 */
 	public static function attach_to_order( $order_id ) {
-		if ( ! is_user_logged_in() ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
 			return;
 		}
 
-		$buyer_affiliate = Zanjir_Registration::get_affiliate_by_user( get_current_user_id() );
-		if ( ! $buyer_affiliate || 'approved' !== $buyer_affiliate->status ) {
+		if ( $order->get_meta( '_zanjir_seller_id' ) ) {
 			return;
 		}
 
-		$affiliate_id = (int) $buyer_affiliate->id;
-		$row = self::get_by_affiliate( $affiliate_id );
-		if ( $row ) {
-			update_post_meta( $order_id, '_zanjir_referral_code', $row->code ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			update_post_meta( $order_id, '_zanjir_seller_id', $affiliate_id ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$code = self::get_cookie_code();
+		if ( '' === $code ) {
+			return;
 		}
+
+		$affiliate_id = self::lookup_affiliate( $code );
+		if ( ! $affiliate_id ) {
+			return;
+		}
+
+		$affiliate = Zanjir_Registration::get_affiliate( $affiliate_id );
+		if ( ! $affiliate || 'approved' !== $affiliate->status ) {
+			return;
+		}
+
+		// Do not attribute self-purchases to the buyer's own code.
+		$buyer_id = (int) $order->get_user_id();
+		if ( $buyer_id && (int) $affiliate->user_id === $buyer_id ) {
+			return;
+		}
+
+		$order->update_meta_data( '_zanjir_referral_code', $code );
+		$order->update_meta_data( '_zanjir_seller_id', $affiliate_id );
+		$order->save();
 	}
 }

@@ -25,7 +25,7 @@ class Zanjir_Commission_Lifecycle {
 	}
 
 	/**
-	 * Hook: schedule return window check when order is completed.
+	 * Hook: create pending commissions and schedule return window check.
 	 *
 	 * @param int $order_id
 	 */
@@ -35,7 +35,58 @@ class Zanjir_Commission_Lifecycle {
 			return;
 		}
 
+		$this->create_pending_commissions( $order_id, $snapshot );
 		$this->schedule_check( $order_id );
+	}
+
+	/**
+	 * Create pending commission rows from snapshot (idempotent).
+	 *
+	 * @param int    $order_id
+	 * @param object $snapshot
+	 * @return bool
+	 */
+	private function create_pending_commissions( $order_id, $snapshot ) {
+		if ( Zanjir_Commission_Engine::has_commissions( $order_id ) ) {
+			$this->ensure_return_window( $order_id );
+			return false;
+		}
+
+		if ( Zanjir_Discount::should_skip_commission( $order_id ) ) {
+			return false;
+		}
+
+		$window_ends = Zanjir_Commission_Engine::get_return_window_end( $order_id );
+		$rows        = Zanjir_Commission_Engine::calculate( $snapshot );
+
+		if ( empty( $rows ) ) {
+			return false;
+		}
+
+		return Zanjir_Commission_Engine::save( $order_id, (int) $snapshot->id, $rows, $window_ends );
+	}
+
+	/**
+	 * Backfill return_window_ends_at when commissions already exist.
+	 *
+	 * @param int $order_id
+	 */
+	private function ensure_return_window( $order_id ) {
+		global $wpdb;
+
+		$window_ends = Zanjir_Commission_Engine::get_return_window_end( $order_id );
+		if ( ! $window_ends ) {
+			return;
+		}
+
+		$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"UPDATE {$wpdb->prefix}zanjir_commissions
+			 SET return_window_ends_at = %s, updated_at = %s
+			 WHERE order_id = %d AND return_window_ends_at IS NULL AND status = 'pending'",
+			$window_ends,
+			current_time( 'mysql', true ),
+			$order_id
+		) );
 	}
 
 	/**
@@ -72,7 +123,7 @@ class Zanjir_Commission_Lifecycle {
 	}
 
 	/**
-	 * Transition all pending commissions for an order to payable.
+	 * Transition all pending commissions for an order to payable (idempotent).
 	 *
 	 * @param int $order_id
 	 * @return int Number of rows updated.
@@ -82,93 +133,99 @@ class Zanjir_Commission_Lifecycle {
 
 		$table = $wpdb->prefix . 'zanjir_commissions';
 		$now   = current_time( 'mysql', true );
+		$rows  = self::get_pending( $order_id );
+		$count = 0;
 
-		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$table,
-			array(
-				'status'     => 'payable',
-				'updated_at' => $now,
-			),
-			array(
-				'order_id' => $order_id,
-				'status'   => 'pending',
-			),
-			array( '%s', '%s' ),
-			array( '%d', '%s' )
-		);
+		foreach ( $rows as $row ) {
+			/**
+			 * Fires before a commission becomes payable.
+			 *
+			 * @param int $commission_id
+			 * @param int $order_id
+			 */
+			do_action( 'zanjir_before_payable', (int) $row->id, $order_id );
 
-		if ( $updated ) {
-			$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id, beneficiary_id, amount FROM {$table} WHERE order_id = %d AND status = 'payable'",
-				$order_id
-			) );
+			$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$table,
+				array(
+					'status'     => 'payable',
+					'updated_at' => $now,
+				),
+				array(
+					'id'     => (int) $row->id,
+					'status' => 'pending',
+				),
+				array( '%s', '%s' ),
+				array( '%d', '%s' )
+			);
 
-			foreach ( $rows as $row ) {
-				Zanjir_Ledger::transfer( (int) $row->beneficiary_id, 'pending', 'payable', (int) $row->amount, 'commission', (int) $row->id );
-
-				/**
-				 * Fires when a commission transitions to payable.
-				 *
-				 * @param int $commission_id
-				 * @param int $order_id
-				 * @param int $beneficiary_id
-				 * @param int $amount
-				 */
-				do_action( 'zanjir_commission_payable', (int) $row->id, $order_id, (int) $row->beneficiary_id, (int) $row->amount );
+			if ( ! $updated ) {
+				continue;
 			}
+
+			Zanjir_Ledger::transfer(
+				(int) $row->beneficiary_id,
+				'pending',
+				'payable',
+				(int) $row->amount,
+				'commission',
+				(int) $row->id
+			);
+
+			do_action( 'zanjir_commission_payable', (int) $row->id, $order_id, (int) $row->beneficiary_id, (int) $row->amount );
+			++$count;
 		}
 
-		return $updated;
+		return $count;
 	}
 
 	/**
-	 * Void all commissions for an order (refund case).
+	 * Void all pending commissions for an order and debit pending ledger (idempotent).
 	 *
 	 * @param int $order_id
 	 * @return int Number of rows voided.
 	 */
-	public function void_commissions( $order_id ) {
+	public static function void_commissions( $order_id ) {
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'zanjir_commissions';
 		$now   = current_time( 'mysql', true );
+		$rows  = self::get_pending( $order_id );
+		$count = 0;
 
-		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$table,
-			array(
-				'status'     => 'void',
-				'updated_at' => $now,
-			),
-			array(
-				'order_id' => $order_id,
-				'status'   => 'pending',
-			),
-			array( '%s', '%s' ),
-			array( '%d', '%s' )
-		);
+		foreach ( $rows as $row ) {
+			$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$table,
+				array(
+					'status'     => 'void',
+					'updated_at' => $now,
+				),
+				array(
+					'id'     => (int) $row->id,
+					'status' => 'pending',
+				),
+				array( '%s', '%s' ),
+				array( '%d', '%s' )
+			);
 
-		if ( $updated ) {
-			$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id, beneficiary_id, amount FROM {$table} WHERE order_id = %d AND status = 'void'",
-				$order_id
-			) );
-
-			foreach ( $rows as $row ) {
-				Zanjir_Ledger::debit( (int) $row->beneficiary_id, 'pending', (int) $row->amount, 'commission', (int) $row->id, 'void' );
-
-				/**
-				 * Fires when a commission is voided.
-				 *
-				 * @param int $commission_id
-				 * @param int $order_id
-				 * @param int $beneficiary_id
-				 * @param int $amount
-				 */
-				do_action( 'zanjir_commission_voided', (int) $row->id, $order_id, (int) $row->beneficiary_id, (int) $row->amount );
+			if ( ! $updated ) {
+				continue;
 			}
+
+			Zanjir_Ledger::debit(
+				(int) $row->beneficiary_id,
+				'pending',
+				(int) $row->amount,
+				'commission',
+				(int) $row->id,
+				'void'
+			);
+
+			do_action( 'zanjir_commission_voided', (int) $row->id, $order_id, (int) $row->beneficiary_id, (int) $row->amount );
+			++$count;
 		}
 
-		return $updated;
+		return $count;
 	}
 
 	/**

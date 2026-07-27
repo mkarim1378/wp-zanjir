@@ -10,7 +10,10 @@ defined( 'ABSPATH' ) || exit;
 class Zanjir_Discount {
 
 	/**
-	 * Apply referral discount to an order at checkout.
+	 * Apply referral discount meta to an order at checkout.
+	 *
+	 * Stores the computed Rial discount on the order. Cart fee application can
+	 * be wired via WooCommerce fee hooks in a later UI pass.
 	 *
 	 * @param int $order_id
 	 */
@@ -21,18 +24,18 @@ class Zanjir_Discount {
 			return;
 		}
 
-		$seller_id = get_post_meta( $order_id, '_zanjir_seller_id', true ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return;
+		}
+
+		$seller_id = (int) $order->get_meta( '_zanjir_seller_id' );
 		if ( ! $seller_id ) {
 			return;
 		}
 
-		$code_row = Zanjir_Referral_Code::get_by_affiliate( (int) $seller_id );
+		$code_row = Zanjir_Referral_Code::get_by_affiliate( $seller_id );
 		if ( ! $code_row || empty( $code_row->discount_enabled ) ) {
-			return;
-		}
-
-		$order = wc_get_order( $order_id );
-		if ( ! $order ) {
 			return;
 		}
 
@@ -43,29 +46,30 @@ class Zanjir_Discount {
 
 		$total = 0;
 		foreach ( $order->get_items() as $item ) {
-			$total += (float) $item->get_total();
+			$total += (int) round( (float) $item->get_total() );
 		}
 
-		$referral_discount = (int) round( $total * $rate / 10000 );
+		$referral_discount = (int) intdiv( $total * $rate, 10000 );
+		$coupon_discount   = (int) round( (float) $order->get_discount_total() );
+		$max_discount      = (int) $settings['max_discount'];
 
-		$coupon_discount = (float) $order->get_discount_total();
-		$max_discount    = (int) $settings['max_discount'];
-
-		$total_discount = $referral_discount + (int) $coupon_discount;
-		if ( $max_discount > 0 && $total_discount > $max_discount ) {
-			$referral_discount = max( 0, $max_discount - (int) $coupon_discount );
+		// max_discount is stored as basis-10000 of line total (cap rate).
+		$max_amount = (int) intdiv( $total * $max_discount, 10000 );
+		if ( $max_amount > 0 ) {
+			$total_discount = $referral_discount + $coupon_discount;
+			if ( $total_discount > $max_amount ) {
+				$referral_discount = max( 0, $max_amount - $coupon_discount );
+			}
 		}
 
 		if ( $referral_discount > 0 ) {
-			update_post_meta( $order_id, '_zanjir_referral_discount', $referral_discount ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$order->update_meta_data( '_zanjir_referral_discount', $referral_discount );
+			$order->save();
 		}
 	}
 
 	/**
 	 * Check if commission should be skipped due to double-dip being off.
-	 *
-	 * If double_dip is disabled and the order has a referral discount,
-	 * commission is not calculated.
 	 *
 	 * @param int $order_id
 	 * @return bool True if commission should be skipped.
@@ -77,7 +81,12 @@ class Zanjir_Discount {
 			return false;
 		}
 
-		$discount = (float) get_post_meta( $order_id, '_zanjir_referral_discount', true ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return false;
+		}
+
+		$discount = (int) $order->get_meta( '_zanjir_referral_discount' );
 
 		return $discount > 0;
 	}

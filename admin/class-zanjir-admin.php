@@ -39,7 +39,10 @@ class Zanjir_Admin {
 	 */
 	public function register_settings() {
 		register_setting( 'zanjir_settings_group', Zanjir_Settings::OPTION_KEY, array(
+			'type'              => 'array',
 			'sanitize_callback' => array( $this, 'sanitize_settings' ),
+			'default'           => Zanjir_Settings::defaults(),
+			'capability'        => Zanjir_Roles::CAP_MANAGE,
 		) );
 
 		add_settings_section(
@@ -203,20 +206,32 @@ class Zanjir_Admin {
 	 * @return array Sanitized values.
 	 */
 	public function sanitize_settings( $input ) {
+		$current   = Zanjir_Settings::all();
 		$defaults  = Zanjir_Settings::defaults();
-		$sanitized = array();
+		$sanitized = $current;
 
-		$sanitized['tree_depth']     = isset( $input['tree_depth'] ) ? absint( $input['tree_depth'] ) : $defaults['tree_depth'];
-		$sanitized['tree_cap']       = isset( $input['tree_cap'] ) ? absint( $input['tree_cap'] ) : $defaults['tree_cap'];
-		$sanitized['staff_rate']     = isset( $input['staff_rate'] ) ? absint( $input['staff_rate'] ) : $defaults['staff_rate'];
-		$sanitized['bonus_pool']     = isset( $input['bonus_pool'] ) ? absint( $input['bonus_pool'] ) : $defaults['bonus_pool'];
-		$sanitized['refund_window']  = isset( $input['refund_window'] ) ? absint( $input['refund_window'] ) : $defaults['refund_window'];
-		$sanitized['discount_enabled'] = ! empty( $input['discount_enabled'] ) ? 1 : 0;
-		$sanitized['coupon_compat']  = ! empty( $input['coupon_compat'] ) ? 1 : 0;
-		$sanitized['double_dip']     = ! empty( $input['double_dip'] ) ? 1 : 0;
-		$sanitized['max_discount']   = isset( $input['max_discount'] ) ? absint( $input['max_discount'] ) : $defaults['max_discount'];
-		$sanitized['annual_cap']     = isset( $input['annual_cap'] ) ? absint( $input['annual_cap'] ) : $defaults['annual_cap'];
-		$sanitized['affiliate_code_len'] = isset( $input['affiliate_code_len'] ) ? absint( $input['affiliate_code_len'] ) : $defaults['affiliate_code_len'];
+		if ( ! is_array( $input ) ) {
+			$input = array();
+		}
+
+		$sanitized['tree_depth']         = isset( $input['tree_depth'] ) ? absint( $input['tree_depth'] ) : (int) $current['tree_depth'];
+		$sanitized['tree_cap']           = isset( $input['tree_cap'] ) ? absint( $input['tree_cap'] ) : (int) $current['tree_cap'];
+		$sanitized['staff_rate']         = isset( $input['staff_rate'] ) ? absint( $input['staff_rate'] ) : (int) $current['staff_rate'];
+		$sanitized['bonus_pool']         = isset( $input['bonus_pool'] ) ? absint( $input['bonus_pool'] ) : (int) $current['bonus_pool'];
+		$sanitized['refund_window']      = isset( $input['refund_window'] ) ? absint( $input['refund_window'] ) : (int) ( isset( $current['refund_window'] ) ? $current['refund_window'] : $defaults['refund_window'] );
+		$sanitized['discount_enabled']   = ! empty( $input['discount_enabled'] ) ? 1 : 0;
+		$sanitized['coupon_compat']      = ! empty( $input['coupon_compat'] ) ? 1 : 0;
+		$sanitized['double_dip']         = ! empty( $input['double_dip'] ) ? 1 : 0;
+		$sanitized['max_discount']       = isset( $input['max_discount'] ) ? absint( $input['max_discount'] ) : (int) $current['max_discount'];
+		$sanitized['annual_cap']         = isset( $input['annual_cap'] ) ? absint( $input['annual_cap'] ) : (int) ( isset( $current['annual_cap'] ) ? $current['annual_cap'] : $defaults['annual_cap'] );
+		$sanitized['affiliate_code_len'] = isset( $input['affiliate_code_len'] ) ? absint( $input['affiliate_code_len'] ) : (int) ( isset( $current['affiliate_code_len'] ) ? $current['affiliate_code_len'] : $defaults['affiliate_code_len'] );
+
+		// Preserve matrix and any other keys not edited by this form.
+		if ( isset( $current['matrix'] ) ) {
+			$sanitized['matrix'] = $current['matrix'];
+		}
+
+		Zanjir_Settings::flush_cache();
 
 		return $sanitized;
 	}

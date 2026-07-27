@@ -73,14 +73,14 @@ class Zanjir {
 		new Zanjir_Registration( $this->loader );
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-referral-code.php';
-		$this->loader->add_action( 'init', 'Zanjir_Referral_Code', 'maybe_capture_referral' );
-		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Referral_Code', 'attach_to_order' );
+		$this->loader->add_action( 'init', 'Zanjir_Referral_Code', 'maybe_capture_referral', 5 );
+		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Referral_Code', 'attach_to_order', 20 );
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-discount.php';
-		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Discount', 'apply_referral_discount' );
+		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Discount', 'apply_referral_discount', 30 );
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-order-observer.php';
-		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Order_Observer', 'capture_snapshot' );
+		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Order_Observer', 'capture_snapshot', 40 );
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-commission-lifecycle.php';
 		new Zanjir_Commission_Lifecycle( $this->loader );
@@ -119,6 +119,7 @@ class Zanjir {
 	 */
 	public static function deactivate() {
 		Zanjir_Roles::deactivate();
+		wp_unschedule_hook( Zanjir_Commission_Lifecycle::CRON_HOOK );
 		flush_rewrite_rules();
 	}
 }
