@@ -6,7 +6,7 @@ Zanjir lets every customer become an affiliate with a unique referral code, and
 distributes commissions across a configurable multi-level referral tree. Built
 with fraud prevention, financial accuracy, and full admin control in mind.
 
-**Current version:** 2.2.0
+**Current version:** 2.2.1
 
 ## Key Features
 - **Matrix-based commissions** — depth × position payout matrix with a

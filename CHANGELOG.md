@@ -5,6 +5,14 @@ All notable changes to the Zanjir plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2026-07-29
+
+### Fixed
+- Declare WooCommerce feature compatibility for **HPOS** (`custom_order_tables`) so the Plugins screen no longer flags Zanjir as incompatible.
+
+### Changed
+- Patch version `2.2.0` → `2.2.1`; `WC tested up to` raised to `9.0`.
+
 ## [2.2.0] - 2026-07-29
 
 ### Added
