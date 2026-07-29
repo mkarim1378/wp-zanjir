@@ -1,0 +1,141 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Zanjir 2.1.0\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Zanjir Settings"
+msgstr ""
+
+msgid "Commission"
+msgstr ""
+
+msgid "Tree Depth"
+msgstr ""
+
+msgid "Settlements"
+msgstr ""
+
+msgid "Withdrawals"
+msgstr ""
+
+msgid "Affiliates"
+msgstr ""
+
+msgid "Fraud queue"
+msgstr ""
+
+msgid "Bonus plans"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Referral discount"
+msgstr ""
+
+msgid "Affiliate dashboard"
+msgstr ""
+
+msgid "Please log in to register as an affiliate."
+msgstr ""
+
+msgid "Please log in to view your affiliate dashboard."
+msgstr ""
+
+msgid "National ID"
+msgstr ""
+
+msgid "Referral code (optional)"
+msgstr ""
+
+msgid "Submit registration"
+msgstr ""
+
+msgid "Request withdrawal"
+msgstr ""
+
+msgid "Amount (Rial)"
+msgstr ""
+
+msgid "Submit request"
+msgstr ""
+
+msgid "Recent withdrawals"
+msgstr ""
+
+msgid "Referral link:"
+msgstr ""
+
+msgid "Commission matrix"
+msgstr ""
+
+msgid "Operations"
+msgstr ""
+
+msgid "Refund window (days)"
+msgstr ""
+
+msgid "Enable Referral Discount"
+msgstr ""
+
+msgid "Coupon Compatibility"
+msgstr ""
+
+msgid "Double-Dip (Discount + Commission)"
+msgstr ""
+
+msgid "Make staff"
+msgstr ""
+
+msgid "Make affiliate"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+msgid "Mark paid"
+msgstr ""
+
+msgid "Mark reviewed"
+msgstr ""
+
+msgid "Prepare draft batch"
+msgstr ""
+
+msgid "No settlements yet."
+msgstr ""
+
+msgid "No withdrawals yet."
+msgstr ""
+
+msgid "Approved affiliate account required."
+msgstr ""
+
+msgid "Registration submitted. Waiting for admin approval."
+msgstr ""
+
+msgid "Withdrawal requested."
+msgstr ""
+
+msgid "Recruitment: enabled"
+msgstr ""
+
+msgid "Recruitment: locked"
+msgstr ""
+
+msgid "Annual recruit cap (Rial)"
+msgstr ""
+
+msgid "Referral code length"
+msgstr ""
+
+msgid "Depth × position rates"
+msgstr ""
+

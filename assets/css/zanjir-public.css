@@ -1,0 +1,58 @@
+/* Zanjir public styles */
+.zanjir-register,
+.zanjir-dashboard {
+	max-width: 40rem;
+	margin-block: 1.5rem;
+	margin-inline: auto;
+	padding: 1.25rem 1.5rem;
+	border: 1px solid #dcdcde;
+	background: #fff;
+	color: #1d2327;
+	line-height: 1.6;
+}
+
+.zanjir-register h2,
+.zanjir-dashboard h2,
+.zanjir-dashboard h3 {
+	margin-top: 0;
+	font-size: 1.25rem;
+}
+
+.zanjir-register label,
+.zanjir-dashboard label {
+	font-weight: 600;
+}
+
+.zanjir-register input[type="text"],
+.zanjir-register input[type="number"],
+.zanjir-dashboard input[type="text"],
+.zanjir-dashboard input[type="number"] {
+	width: 100%;
+	max-width: 24rem;
+	padding: 0.4rem 0.55rem;
+}
+
+.zanjir-register button,
+.zanjir-dashboard button {
+	cursor: pointer;
+	padding: 0.45rem 1rem;
+}
+
+.zanjir-error {
+	color: #b32d2e;
+}
+
+.zanjir-success {
+	color: #007017;
+}
+
+.zanjir-dashboard code {
+	display: inline-block;
+	padding: 0.15rem 0.4rem;
+	background: #f0f0f1;
+	word-break: break-all;
+}
+
+.zanjir-dashboard ul {
+	padding-inline-start: 1.25rem;
+}

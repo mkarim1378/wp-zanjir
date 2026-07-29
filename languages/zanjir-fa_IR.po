@@ -1,0 +1,141 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Zanjir 2.1.0\n"
+"Language: fa_IR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Zanjir Settings"
+msgstr "تنظیمات زنجیر"
+
+msgid "Commission"
+msgstr "پورسانت"
+
+msgid "Tree Depth"
+msgstr "عمق درخت"
+
+msgid "Settlements"
+msgstr "تسویه‌ها"
+
+msgid "Withdrawals"
+msgstr "برداشت‌ها"
+
+msgid "Affiliates"
+msgstr "افیلیت‌ها"
+
+msgid "Fraud queue"
+msgstr "صف تقلب"
+
+msgid "Bonus plans"
+msgstr "پلن‌های پاداش"
+
+msgid "Settings"
+msgstr "تنظیمات"
+
+msgid "Referral discount"
+msgstr "تخفیف معرف"
+
+msgid "Affiliate dashboard"
+msgstr "داشبورد افیلیت"
+
+msgid "Please log in to register as an affiliate."
+msgstr "برای ثبت‌نام به‌عنوان افیلیت وارد شوید."
+
+msgid "Please log in to view your affiliate dashboard."
+msgstr "برای مشاهده داشبورد افیلیت وارد شوید."
+
+msgid "National ID"
+msgstr "کد ملی"
+
+msgid "Referral code (optional)"
+msgstr "کد معرف (اختیاری)"
+
+msgid "Submit registration"
+msgstr "ارسال ثبت‌نام"
+
+msgid "Request withdrawal"
+msgstr "درخواست برداشت"
+
+msgid "Amount (Rial)"
+msgstr "مبلغ (ریال)"
+
+msgid "Submit request"
+msgstr "ثبت درخواست"
+
+msgid "Recent withdrawals"
+msgstr "برداشت‌های اخیر"
+
+msgid "Referral link:"
+msgstr "لینک معرف:"
+
+msgid "Commission matrix"
+msgstr "ماتریس پورسانت"
+
+msgid "Operations"
+msgstr "عملیات"
+
+msgid "Refund window (days)"
+msgstr "پنجره مرجوعی (روز)"
+
+msgid "Enable Referral Discount"
+msgstr "فعال‌سازی تخفیف معرف"
+
+msgid "Coupon Compatibility"
+msgstr "سازگاری با کوپن"
+
+msgid "Double-Dip (Discount + Commission)"
+msgstr "دابل‌دیپ (تخفیف + پورسانت)"
+
+msgid "Make staff"
+msgstr "تبدیل به پرسنل"
+
+msgid "Make affiliate"
+msgstr "تبدیل به افیلیت"
+
+msgid "Approve"
+msgstr "تأیید"
+
+msgid "Reject"
+msgstr "رد"
+
+msgid "Mark paid"
+msgstr "علامت‌گذاری پرداخت‌شده"
+
+msgid "Mark reviewed"
+msgstr "علامت‌گذاری بررسی‌شده"
+
+msgid "Prepare draft batch"
+msgstr "آماده‌سازی بسته پیش‌نویس"
+
+msgid "No settlements yet."
+msgstr "هنوز تسویه‌ای نیست."
+
+msgid "No withdrawals yet."
+msgstr "هنوز برداشتی نیست."
+
+msgid "Approved affiliate account required."
+msgstr "حساب افیلیت تأییدشده لازم است."
+
+msgid "Registration submitted. Waiting for admin approval."
+msgstr "ثبت‌نام ارسال شد. در انتظار تأیید مدیر."
+
+msgid "Withdrawal requested."
+msgstr "درخواست برداشت ثبت شد."
+
+msgid "Recruitment: enabled"
+msgstr "مجوز جذب: فعال"
+
+msgid "Recruitment: locked"
+msgstr "مجوز جذب: قفل"
+
+msgid "Annual recruit cap (Rial)"
+msgstr "سقف جذب سالانه (ریال)"
+
+msgid "Referral code length"
+msgstr "طول کد معرف"
+
+msgid "Depth × position rates"
+msgstr "نرخ‌های عمق × جایگاه"
+

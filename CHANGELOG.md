@@ -5,6 +5,18 @@ All notable changes to the Zanjir plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-29
+
+### Added
+- Live **WooCommerce cart fee** for referral discounts (`woocommerce_cart_calculate_fees`), with coupon compatibility gate and order-meta sync.
+- Admin **commission matrix editor** (depth × rates + tree_cap) with validation errors on save.
+- Operations settings fields: refund window, annual recruit cap, referral code length; budget summary on settings screen.
+- Front CSS for shortcodes + RTL stylesheet; admin CSS for matrix/settings.
+- Persian translations (`languages/zanjir-fa_IR.po` / `.mo`) and `bin/build-languages.php`.
+
+### Changed
+- Minor version `2.0.1` → `2.1.0` (product completion: discount UX, matrix UI, i18n/RTL).
+
 ## [2.0.1] - 2026-07-27
 
 ### Added

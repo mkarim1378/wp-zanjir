@@ -17,12 +17,31 @@ class Zanjir_Admin {
 	public function __construct( $loader ) {
 		$loader->add_action( 'admin_menu', $this, 'add_menu' );
 		$loader->add_action( 'admin_init', $this, 'register_settings' );
+		$loader->add_action( 'admin_enqueue_scripts', $this, 'enqueue_assets' );
 		$loader->add_action( 'admin_post_zanjir_settlement_prepare', $this, 'handle_settlement_prepare' );
 		$loader->add_action( 'admin_post_zanjir_settlement_review', $this, 'handle_settlement_review' );
 		$loader->add_action( 'admin_post_zanjir_settlement_approve', $this, 'handle_settlement_approve' );
 		$loader->add_action( 'admin_post_zanjir_fraud_review', $this, 'handle_fraud_review' );
 		$loader->add_action( 'admin_post_zanjir_bonus_create', $this, 'handle_bonus_create' );
 		$loader->add_action( 'admin_post_zanjir_set_affiliate_type', $this, 'handle_set_affiliate_type' );
+	}
+
+	/**
+	 * Enqueue admin CSS on Zanjir screens.
+	 *
+	 * @param string $hook
+	 */
+	public function enqueue_assets( $hook ) {
+		if ( false === strpos( $hook, 'zanjir' ) ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'zanjir-admin',
+			ZANJIR_PLUGIN_URL . 'assets/css/zanjir-admin.css',
+			array(),
+			ZANJIR_VERSION
+		);
 	}
 
 	/**
@@ -190,15 +209,80 @@ class Zanjir_Admin {
 			'zanjir_discount',
 			array( 'key' => 'double_dip', 'description' => __( 'WARNING: When disabled, orders with referral discount will NOT generate commissions.', 'zanjir' ) )
 		);
+
+		add_settings_section(
+			'zanjir_ops',
+			__( 'Operations', 'zanjir' ),
+			array( $this, 'ops_section' ),
+			'zanjir-settings'
+		);
+
+		add_settings_field(
+			'refund_window',
+			__( 'Refund window (days)', 'zanjir' ),
+			array( $this, 'render_number_field' ),
+			'zanjir-settings',
+			'zanjir_ops',
+			array( 'key' => 'refund_window', 'min' => 0, 'max' => 365 )
+		);
+
+		add_settings_field(
+			'annual_cap',
+			__( 'Annual recruit cap (Rial)', 'zanjir' ),
+			array( $this, 'render_number_field' ),
+			'zanjir-settings',
+			'zanjir_ops',
+			array( 'key' => 'annual_cap', 'min' => 0, 'max' => 999999999999 )
+		);
+
+		add_settings_field(
+			'affiliate_code_len',
+			__( 'Referral code length', 'zanjir' ),
+			array( $this, 'render_number_field' ),
+			'zanjir-settings',
+			'zanjir_ops',
+			array( 'key' => 'affiliate_code_len', 'min' => 4, 'max' => 32 )
+		);
+
+		add_settings_section(
+			'zanjir_matrix',
+			__( 'Commission matrix', 'zanjir' ),
+			array( $this, 'matrix_section' ),
+			'zanjir-settings'
+		);
+
+		add_settings_field(
+			'matrix',
+			__( 'Depth × position rates', 'zanjir' ),
+			array( $this, 'render_matrix_field' ),
+			'zanjir-settings',
+			'zanjir_matrix'
+		);
 	}
 
 	/**
 	 * Render the settings page.
 	 */
 	public function render_settings_page() {
+		$settings = Zanjir_Settings::all();
+		$total    = (int) $settings['tree_cap'] + (int) $settings['staff_rate'] + (int) $settings['bonus_pool'];
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Zanjir Settings', 'zanjir' ); ?></h1>
+			<?php settings_errors( 'zanjir_settings' ); ?>
+			<div class="zanjir-budget-summary">
+				<?php
+				printf(
+					/* translators: 1: tree cap, 2: staff rate, 3: bonus pool, 4: total basis-10000 */
+					esc_html__( 'Budget: tree %1$d + staff %2$d + bonus %3$d = %4$d / 10000 (%5$s%%).', 'zanjir' ),
+					(int) $settings['tree_cap'],
+					(int) $settings['staff_rate'],
+					(int) $settings['bonus_pool'],
+					$total,
+					esc_html( number_format_i18n( $total / 100, 2 ) )
+				);
+				?>
+			</div>
 			<form method="post" action="options.php">
 				<?php
 				settings_fields( 'zanjir_settings_group' );
@@ -222,6 +306,85 @@ class Zanjir_Admin {
 	 */
 	public function discount_section() {
 		echo '<p>' . esc_html__( 'Configure referral discount and double-dip behavior.', 'zanjir' ) . '</p>';
+	}
+
+	/**
+	 * Operations section description.
+	 */
+	public function ops_section() {
+		echo '<p>' . esc_html__( 'Return window, recruitment cap, and referral code length.', 'zanjir' ) . '</p>';
+	}
+
+	/**
+	 * Matrix section description.
+	 */
+	public function matrix_section() {
+		echo '<p>' . esc_html__( 'Each row depth must match the number of rates, rates must sum to tree_cap, and the seller (first rate) must be highest.', 'zanjir' ) . '</p>';
+	}
+
+	/**
+	 * Render matrix editor inputs.
+	 */
+	public function render_matrix_field() {
+		$matrix = Zanjir_Matrix::load();
+		$option = Zanjir_Settings::OPTION_KEY;
+		?>
+		<table class="zanjir-matrix-editor">
+			<thead>
+				<tr>
+					<th scope="col"><?php esc_html_e( 'Depth', 'zanjir' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Tree cap', 'zanjir' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Rates (basis-10000, seller → upline)', 'zanjir' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php foreach ( $matrix as $i => $row ) : ?>
+				<?php
+				$depth = (int) $row['depth'];
+				$cap   = isset( $row['tree_cap'] ) ? (int) $row['tree_cap'] : (int) Zanjir_Settings::get( 'tree_cap', 2000 );
+				$rates = array_pad( array_map( 'intval', $row['rates'] ), 3, 0 );
+				$rates = array_slice( $rates, 0, 3 );
+				?>
+				<tr>
+					<td>
+						<label class="screen-reader-text" for="zanjir-matrix-depth-<?php echo (int) $i; ?>"><?php esc_html_e( 'Depth', 'zanjir' ); ?></label>
+						<input id="zanjir-matrix-depth-<?php echo (int) $i; ?>" type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][depth]" value="<?php echo esc_attr( (string) $depth ); ?>" min="1" max="3" />
+					</td>
+					<td>
+						<label class="screen-reader-text" for="zanjir-matrix-cap-<?php echo (int) $i; ?>"><?php esc_html_e( 'Tree cap', 'zanjir' ); ?></label>
+						<input id="zanjir-matrix-cap-<?php echo (int) $i; ?>" type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][tree_cap]" value="<?php echo esc_attr( (string) $cap ); ?>" min="0" max="10000" />
+					</td>
+					<td>
+						<?php for ( $r = 0; $r < 3; $r++ ) : ?>
+							<label>
+								<span class="screen-reader-text">
+									<?php
+									printf(
+										/* translators: %d: tier number */
+										esc_html__( 'Tier %d', 'zanjir' ),
+										$r + 1
+									);
+									?>
+								</span>
+								<input type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][rates][<?php echo (int) $r; ?>]" value="<?php echo esc_attr( (string) $rates[ $r ] ); ?>" min="0" max="10000" aria-label="<?php echo esc_attr( sprintf( __( 'Tier %d', 'zanjir' ), $r + 1 ) ); ?>" />
+							</label>
+						<?php endfor; ?>
+						<p class="description">
+							<?php
+							printf(
+								/* translators: 1: depth, 2: sum of first N rates */
+								esc_html__( 'Using first %1$d rate(s); sum = %2$d (must equal tree cap).', 'zanjir' ),
+								$depth,
+								(int) array_sum( array_slice( $rates, 0, $depth ) )
+							);
+							?>
+						</p>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
+		<?php
 	}
 
 	/**
@@ -286,9 +449,45 @@ class Zanjir_Admin {
 		$sanitized['annual_cap']         = isset( $input['annual_cap'] ) ? absint( $input['annual_cap'] ) : (int) ( isset( $current['annual_cap'] ) ? $current['annual_cap'] : $defaults['annual_cap'] );
 		$sanitized['affiliate_code_len'] = isset( $input['affiliate_code_len'] ) ? absint( $input['affiliate_code_len'] ) : (int) ( isset( $current['affiliate_code_len'] ) ? $current['affiliate_code_len'] : $defaults['affiliate_code_len'] );
 
-		// Preserve matrix and any other keys not edited by this form.
-		if ( isset( $current['matrix'] ) ) {
+		if ( isset( $input['matrix'] ) && is_array( $input['matrix'] ) ) {
+			$matrix_rows = array();
+			foreach ( $input['matrix'] as $row ) {
+				if ( ! is_array( $row ) ) {
+					continue;
+				}
+				$depth = isset( $row['depth'] ) ? absint( $row['depth'] ) : 0;
+				$cap   = isset( $row['tree_cap'] ) ? absint( $row['tree_cap'] ) : (int) $sanitized['tree_cap'];
+				$rates = array();
+				if ( isset( $row['rates'] ) && is_array( $row['rates'] ) ) {
+					foreach ( $row['rates'] as $rate ) {
+						$rates[] = absint( $rate );
+					}
+				}
+				$depth = max( 1, min( 3, $depth ) );
+				$rates = array_slice( array_pad( $rates, $depth, 0 ), 0, $depth );
+				$matrix_rows[] = array(
+					'depth'    => $depth,
+					'tree_cap' => $cap,
+					'rates'    => $rates,
+				);
+			}
+
+			$validated = Zanjir_Matrix::validate( $matrix_rows );
+			if ( is_wp_error( $validated ) ) {
+				add_settings_error(
+					'zanjir_settings',
+					'zanjir_matrix_invalid',
+					$validated->get_error_message(),
+					'error'
+				);
+				$sanitized['matrix'] = isset( $current['matrix'] ) ? $current['matrix'] : Zanjir_Matrix::defaults();
+			} else {
+				$sanitized['matrix'] = $matrix_rows;
+			}
+		} elseif ( isset( $current['matrix'] ) ) {
 			$sanitized['matrix'] = $current['matrix'];
+		} else {
+			$sanitized['matrix'] = Zanjir_Matrix::defaults();
 		}
 
 		Zanjir_Settings::flush_cache();

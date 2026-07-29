@@ -77,7 +77,7 @@ class Zanjir {
 		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Referral_Code', 'attach_to_order', 20 );
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-discount.php';
-		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Discount', 'apply_referral_discount', 30 );
+		Zanjir_Discount::register( $this->loader );
 
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-order-observer.php';
 		$this->loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Order_Observer', 'capture_snapshot', 40 );

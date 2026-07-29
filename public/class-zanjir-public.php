@@ -14,6 +14,42 @@ class Zanjir_Public {
 	 */
 	public function __construct( $loader ) {
 		$loader->add_action( 'init', $this, 'register_shortcodes' );
+		$loader->add_action( 'wp_enqueue_scripts', $this, 'enqueue_assets' );
+	}
+
+	/**
+	 * Front-end styles (LTR + RTL).
+	 */
+	public function enqueue_assets() {
+		if ( ! is_singular() ) {
+			return;
+		}
+
+		$post = get_post();
+		if ( ! $post ) {
+			return;
+		}
+
+		$content = $post->post_content;
+		if ( ! has_shortcode( $content, 'zanjir_register' ) && ! has_shortcode( $content, 'zanjir_dashboard' ) ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'zanjir-public',
+			ZANJIR_PLUGIN_URL . 'assets/css/zanjir-public.css',
+			array(),
+			ZANJIR_VERSION
+		);
+
+		if ( is_rtl() ) {
+			wp_enqueue_style(
+				'zanjir-public-rtl',
+				ZANJIR_PLUGIN_URL . 'assets/css/zanjir-public-rtl.css',
+				array( 'zanjir-public' ),
+				ZANJIR_VERSION
+			);
+		}
 	}
 
 	/**

@@ -1,0 +1,11 @@
+/* Zanjir public RTL overrides */
+.zanjir-register,
+.zanjir-dashboard {
+	text-align: right;
+	direction: rtl;
+}
+
+.zanjir-dashboard ul {
+	padding-inline-start: 0;
+	padding-inline-end: 1.25rem;
+}

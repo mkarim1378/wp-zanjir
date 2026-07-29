@@ -1,0 +1,35 @@
+/* Zanjir admin */
+.zanjir-matrix-editor {
+	border-collapse: collapse;
+	width: 100%;
+	max-width: 52rem;
+	margin-top: 0.5rem;
+}
+
+.zanjir-matrix-editor th,
+.zanjir-matrix-editor td {
+	padding: 0.5rem 0.65rem;
+	border: 1px solid #c3c4c7;
+	text-align: start;
+	vertical-align: middle;
+}
+
+.zanjir-matrix-editor input[type="number"] {
+	width: 5.5rem;
+}
+
+.zanjir-matrix-editor .description {
+	margin: 0.35rem 0 0;
+}
+
+.zanjir-budget-summary {
+	margin: 0.75rem 0 1.25rem;
+	padding: 0.75rem 1rem;
+	background: #f6f7f7;
+	border-inline-start: 4px solid #2271b1;
+}
+
+body.rtl .zanjir-matrix-editor th,
+body.rtl .zanjir-matrix-editor td {
+	text-align: right;
+}
