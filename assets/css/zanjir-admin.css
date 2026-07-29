@@ -33,3 +33,105 @@ body.rtl .zanjir-matrix-editor th,
 body.rtl .zanjir-matrix-editor td {
 	text-align: right;
 }
+
+/* Reports */
+.zanjir-reports .zanjir-reports-tabs {
+	margin: 1rem 0 1.25rem;
+}
+
+.zanjir-report-summary {
+	margin: 0 0 1rem;
+	padding: 0.75rem 1rem;
+	background: #f6f7f7;
+	border-inline-start: 4px solid #2271b1;
+}
+
+.zanjir-report-status-totals {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem 1.25rem;
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.zanjir-report-filters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 0.75rem 1rem;
+	margin: 0 0 1rem;
+	padding: 0.75rem 0;
+}
+
+.zanjir-report-filters label {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	font-weight: 600;
+}
+
+.zanjir-report-filters input[type="number"],
+.zanjir-report-filters input[type="date"],
+.zanjir-report-filters select {
+	min-width: 8rem;
+	font-weight: 400;
+}
+
+.zanjir-report-table {
+	margin-top: 0.5rem;
+}
+
+.zanjir-status {
+	display: inline-block;
+	padding: 0.1rem 0.45rem;
+	border-radius: 3px;
+	background: #dcdcde;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.zanjir-status-pending,
+.zanjir-status-draft,
+.zanjir-status-requested {
+	background: #f0c33c;
+}
+
+.zanjir-status-payable,
+.zanjir-status-reviewed,
+.zanjir-status-approved {
+	background: #72aee6;
+	color: #fff;
+}
+
+.zanjir-status-paid {
+	background: #00a32a;
+	color: #fff;
+}
+
+.zanjir-status-void,
+.zanjir-status-rejected {
+	background: #d63638;
+	color: #fff;
+}
+
+.zanjir-tree-list {
+	margin: 0.5rem 0 1.5rem;
+	padding: 0;
+	list-style: none;
+}
+
+.zanjir-tree-node {
+	padding: 0.35rem 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.zanjir-tree-meta {
+	margin-inline-start: 0.5rem;
+	color: #646970;
+	font-size: 12px;
+}
+
+.zanjir-report-export {
+	margin: 0 0 0.75rem;
+}

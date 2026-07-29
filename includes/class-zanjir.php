@@ -62,6 +62,9 @@ class Zanjir {
 		if ( is_admin() ) {
 			require_once ZANJIR_PLUGIN_DIR . 'admin/class-zanjir-admin.php';
 			new Zanjir_Admin( $this->loader );
+
+			require_once ZANJIR_PLUGIN_DIR . 'admin/class-zanjir-admin-reports.php';
+			new Zanjir_Admin_Reports( $this->loader );
 		}
 	}
 

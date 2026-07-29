@@ -6,7 +6,7 @@ Zanjir lets every customer become an affiliate with a unique referral code, and
 distributes commissions across a configurable multi-level referral tree. Built
 with fraud prevention, financial accuracy, and full admin control in mind.
 
-**Current version:** 2.1.0
+**Current version:** 2.2.0
 
 ## Key Features
 - **Matrix-based commissions** — depth × position payout matrix with a
@@ -27,7 +27,8 @@ with fraud prevention, financial accuracy, and full admin control in mind.
 - **Internal wallet & ledger** — pending / payable / withdrawable buckets with
   settlement batches and withdrawal requests.
 - **Admin panel** — settings + matrix editor, affiliates, settlements,
-  withdrawals, fraud queue, and bonus plans.
+  withdrawals, fraud queue, bonus plans, and reports (commissions,
+  settlements, withdrawals, referral tree) with CSV export.
 - **Affiliate dashboard** — referral link, balances, withdrawal form, recruitment status.
 
 ## Shortcodes

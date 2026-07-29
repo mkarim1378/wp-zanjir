@@ -5,6 +5,16 @@ All notable changes to the Zanjir plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-07-29
+
+### Added
+- Admin **Reports** screen (`Zanjir → Reports`) with tabs for commissions, settlements, withdrawals, and referral tree inspection.
+- Filterable listings with status/kind/date/affiliate/order filters, per-status totals, pagination, and CSV export.
+- Tree report: root listing, upline chain, direct children, and indented subtree browser.
+
+### Changed
+- Minor version `2.1.0` → `2.2.0` (admin reporting for Phase 20 remaining scope).
+
 ## [2.1.0] - 2026-07-29
 
 ### Added

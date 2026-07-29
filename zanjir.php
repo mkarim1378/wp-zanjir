@@ -3,7 +3,7 @@
  * Plugin Name: Zanjir
  * Plugin URI:  https://github.com/mkarim1378/wp-zanjir
  * Description: Multi-tier affiliate marketing plugin for WooCommerce with matrix-based commissions, anti-fraud suite, and internal wallet.
- * Version:     2.1.0
+ * Version:     2.2.0
  * Author:      محمد کریم قصبه
  * Author-URI:  https://m-karim.ir
  * License:     GPL-2.0-or-later
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ZANJIR_VERSION', '2.1.0' );
+define( 'ZANJIR_VERSION', '2.2.0' );
 define( 'ZANJIR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -39,6 +39,7 @@ require_once ZANJIR_PLUGIN_DIR . 'includes/wallet/class-zanjir-withdrawal-servic
 require_once ZANJIR_PLUGIN_DIR . 'includes/fraud/class-zanjir-fraud-guard.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-recruit-service.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/bonus/class-zanjir-bonus-service.php';
+require_once ZANJIR_PLUGIN_DIR . 'includes/admin/class-zanjir-reports-service.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-order-observer.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-commission-lifecycle.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir.php';
