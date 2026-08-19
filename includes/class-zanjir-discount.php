@@ -22,6 +22,7 @@ class Zanjir_Discount {
 	public static function register( $loader ) {
 		$loader->add_action( 'woocommerce_cart_calculate_fees', 'Zanjir_Discount', 'add_cart_fee', 20 );
 		$loader->add_action( 'woocommerce_checkout_order_processed', 'Zanjir_Discount', 'apply_referral_discount', 30 );
+		$loader->add_action( 'woocommerce_store_api_checkout_order_processed', 'Zanjir_Discount', 'apply_referral_discount', 30 );
 	}
 
 	/**
@@ -138,18 +139,24 @@ class Zanjir_Discount {
 	/**
 	 * Persist referral discount meta on the order after checkout.
 	 *
-	 * Prefers the fee amount already applied on the order; falls back to recalculation.
+	 * Accepts either an order ID (shortcode checkout) or a WC_Order object (Store API / Checkout Block).
 	 *
-	 * @param int $order_id
+	 * @param int|WC_Order $order_id_or_order
 	 */
-	public static function apply_referral_discount( $order_id ) {
+	public static function apply_referral_discount( $order_id_or_order ) {
 		$settings = Zanjir_Settings::all();
 
 		if ( empty( $settings['discount_enabled'] ) ) {
 			return;
 		}
 
-		$order = wc_get_order( $order_id );
+		if ( $order_id_or_order instanceof \WC_Order ) {
+			$order    = $order_id_or_order;
+			$order_id = $order->get_id();
+		} else {
+			$order_id = (int) $order_id_or_order;
+			$order    = wc_get_order( $order_id );
+		}
 		if ( ! $order ) {
 			return;
 		}

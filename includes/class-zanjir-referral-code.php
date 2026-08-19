@@ -177,10 +177,18 @@ class Zanjir_Referral_Code {
 	/**
 	 * Hook: attach referral code from cookie to WooCommerce order at checkout.
 	 *
-	 * @param int $order_id
+	 * Accepts either an order ID (shortcode checkout) or a WC_Order object (Store API / Checkout Block).
+	 *
+	 * @param int|WC_Order $order_id_or_order
 	 */
-	public static function attach_to_order( $order_id ) {
-		$order = wc_get_order( $order_id );
+	public static function attach_to_order( $order_id_or_order ) {
+		if ( $order_id_or_order instanceof \WC_Order ) {
+			$order    = $order_id_or_order;
+			$order_id = $order->get_id();
+		} else {
+			$order_id = (int) $order_id_or_order;
+			$order    = wc_get_order( $order_id );
+		}
 		if ( ! $order ) {
 			return;
 		}
