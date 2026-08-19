@@ -10,8 +10,9 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: zanjir
  * Domain Path: /languages
- * Requires at least: 6.0
+ * Requires at least: 6.5
  * Requires PHP: 7.4
+ * Requires Plugins: woocommerce
  * WC requires at least: 8.0
  * WC tested up to: 11.0
  */
