@@ -70,8 +70,14 @@ class Zanjir {
 
 	/**
 	 * Register public-facing hooks.
+	 *
+	 * Skips WooCommerce-dependent hooks when WooCommerce is not active.
 	 */
 	private function define_public_hooks() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return;
+		}
+
 		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-registration.php';
 		new Zanjir_Registration( $this->loader );
 
