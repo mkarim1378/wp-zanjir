@@ -162,9 +162,10 @@ class Zanjir_Admin_Reports {
 						<td><?php echo esc_html( (string) $row->id ); ?></td>
 						<td>
 							<?php
-							$order_link = admin_url( 'post.php?post=' . (int) $row->order_id . '&action=edit' );
-							if ( function_exists( 'wc_get_order' ) ) {
-								$order_link = admin_url( 'admin.php?page=wc-orders&action=edit&id=' . (int) $row->order_id );
+							if ( class_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class ) ) {
+								$order_link = \Automattic\WooCommerce\Utilities\OrderUtil::get_order_admin_edit_url( (int) $row->order_id );
+							} else {
+								$order_link = admin_url( 'post.php?post=' . (int) $row->order_id . '&action=edit' );
 							}
 							?>
 							<a href="<?php echo esc_url( $order_link ); ?>"><?php echo esc_html( (string) $row->order_id ); ?></a>
