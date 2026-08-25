@@ -224,7 +224,7 @@ if ( ! is_dir( $dir ) ) {
 }
 
 $header = "msgid \"\"\nmsgstr \"\"\n"
-	. "\"Project-Id-Version: Zanjir 2.2.2\\n\"\n"
+	. "\"Project-Id-Version: Zanjir 2.2.3\\n\"\n"
 	. "\"Language: fa_IR\\n\"\n"
 	. "\"MIME-Version: 1.0\\n\"\n"
 	. "\"Content-Type: text/plain; charset=UTF-8\\n\"\n"
