@@ -106,7 +106,7 @@ class Zanjir_Admin_Reports {
 				<select name="status">
 					<option value=""><?php esc_html_e( 'All', 'zanjir' ); ?></option>
 					<?php foreach ( array( 'pending', 'payable', 'paid', 'void' ) as $st ) : ?>
-						<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $filters['status'], $st ); ?>><?php echo esc_html( $st ); ?></option>
+						<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $filters['status'], $st ); ?>><?php echo esc_html( Zanjir_I18n::label( $st ) ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</label>
@@ -115,7 +115,7 @@ class Zanjir_Admin_Reports {
 				<select name="kind">
 					<option value=""><?php esc_html_e( 'All', 'zanjir' ); ?></option>
 					<?php foreach ( array( 'tree', 'staff_override', 'bonus' ) as $kind ) : ?>
-						<option value="<?php echo esc_attr( $kind ); ?>" <?php selected( $filters['kind'], $kind ); ?>><?php echo esc_html( $kind ); ?></option>
+						<option value="<?php echo esc_attr( $kind ); ?>" <?php selected( $filters['kind'], $kind ); ?>><?php echo esc_html( Zanjir_I18n::label( $kind ) ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</label>
@@ -175,11 +175,11 @@ class Zanjir_Admin_Reports {
 								<?php echo esc_html( (string) $row->beneficiary_id ); ?>
 							</a>
 						</td>
-						<td><?php echo esc_html( (string) $row->kind ); ?></td>
+						<td><?php echo esc_html( Zanjir_I18n::label( (string) $row->kind ) ); ?></td>
 						<td><?php echo esc_html( (string) $row->tier_level ); ?></td>
 						<td><?php echo esc_html( (string) $row->rate ); ?></td>
 						<td><?php echo esc_html( number_format_i18n( (int) $row->amount ) ); ?></td>
-						<td><span class="zanjir-status zanjir-status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( $row->status ); ?></span></td>
+						<td><span class="zanjir-status zanjir-status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></span></td>
 						<td><?php echo esc_html( (string) $row->return_window_ends_at ); ?></td>
 						<td><?php echo esc_html( (string) $row->created_at ); ?></td>
 					</tr>
@@ -208,7 +208,7 @@ class Zanjir_Admin_Reports {
 				<select name="status">
 					<option value=""><?php esc_html_e( 'All', 'zanjir' ); ?></option>
 					<?php foreach ( array( 'draft', 'reviewed', 'approved' ) as $st ) : ?>
-						<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $filters['status'], $st ); ?>><?php echo esc_html( $st ); ?></option>
+						<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $filters['status'], $st ); ?>><?php echo esc_html( Zanjir_I18n::label( $st ) ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</label>
@@ -245,7 +245,7 @@ class Zanjir_Admin_Reports {
 						<td><?php echo esc_html( (string) $row->id ); ?></td>
 						<td><?php echo esc_html( $row->period_start . ' → ' . $row->period_end ); ?></td>
 						<td><?php echo esc_html( number_format_i18n( (int) $row->total_amount ) ); ?></td>
-						<td><span class="zanjir-status zanjir-status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( $row->status ); ?></span></td>
+						<td><span class="zanjir-status zanjir-status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></span></td>
 						<td><?php echo esc_html( (string) $row->approved_by ); ?></td>
 						<td><?php echo esc_html( (string) $row->approved_at ); ?></td>
 						<td><?php echo esc_html( (string) $row->created_at ); ?></td>
@@ -280,7 +280,7 @@ class Zanjir_Admin_Reports {
 				<select name="status">
 					<option value=""><?php esc_html_e( 'All', 'zanjir' ); ?></option>
 					<?php foreach ( array( 'requested', 'approved', 'rejected', 'paid' ) as $st ) : ?>
-						<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $filters['status'], $st ); ?>><?php echo esc_html( $st ); ?></option>
+						<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $filters['status'], $st ); ?>><?php echo esc_html( Zanjir_I18n::label( $st ) ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</label>
@@ -307,7 +307,7 @@ class Zanjir_Admin_Reports {
 					<th><?php esc_html_e( 'Amount', 'zanjir' ); ?></th>
 					<th><?php esc_html_e( 'IBAN', 'zanjir' ); ?></th>
 					<th><?php esc_html_e( 'Status', 'zanjir' ); ?></th>
-					<th><?php esc_html_e( 'Requested', 'zanjir' ); ?></th>
+					<th><?php esc_html_e( 'Requested at', 'zanjir' ); ?></th>
 					<th><?php esc_html_e( 'Processed', 'zanjir' ); ?></th>
 					<th><?php esc_html_e( 'Note', 'zanjir' ); ?></th>
 					<th><?php esc_html_e( 'Ops', 'zanjir' ); ?></th>
@@ -327,7 +327,7 @@ class Zanjir_Admin_Reports {
 						</td>
 						<td><?php echo esc_html( number_format_i18n( (int) $row->amount ) ); ?></td>
 						<td><code><?php echo esc_html( (string) $row->iban ); ?></code></td>
-						<td><span class="zanjir-status zanjir-status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( $row->status ); ?></span></td>
+						<td><span class="zanjir-status zanjir-status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></span></td>
 						<td><?php echo esc_html( (string) $row->requested_at ); ?></td>
 						<td><?php echo esc_html( (string) $row->processed_at ); ?></td>
 						<td><?php echo esc_html( (string) $row->admin_note ); ?></td>
@@ -382,8 +382,8 @@ class Zanjir_Admin_Reports {
 						esc_html( (string) $focus->affiliate_id ),
 						esc_html( (string) $focus->depth ),
 						esc_html( (string) $focus->path ),
-						esc_html( (string) $focus->type ),
-						esc_html( (string) $focus->status ),
+						esc_html( Zanjir_I18n::label( (string) $focus->type ) ),
+						esc_html( Zanjir_I18n::label( (string) $focus->status ) ),
 						esc_html( (string) $focus->user_id )
 					);
 					?>
@@ -421,8 +421,8 @@ class Zanjir_Admin_Reports {
 						<tr>
 							<td><a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'tree', 'affiliate_id' => (int) $row->affiliate_id ), $base ) ); ?>">#<?php echo esc_html( (string) $row->affiliate_id ); ?></a></td>
 							<td><?php echo esc_html( (string) $row->user_id ); ?></td>
-							<td><?php echo esc_html( (string) $row->type ); ?></td>
-							<td><?php echo esc_html( (string) $row->status ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( (string) $row->type ) ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( (string) $row->status ) ); ?></td>
 							<td><?php echo esc_html( (string) $row->depth ); ?></td>
 						</tr>
 					<?php endforeach; ?>
@@ -441,10 +441,11 @@ class Zanjir_Admin_Reports {
 							<?php
 							echo esc_html(
 								sprintf(
-									'user %1$s · %2$s · %3$s · depth %4$s',
+									/* translators: 1: user id, 2: type, 3: status, 4: depth */
+									__( 'user %1$s · %2$s · %3$s · depth %4$s', 'zanjir' ),
 									(string) $row->user_id,
-									(string) $row->type,
-									(string) $row->status,
+									Zanjir_I18n::label( (string) $row->type ),
+									Zanjir_I18n::label( (string) $row->status ),
 									(string) $row->depth
 								)
 							);
@@ -479,8 +480,8 @@ class Zanjir_Admin_Reports {
 								</a>
 							</td>
 							<td><?php echo esc_html( (string) $row->user_id ); ?></td>
-							<td><?php echo esc_html( (string) $row->type ); ?></td>
-							<td><?php echo esc_html( (string) $row->status ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( (string) $row->type ) ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( (string) $row->status ) ); ?></td>
 							<td><code><?php echo esc_html( (string) $row->path ); ?></code></td>
 							<td><?php echo esc_html( (string) count( $kids ) ); ?></td>
 						</tr>
@@ -514,7 +515,7 @@ class Zanjir_Admin_Reports {
 				<ul class="zanjir-report-status-totals">
 					<?php foreach ( $by_status as $status => $amount ) : ?>
 						<li>
-							<span class="zanjir-status zanjir-status-<?php echo esc_attr( $status ); ?>"><?php echo esc_html( $status ); ?></span>
+							<span class="zanjir-status zanjir-status-<?php echo esc_attr( $status ); ?>"><?php echo esc_html( Zanjir_I18n::label( $status ) ); ?></span>
 							—
 							<?php echo esc_html( number_format_i18n( (int) $amount ) ); ?>
 							<?php esc_html_e( 'Rial', 'zanjir' ); ?>

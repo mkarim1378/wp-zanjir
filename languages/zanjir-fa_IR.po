@@ -1,20 +1,164 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Zanjir 2.1.0\n"
+"Project-Id-Version: Zanjir 2.2.2\n"
 "Language: fa_IR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "Zanjir"
+msgstr "زنجیر"
+
 msgid "Zanjir Settings"
 msgstr "تنظیمات زنجیر"
+
+msgid "Zanjir Settlements"
+msgstr "تسویه‌های زنجیر"
+
+msgid "Zanjir Withdrawals"
+msgstr "برداشت‌های زنجیر"
+
+msgid "Zanjir Affiliates"
+msgstr "افیلیت‌های زنجیر"
+
+msgid "Zanjir Reports"
+msgstr "گزارش‌های زنجیر"
+
+msgid "Zanjir Affiliate"
+msgstr "افیلیت زنجیر"
+
+msgid "Zanjir Staff"
+msgstr "پرسنل زنجیر"
+
+msgid "Settings"
+msgstr "تنظیمات"
 
 msgid "Commission"
 msgstr "پورسانت"
 
+msgid "Commissions"
+msgstr "پورسانت‌ها"
+
 msgid "Tree Depth"
 msgstr "عمق درخت"
+
+msgid "Tree Cap (basis-10000)"
+msgstr "سقف درخت (مبنای ۱۰۰۰۰)"
+
+msgid "Staff Override (basis-10000)"
+msgstr "سهم پرسنل (مبنای ۱۰۰۰۰)"
+
+msgid "Bonus Pool (basis-10000)"
+msgstr "صندوق پاداش (مبنای ۱۰۰۰۰)"
+
+msgid "Discount & Double-Dip"
+msgstr "تخفیف و دابل‌دیپ"
+
+msgid "Enable Referral Discount"
+msgstr "فعال‌سازی تخفیف معرف"
+
+msgid "Coupon Compatibility"
+msgstr "سازگاری با کوپن"
+
+msgid "Max Total Discount (basis-10000)"
+msgstr "سقف کل تخفیف (مبنای ۱۰۰۰۰)"
+
+msgid "Double-Dip (Discount + Commission)"
+msgstr "دابل‌دیپ (تخفیف + پورسانت)"
+
+msgid "WARNING: When disabled, orders with referral discount will NOT generate commissions."
+msgstr "هشدار: اگر غیرفعال باشد، سفارش‌های دارای تخفیف معرف پورسانت نمی‌گیرند."
+
+msgid "Operations"
+msgstr "عملیات"
+
+msgid "Refund window (days)"
+msgstr "پنجره مرجوعی (روز)"
+
+msgid "Annual recruit cap (Rial)"
+msgstr "سقف جذب سالانه (ریال)"
+
+msgid "Referral code length"
+msgstr "طول کد معرف"
+
+msgid "Commission matrix"
+msgstr "ماتریس پورسانت"
+
+msgid "Depth × position rates"
+msgstr "نرخ‌های عمق × جایگاه"
+
+msgid "Budget: tree %1$d + staff %2$d + bonus %3$d = %4$d / 10000 (%5$s%%)."
+msgstr "بودجه: درخت %1$d + پرسنل %2$d + پاداش %3$d = %4$d / ۱۰۰۰۰ (%5$s٪)."
+
+msgid "Configure commission rates and tree structure."
+msgstr "نرخ پورسانت و ساختار درخت را تنظیم کنید."
+
+msgid "Configure referral discount and double-dip behavior."
+msgstr "تخفیف معرف و رفتار دابل‌دیپ را تنظیم کنید."
+
+msgid "Return window, recruitment cap, and referral code length."
+msgstr "پنجره مرجوعی، سقف جذب و طول کد معرف."
+
+msgid "Each row depth must match the number of rates, rates must sum to tree_cap, and the seller (first rate) must be highest."
+msgstr "عمق هر ردیف باید با تعداد نرخ‌ها برابر باشد، مجموع نرخ‌ها باید برابر سقف درخت باشد و نرخ فروشنده (اولین نرخ) باید بیشترین باشد."
+
+msgid "Depth"
+msgstr "عمق"
+
+msgid "Tree cap"
+msgstr "سقف درخت"
+
+msgid "Rates (basis-10000, seller → upline)"
+msgstr "نرخ‌ها (مبنای ۱۰۰۰۰، فروشنده ← بالادست)"
+
+msgid "Tier %d"
+msgstr "سطح %d"
+
+msgid "Using first %1$d rate(s); sum = %2$d (must equal tree cap)."
+msgstr "از %1$d نرخ اول استفاده می‌شود؛ مجموع = %2$d (باید برابر سقف درخت باشد)."
+
+msgid "Current payable total: %s Rial"
+msgstr "مجموع قابل پرداخت فعلی: %s ریال"
+
+msgid "Period start"
+msgstr "شروع دوره"
+
+msgid "Period end"
+msgstr "پایان دوره"
+
+msgid "Prepare draft batch"
+msgstr "آماده‌سازی بسته پیش‌نویس"
+
+msgid "ID"
+msgstr "شناسه"
+
+msgid "Period"
+msgstr "دوره"
+
+msgid "Total"
+msgstr "مجموع"
+
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "Actions"
+msgstr "اقدامات"
+
+msgid "No settlements yet."
+msgstr "هنوز تسویه‌ای نیست."
+
+msgid "Mark reviewed"
+msgstr "علامت‌گذاری بررسی‌شده"
+
+msgid "Approve"
+msgstr "تأیید"
+
+msgid "Reject"
+msgstr "رد"
+
+msgid "Mark paid"
+msgstr "علامت‌گذاری پرداخت‌شده"
 
 msgid "Settlements"
 msgstr "تسویه‌ها"
@@ -31,8 +175,95 @@ msgstr "صف تقلب"
 msgid "Bonus plans"
 msgstr "پلن‌های پاداش"
 
-msgid "Settings"
-msgstr "تنظیمات"
+msgid "Reports"
+msgstr "گزارش‌ها"
+
+msgid "Affiliate"
+msgstr "افیلیت"
+
+msgid "Amount"
+msgstr "مبلغ"
+
+msgid "IBAN"
+msgstr "شبا"
+
+msgid "No withdrawals yet."
+msgstr "هنوز برداشتی نیست."
+
+msgid "Unauthorized."
+msgstr "دسترسی غیرمجاز."
+
+msgid "User"
+msgstr "کاربر"
+
+msgid "Type"
+msgstr "نوع"
+
+msgid "Recruit"
+msgstr "جذب"
+
+msgid "No affiliates yet."
+msgstr "هنوز افیلیتی نیست."
+
+msgid "yes"
+msgstr "بله"
+
+msgid "no"
+msgstr "خیر"
+
+msgid "Make staff"
+msgstr "تبدیل به پرسنل"
+
+msgid "Make affiliate"
+msgstr "تبدیل به افیلیت"
+
+msgid "Event"
+msgstr "رویداد"
+
+msgid "Severity"
+msgstr "شدت"
+
+msgid "Order"
+msgstr "سفارش"
+
+msgid "No unreviewed events."
+msgstr "رویداد بررسی‌نشده‌ای نیست."
+
+msgid "Title"
+msgstr "عنوان"
+
+msgid "Metric"
+msgstr "معیار"
+
+msgid "Sales volume"
+msgstr "حجم فروش"
+
+msgid "Order count"
+msgstr "تعداد سفارش"
+
+msgid "Threshold"
+msgstr "آستانه"
+
+msgid "Reward type"
+msgstr "نوع پاداش"
+
+msgid "Fixed"
+msgstr "ثابت"
+
+msgid "Rate (basis-10000)"
+msgstr "نرخ (مبنای ۱۰۰۰۰)"
+
+msgid "Reward value"
+msgstr "مقدار پاداش"
+
+msgid "Create plan"
+msgstr "ایجاد پلن"
+
+msgid "Reward"
+msgstr "پاداش"
+
+msgid "No active plans."
+msgstr "پلن فعالی نیست."
 
 msgid "Referral discount"
 msgstr "تخفیف معرف"
@@ -70,59 +301,20 @@ msgstr "برداشت‌های اخیر"
 msgid "Referral link:"
 msgstr "لینک معرف:"
 
-msgid "Commission matrix"
-msgstr "ماتریس پورسانت"
+msgid "You are already registered (status: %s)."
+msgstr "شما قبلاً ثبت‌نام کرده‌اید (وضعیت: %s)."
 
-msgid "Operations"
-msgstr "عملیات"
+msgid "Pending: %s"
+msgstr "در انتظار: %s"
 
-msgid "Refund window (days)"
-msgstr "پنجره مرجوعی (روز)"
+msgid "Payable: %s"
+msgstr "قابل پرداخت: %s"
 
-msgid "Enable Referral Discount"
-msgstr "فعال‌سازی تخفیف معرف"
+msgid "Withdrawable: %s"
+msgstr "قابل برداشت: %s"
 
-msgid "Coupon Compatibility"
-msgstr "سازگاری با کوپن"
-
-msgid "Double-Dip (Discount + Commission)"
-msgstr "دابل‌دیپ (تخفیف + پورسانت)"
-
-msgid "Make staff"
-msgstr "تبدیل به پرسنل"
-
-msgid "Make affiliate"
-msgstr "تبدیل به افیلیت"
-
-msgid "Approve"
-msgstr "تأیید"
-
-msgid "Reject"
-msgstr "رد"
-
-msgid "Mark paid"
-msgstr "علامت‌گذاری پرداخت‌شده"
-
-msgid "Mark reviewed"
-msgstr "علامت‌گذاری بررسی‌شده"
-
-msgid "Prepare draft batch"
-msgstr "آماده‌سازی بسته پیش‌نویس"
-
-msgid "No settlements yet."
-msgstr "هنوز تسویه‌ای نیست."
-
-msgid "No withdrawals yet."
-msgstr "هنوز برداشتی نیست."
-
-msgid "Approved affiliate account required."
-msgstr "حساب افیلیت تأییدشده لازم است."
-
-msgid "Registration submitted. Waiting for admin approval."
-msgstr "ثبت‌نام ارسال شد. در انتظار تأیید مدیر."
-
-msgid "Withdrawal requested."
-msgstr "درخواست برداشت ثبت شد."
+msgid "Available to request: %s"
+msgstr "قابل درخواست: %s"
 
 msgid "Recruitment: enabled"
 msgstr "مجوز جذب: فعال"
@@ -130,12 +322,318 @@ msgstr "مجوز جذب: فعال"
 msgid "Recruitment: locked"
 msgstr "مجوز جذب: قفل"
 
-msgid "Annual recruit cap (Rial)"
-msgstr "سقف جذب سالانه (ریال)"
+msgid "Approved affiliate account required."
+msgstr "حساب افیلیت تأییدشده لازم است."
 
-msgid "Referral code length"
-msgstr "طول کد معرف"
+msgid "Registration submitted. Waiting for admin approval."
+msgstr "ثبت‌نام ارسال شد. در انتظار تأیید مدیر."
 
-msgid "Depth × position rates"
-msgstr "نرخ‌های عمق × جایگاه"
+msgid "You are already registered as an affiliate."
+msgstr "شما قبلاً به‌عنوان افیلیت ثبت‌نام کرده‌اید."
+
+msgid "Invalid national ID."
+msgstr "کد ملی نامعتبر است."
+
+msgid "This national ID is already registered."
+msgstr "این کد ملی قبلاً ثبت شده است."
+
+msgid "Registration failed. Please try again."
+msgstr "ثبت‌نام ناموفق بود. دوباره تلاش کنید."
+
+msgid "This referrer is not yet allowed to recruit."
+msgstr "این معرف هنوز مجاز به جذب نیست."
+
+msgid "Invalid request."
+msgstr "درخواست نامعتبر است."
+
+msgid "Security check failed."
+msgstr "بررسی امنیتی ناموفق بود."
+
+msgid "Affiliate cannot be approved from the current status."
+msgstr "افیلیت از وضعیت فعلی قابل تأیید نیست."
+
+msgid "Invalid withdrawal amount."
+msgstr "مبلغ برداشت نامعتبر است."
+
+msgid "Insufficient withdrawable balance."
+msgstr "موجودی قابل برداشت کافی نیست."
+
+msgid "Could not create withdrawal request."
+msgstr "ایجاد درخواست برداشت ممکن نشد."
+
+msgid "Withdrawal cannot be approved."
+msgstr "این برداشت قابل تأیید نیست."
+
+msgid "Could not lock withdrawal amount."
+msgstr "قفل کردن مبلغ برداشت ممکن نشد."
+
+msgid "Could not approve withdrawal."
+msgstr "تأیید برداشت ممکن نشد."
+
+msgid "Withdrawal cannot be rejected."
+msgstr "این برداشت قابل رد نیست."
+
+msgid "Withdrawal cannot be marked paid."
+msgstr "این برداشت را نمی‌توان پرداخت‌شده علامت زد."
+
+msgid "Could not mark withdrawal as paid."
+msgstr "علامت‌گذاری برداشت به‌عنوان پرداخت‌شده ممکن نشد."
+
+msgid "Affiliate account required."
+msgstr "حساب افیلیت لازم است."
+
+msgid "Withdrawal requested."
+msgstr "درخواست برداشت ثبت شد."
+
+msgid "Report sections"
+msgstr "بخش‌های گزارش"
+
+msgid "Referral tree"
+msgstr "درخت معرف"
+
+msgid "All"
+msgstr "همه"
+
+msgid "Kind"
+msgstr "نوع"
+
+msgid "Beneficiary ID"
+msgstr "شناسه ذی‌نفع"
+
+msgid "Order ID"
+msgstr "شناسه سفارش"
+
+msgid "From"
+msgstr "از"
+
+msgid "To"
+msgstr "تا"
+
+msgid "Filter"
+msgstr "فیلتر"
+
+msgid "Beneficiary"
+msgstr "ذی‌نفع"
+
+msgid "Tier"
+msgstr "سطح"
+
+msgid "Rate"
+msgstr "نرخ"
+
+msgid "Window ends"
+msgstr "پایان پنجره"
+
+msgid "Created"
+msgstr "ایجاد"
+
+msgid "No commissions match these filters."
+msgstr "پورسانتی با این فیلترها یافت نشد."
+
+msgid "Period overlaps from"
+msgstr "همپوشانی دوره از"
+
+msgid "Period overlaps to"
+msgstr "همپوشانی دوره تا"
+
+msgid "Approved by"
+msgstr "تأییدکننده"
+
+msgid "Approved at"
+msgstr "زمان تأیید"
+
+msgid "Ops"
+msgstr "عملیات"
+
+msgid "No settlements match these filters."
+msgstr "تسویه‌ای با این فیلترها یافت نشد."
+
+msgid "Open settlements"
+msgstr "مشاهده تسویه‌ها"
+
+msgid "Affiliate ID"
+msgstr "شناسه افیلیت"
+
+msgid "Requested"
+msgstr "درخواست‌شده"
+
+msgid "Requested at"
+msgstr "زمان درخواست"
+
+msgid "Processed"
+msgstr "پردازش"
+
+msgid "Note"
+msgstr "یادداشت"
+
+msgid "No withdrawals match these filters."
+msgstr "برداشتی با این فیلترها یافت نشد."
+
+msgid "Open withdrawals"
+msgstr "مشاهده برداشت‌ها"
+
+msgid "Inspect node"
+msgstr "بررسی گره"
+
+msgid "Show roots"
+msgstr "نمایش ریشه‌ها"
+
+msgid "Node #%1$s · depth %2$s · path %3$s · type %4$s · status %5$s · user %6$s"
+msgstr "گره #%1$s · عمق %2$s · مسیر %3$s · نوع %4$s · وضعیت %5$s · کاربر %6$s"
+
+msgid "Upline (closest → root):"
+msgstr "بالادست (نزدیک‌ترین ← ریشه):"
+
+msgid "Direct children"
+msgstr "فرزندان مستقیم"
+
+msgid "No children."
+msgstr "فرزندی نیست."
+
+msgid "Subtree"
+msgstr "زیردرخت"
+
+msgid "user %1$s · %2$s · %3$s · depth %4$s"
+msgstr "کاربر %1$s · %2$s · %3$s · عمق %4$s"
+
+msgid "Root affiliates"
+msgstr "افیلیت‌های ریشه"
+
+msgid "Path"
+msgstr "مسیر"
+
+msgid "Children"
+msgstr "فرزندان"
+
+msgid "No tree nodes yet."
+msgstr "هنوز گره‌ای در درخت نیست."
+
+msgid "%1$s rows · filtered sum %2$s Rial"
+msgstr "%1$s ردیف · مجموع فیلترشده %2$s ریال"
+
+msgid "Rial"
+msgstr "ریال"
+
+msgid "Export CSV"
+msgstr "خروجی CSV"
+
+msgid "%s items"
+msgstr "%s مورد"
+
+msgid "Pending"
+msgstr "در انتظار"
+
+msgid "Payable"
+msgstr "قابل پرداخت"
+
+msgid "Paid"
+msgstr "پرداخت‌شده"
+
+msgid "Void"
+msgstr "باطل"
+
+msgid "Approved"
+msgstr "تأییدشده"
+
+msgid "Rejected"
+msgstr "ردشده"
+
+msgid "Draft"
+msgstr "پیش‌نویس"
+
+msgid "Reviewed"
+msgstr "بررسی‌شده"
+
+msgid "Staff"
+msgstr "پرسنل"
+
+msgid "Tree"
+msgstr "درخت"
+
+msgid "Staff override"
+msgstr "سهم پرسنل"
+
+msgid "Bonus"
+msgstr "پاداش"
+
+msgid "Self-purchase"
+msgstr "خرید با کد خود"
+
+msgid "Own referral chain"
+msgstr "خرید در زنجیره خود"
+
+msgid "IP seen"
+msgstr "مشاهده آی‌پی"
+
+msgid "Critical"
+msgstr "بحرانی"
+
+msgid "Info"
+msgstr "اطلاع"
+
+msgid "Matrix must have at least one row."
+msgstr "ماتریس باید حداقل یک ردیف داشته باشد."
+
+msgid "Row %d is invalid."
+msgstr "ردیف %d نامعتبر است."
+
+msgid "Row %d: depth is %d but %d rates provided."
+msgstr "ردیف %d: عمق %d است اما %d نرخ وارد شده."
+
+msgid "Row %d: rates sum to %d but tree cap is %d."
+msgstr "ردیف %d: مجموع نرخ‌ها %d است اما سقف درخت %d است."
+
+msgid "Row %d: direct seller must have the highest rate."
+msgstr "ردیف %d: فروشنده مستقیم باید بیشترین نرخ را داشته باشد."
+
+msgid "Identity verification failed."
+msgstr "احراز هویت ناموفق بود."
+
+msgid "Bonus plan title is required."
+msgstr "عنوان پلن پاداش الزامی است."
+
+msgid "Invalid bonus metric."
+msgstr "معیار پاداش نامعتبر است."
+
+msgid "Invalid reward type."
+msgstr "نوع پاداش نامعتبر است."
+
+msgid "Could not create bonus plan."
+msgstr "ایجاد پلن پاداش ممکن نشد."
+
+msgid "Affiliate already exists in the tree."
+msgstr "این افیلیت از قبل در درخت وجود دارد."
+
+msgid "Parent affiliate not found in tree."
+msgstr "افیلیت والد در درخت یافت نشد."
+
+msgid "Referral loop detected."
+msgstr "حلقه معرف شناسایی شد."
+
+msgid "Failed to insert into tree."
+msgstr "درج در درخت ناموفق بود."
+
+msgid "Could not generate unique code."
+msgstr "تولید کد یکتا ممکن نشد."
+
+msgid "Self-purchase referrals are not allowed."
+msgstr "خرید با کد معرف خودتان مجاز نیست."
+
+msgid "Purchases inside your own referral chain are not allowed."
+msgstr "خرید داخل زنجیره معرف خودتان مجاز نیست."
+
+msgid "Invalid settlement period."
+msgstr "دوره تسویه نامعتبر است."
+
+msgid "Could not create settlement batch."
+msgstr "ایجاد بسته تسویه ممکن نشد."
+
+msgid "Settlement not found."
+msgstr "تسویه یافت نشد."
+
+msgid "Settlement cannot be approved from the current status."
+msgstr "تسویه از وضعیت فعلی قابل تأیید نیست."
+
+msgid "Invalid settlement status transition."
+msgstr "تغییر وضعیت تسویه نامعتبر است."
 

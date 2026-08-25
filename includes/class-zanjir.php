@@ -45,11 +45,43 @@ class Zanjir {
 	 * Load text domain for i18n.
 	 */
 	private function define_i18n() {
-		$this->loader->add_action( 'plugins_loaded', $this, 'load_textdomain' );
+		$this->loader->add_filter( 'plugin_locale', $this, 'force_persian_locale', 10, 2 );
+		$this->loader->add_filter( 'load_textdomain_mofile', $this, 'force_persian_mofile', 10, 2 );
+		$this->loader->add_action( 'init', $this, 'load_textdomain', 0 );
 	}
 
 	/**
-	 * Load the plugin text domain.
+	 * Always use Persian for this plugin's strings.
+	 *
+	 * @param string $locale Current locale.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	public function force_persian_locale( $locale, $domain ) {
+		if ( 'zanjir' === $domain ) {
+			return 'fa_IR';
+		}
+		return $locale;
+	}
+
+	/**
+	 * Point gettext at the bundled fa_IR catalog.
+	 *
+	 * @param string $mofile Path WordPress would load.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	public function force_persian_mofile( $mofile, $domain ) {
+		if ( 'zanjir' !== $domain ) {
+			return $mofile;
+		}
+
+		$forced = ZANJIR_PLUGIN_DIR . 'languages/zanjir-fa_IR.mo';
+		return is_readable( $forced ) ? $forced : $mofile;
+	}
+
+	/**
+	 * Load the plugin text domain (always Persian).
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain( 'zanjir', false, dirname( ZANJIR_PLUGIN_BASENAME ) . '/languages' );
@@ -137,6 +169,7 @@ class Zanjir {
 	 * Plugin activation callback.
 	 */
 	public static function activate() {
+		self::instance()->load_textdomain();
 		Zanjir_DB::maybe_upgrade();
 		Zanjir_Roles::activate();
 		Zanjir_Recruit_Service::maybe_schedule();

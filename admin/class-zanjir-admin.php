@@ -552,7 +552,7 @@ class Zanjir_Admin {
 							<td><?php echo esc_html( (string) $row->id ); ?></td>
 							<td><?php echo esc_html( $row->period_start . ' → ' . $row->period_end ); ?></td>
 							<td><?php echo esc_html( number_format_i18n( (int) $row->total_amount ) ); ?></td>
-							<td><?php echo esc_html( $row->status ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></td>
 							<td>
 								<?php if ( 'draft' === $row->status ) : ?>
 									<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=zanjir_settlement_review&id=' . (int) $row->id ), 'zanjir_settlement_' . (int) $row->id ) ); ?>">
@@ -610,7 +610,7 @@ class Zanjir_Admin {
 							<td><?php echo esc_html( (string) $row->affiliate_id ); ?></td>
 							<td><?php echo esc_html( number_format_i18n( (int) $row->amount ) ); ?></td>
 							<td><?php echo esc_html( (string) $row->iban ); ?></td>
-							<td><?php echo esc_html( $row->status ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></td>
 							<td>
 								<?php
 								$nonce_action = Zanjir_Withdrawal_Service::ADMIN_NONCE . (int) $row->id;
@@ -715,8 +715,8 @@ class Zanjir_Admin {
 						<tr>
 							<td><?php echo esc_html( (string) $row->id ); ?></td>
 							<td><?php echo esc_html( (string) $row->user_id ); ?></td>
-							<td><?php echo esc_html( $row->type ); ?></td>
-							<td><?php echo esc_html( $row->status ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $row->type ) ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></td>
 							<td><?php echo ! empty( $row->recruit_enabled ) ? esc_html__( 'yes', 'zanjir' ) : esc_html__( 'no', 'zanjir' ); ?></td>
 							<td>
 								<?php if ( 'pending' === $row->status ) : ?>
@@ -778,8 +778,8 @@ class Zanjir_Admin {
 					<?php foreach ( $rows as $row ) : ?>
 						<tr>
 							<td><?php echo esc_html( (string) $row->id ); ?></td>
-							<td><?php echo esc_html( $row->event_type ); ?></td>
-							<td><?php echo esc_html( $row->severity ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $row->event_type ) ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $row->severity ) ); ?></td>
 							<td><?php echo esc_html( (string) $row->order_id ); ?></td>
 							<td><?php echo esc_html( (string) $row->affiliate_id ); ?></td>
 							<td>
@@ -864,9 +864,9 @@ class Zanjir_Admin {
 						<tr>
 							<td><?php echo esc_html( (string) $plan->id ); ?></td>
 							<td><?php echo esc_html( $plan->title ); ?></td>
-							<td><?php echo esc_html( $plan->metric ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $plan->metric ) ); ?></td>
 							<td><?php echo esc_html( number_format_i18n( (int) $plan->threshold ) ); ?></td>
-							<td><?php echo esc_html( $plan->reward_type . ':' . number_format_i18n( (int) $plan->reward_value ) ); ?></td>
+							<td><?php echo esc_html( Zanjir_I18n::label( $plan->reward_type ) . ': ' . number_format_i18n( (int) $plan->reward_value ) ); ?></td>
 						</tr>
 					<?php endforeach; ?>
 				<?php endif; ?>

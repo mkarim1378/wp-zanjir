@@ -77,7 +77,7 @@ class Zanjir_Public {
 				sprintf(
 					/* translators: %s: status */
 					__( 'You are already registered (status: %s).', 'zanjir' ),
-					$existing->status
+					Zanjir_I18n::label( $existing->status )
 				)
 			) . '</p>';
 		}
@@ -201,7 +201,7 @@ class Zanjir_Public {
 						<li>
 							#<?php echo esc_html( (string) $wd->id ); ?> —
 							<?php echo esc_html( number_format_i18n( (int) $wd->amount ) ); ?> —
-							<?php echo esc_html( $wd->status ); ?>
+							<?php echo esc_html( Zanjir_I18n::label( $wd->status ) ); ?>
 						</li>
 					<?php endforeach; ?>
 				</ul>

@@ -1,19 +1,163 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Zanjir 2.1.0\n"
+"Project-Id-Version: Zanjir 2.2.2\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "Zanjir"
+msgstr ""
+
 msgid "Zanjir Settings"
+msgstr ""
+
+msgid "Zanjir Settlements"
+msgstr ""
+
+msgid "Zanjir Withdrawals"
+msgstr ""
+
+msgid "Zanjir Affiliates"
+msgstr ""
+
+msgid "Zanjir Reports"
+msgstr ""
+
+msgid "Zanjir Affiliate"
+msgstr ""
+
+msgid "Zanjir Staff"
+msgstr ""
+
+msgid "Settings"
 msgstr ""
 
 msgid "Commission"
 msgstr ""
 
+msgid "Commissions"
+msgstr ""
+
 msgid "Tree Depth"
+msgstr ""
+
+msgid "Tree Cap (basis-10000)"
+msgstr ""
+
+msgid "Staff Override (basis-10000)"
+msgstr ""
+
+msgid "Bonus Pool (basis-10000)"
+msgstr ""
+
+msgid "Discount & Double-Dip"
+msgstr ""
+
+msgid "Enable Referral Discount"
+msgstr ""
+
+msgid "Coupon Compatibility"
+msgstr ""
+
+msgid "Max Total Discount (basis-10000)"
+msgstr ""
+
+msgid "Double-Dip (Discount + Commission)"
+msgstr ""
+
+msgid "WARNING: When disabled, orders with referral discount will NOT generate commissions."
+msgstr ""
+
+msgid "Operations"
+msgstr ""
+
+msgid "Refund window (days)"
+msgstr ""
+
+msgid "Annual recruit cap (Rial)"
+msgstr ""
+
+msgid "Referral code length"
+msgstr ""
+
+msgid "Commission matrix"
+msgstr ""
+
+msgid "Depth × position rates"
+msgstr ""
+
+msgid "Budget: tree %1$d + staff %2$d + bonus %3$d = %4$d / 10000 (%5$s%%)."
+msgstr ""
+
+msgid "Configure commission rates and tree structure."
+msgstr ""
+
+msgid "Configure referral discount and double-dip behavior."
+msgstr ""
+
+msgid "Return window, recruitment cap, and referral code length."
+msgstr ""
+
+msgid "Each row depth must match the number of rates, rates must sum to tree_cap, and the seller (first rate) must be highest."
+msgstr ""
+
+msgid "Depth"
+msgstr ""
+
+msgid "Tree cap"
+msgstr ""
+
+msgid "Rates (basis-10000, seller → upline)"
+msgstr ""
+
+msgid "Tier %d"
+msgstr ""
+
+msgid "Using first %1$d rate(s); sum = %2$d (must equal tree cap)."
+msgstr ""
+
+msgid "Current payable total: %s Rial"
+msgstr ""
+
+msgid "Period start"
+msgstr ""
+
+msgid "Period end"
+msgstr ""
+
+msgid "Prepare draft batch"
+msgstr ""
+
+msgid "ID"
+msgstr ""
+
+msgid "Period"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "No settlements yet."
+msgstr ""
+
+msgid "Mark reviewed"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+msgid "Mark paid"
 msgstr ""
 
 msgid "Settlements"
@@ -31,7 +175,94 @@ msgstr ""
 msgid "Bonus plans"
 msgstr ""
 
-msgid "Settings"
+msgid "Reports"
+msgstr ""
+
+msgid "Affiliate"
+msgstr ""
+
+msgid "Amount"
+msgstr ""
+
+msgid "IBAN"
+msgstr ""
+
+msgid "No withdrawals yet."
+msgstr ""
+
+msgid "Unauthorized."
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Recruit"
+msgstr ""
+
+msgid "No affiliates yet."
+msgstr ""
+
+msgid "yes"
+msgstr ""
+
+msgid "no"
+msgstr ""
+
+msgid "Make staff"
+msgstr ""
+
+msgid "Make affiliate"
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "Severity"
+msgstr ""
+
+msgid "Order"
+msgstr ""
+
+msgid "No unreviewed events."
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Metric"
+msgstr ""
+
+msgid "Sales volume"
+msgstr ""
+
+msgid "Order count"
+msgstr ""
+
+msgid "Threshold"
+msgstr ""
+
+msgid "Reward type"
+msgstr ""
+
+msgid "Fixed"
+msgstr ""
+
+msgid "Rate (basis-10000)"
+msgstr ""
+
+msgid "Reward value"
+msgstr ""
+
+msgid "Create plan"
+msgstr ""
+
+msgid "Reward"
+msgstr ""
+
+msgid "No active plans."
 msgstr ""
 
 msgid "Referral discount"
@@ -70,58 +301,19 @@ msgstr ""
 msgid "Referral link:"
 msgstr ""
 
-msgid "Commission matrix"
+msgid "You are already registered (status: %s)."
 msgstr ""
 
-msgid "Operations"
+msgid "Pending: %s"
 msgstr ""
 
-msgid "Refund window (days)"
+msgid "Payable: %s"
 msgstr ""
 
-msgid "Enable Referral Discount"
+msgid "Withdrawable: %s"
 msgstr ""
 
-msgid "Coupon Compatibility"
-msgstr ""
-
-msgid "Double-Dip (Discount + Commission)"
-msgstr ""
-
-msgid "Make staff"
-msgstr ""
-
-msgid "Make affiliate"
-msgstr ""
-
-msgid "Approve"
-msgstr ""
-
-msgid "Reject"
-msgstr ""
-
-msgid "Mark paid"
-msgstr ""
-
-msgid "Mark reviewed"
-msgstr ""
-
-msgid "Prepare draft batch"
-msgstr ""
-
-msgid "No settlements yet."
-msgstr ""
-
-msgid "No withdrawals yet."
-msgstr ""
-
-msgid "Approved affiliate account required."
-msgstr ""
-
-msgid "Registration submitted. Waiting for admin approval."
-msgstr ""
-
-msgid "Withdrawal requested."
+msgid "Available to request: %s"
 msgstr ""
 
 msgid "Recruitment: enabled"
@@ -130,12 +322,318 @@ msgstr ""
 msgid "Recruitment: locked"
 msgstr ""
 
-msgid "Annual recruit cap (Rial)"
+msgid "Approved affiliate account required."
 msgstr ""
 
-msgid "Referral code length"
+msgid "Registration submitted. Waiting for admin approval."
 msgstr ""
 
-msgid "Depth × position rates"
+msgid "You are already registered as an affiliate."
+msgstr ""
+
+msgid "Invalid national ID."
+msgstr ""
+
+msgid "This national ID is already registered."
+msgstr ""
+
+msgid "Registration failed. Please try again."
+msgstr ""
+
+msgid "This referrer is not yet allowed to recruit."
+msgstr ""
+
+msgid "Invalid request."
+msgstr ""
+
+msgid "Security check failed."
+msgstr ""
+
+msgid "Affiliate cannot be approved from the current status."
+msgstr ""
+
+msgid "Invalid withdrawal amount."
+msgstr ""
+
+msgid "Insufficient withdrawable balance."
+msgstr ""
+
+msgid "Could not create withdrawal request."
+msgstr ""
+
+msgid "Withdrawal cannot be approved."
+msgstr ""
+
+msgid "Could not lock withdrawal amount."
+msgstr ""
+
+msgid "Could not approve withdrawal."
+msgstr ""
+
+msgid "Withdrawal cannot be rejected."
+msgstr ""
+
+msgid "Withdrawal cannot be marked paid."
+msgstr ""
+
+msgid "Could not mark withdrawal as paid."
+msgstr ""
+
+msgid "Affiliate account required."
+msgstr ""
+
+msgid "Withdrawal requested."
+msgstr ""
+
+msgid "Report sections"
+msgstr ""
+
+msgid "Referral tree"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Kind"
+msgstr ""
+
+msgid "Beneficiary ID"
+msgstr ""
+
+msgid "Order ID"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "Beneficiary"
+msgstr ""
+
+msgid "Tier"
+msgstr ""
+
+msgid "Rate"
+msgstr ""
+
+msgid "Window ends"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "No commissions match these filters."
+msgstr ""
+
+msgid "Period overlaps from"
+msgstr ""
+
+msgid "Period overlaps to"
+msgstr ""
+
+msgid "Approved by"
+msgstr ""
+
+msgid "Approved at"
+msgstr ""
+
+msgid "Ops"
+msgstr ""
+
+msgid "No settlements match these filters."
+msgstr ""
+
+msgid "Open settlements"
+msgstr ""
+
+msgid "Affiliate ID"
+msgstr ""
+
+msgid "Requested"
+msgstr ""
+
+msgid "Requested at"
+msgstr ""
+
+msgid "Processed"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "No withdrawals match these filters."
+msgstr ""
+
+msgid "Open withdrawals"
+msgstr ""
+
+msgid "Inspect node"
+msgstr ""
+
+msgid "Show roots"
+msgstr ""
+
+msgid "Node #%1$s · depth %2$s · path %3$s · type %4$s · status %5$s · user %6$s"
+msgstr ""
+
+msgid "Upline (closest → root):"
+msgstr ""
+
+msgid "Direct children"
+msgstr ""
+
+msgid "No children."
+msgstr ""
+
+msgid "Subtree"
+msgstr ""
+
+msgid "user %1$s · %2$s · %3$s · depth %4$s"
+msgstr ""
+
+msgid "Root affiliates"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Children"
+msgstr ""
+
+msgid "No tree nodes yet."
+msgstr ""
+
+msgid "%1$s rows · filtered sum %2$s Rial"
+msgstr ""
+
+msgid "Rial"
+msgstr ""
+
+msgid "Export CSV"
+msgstr ""
+
+msgid "%s items"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Payable"
+msgstr ""
+
+msgid "Paid"
+msgstr ""
+
+msgid "Void"
+msgstr ""
+
+msgid "Approved"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Draft"
+msgstr ""
+
+msgid "Reviewed"
+msgstr ""
+
+msgid "Staff"
+msgstr ""
+
+msgid "Tree"
+msgstr ""
+
+msgid "Staff override"
+msgstr ""
+
+msgid "Bonus"
+msgstr ""
+
+msgid "Self-purchase"
+msgstr ""
+
+msgid "Own referral chain"
+msgstr ""
+
+msgid "IP seen"
+msgstr ""
+
+msgid "Critical"
+msgstr ""
+
+msgid "Info"
+msgstr ""
+
+msgid "Matrix must have at least one row."
+msgstr ""
+
+msgid "Row %d is invalid."
+msgstr ""
+
+msgid "Row %d: depth is %d but %d rates provided."
+msgstr ""
+
+msgid "Row %d: rates sum to %d but tree cap is %d."
+msgstr ""
+
+msgid "Row %d: direct seller must have the highest rate."
+msgstr ""
+
+msgid "Identity verification failed."
+msgstr ""
+
+msgid "Bonus plan title is required."
+msgstr ""
+
+msgid "Invalid bonus metric."
+msgstr ""
+
+msgid "Invalid reward type."
+msgstr ""
+
+msgid "Could not create bonus plan."
+msgstr ""
+
+msgid "Affiliate already exists in the tree."
+msgstr ""
+
+msgid "Parent affiliate not found in tree."
+msgstr ""
+
+msgid "Referral loop detected."
+msgstr ""
+
+msgid "Failed to insert into tree."
+msgstr ""
+
+msgid "Could not generate unique code."
+msgstr ""
+
+msgid "Self-purchase referrals are not allowed."
+msgstr ""
+
+msgid "Purchases inside your own referral chain are not allowed."
+msgstr ""
+
+msgid "Invalid settlement period."
+msgstr ""
+
+msgid "Could not create settlement batch."
+msgstr ""
+
+msgid "Settlement not found."
+msgstr ""
+
+msgid "Settlement cannot be approved from the current status."
+msgstr ""
+
+msgid "Invalid settlement status transition."
 msgstr ""
 
