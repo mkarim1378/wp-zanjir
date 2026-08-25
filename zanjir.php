@@ -3,7 +3,7 @@
  * Plugin Name: Zanjir
  * Plugin URI:  https://github.com/mkarim1378/wp-zanjir
  * Description: افزونه بازاریابی چندسطحی برای ووکامرس با پورسانت ماتریسی، مجموعه ضدتقلب و کیف پول داخلی.
- * Version:     2.3.0
+ * Version:     2.3.1
  * Author:      محمد کریم قصبه
  * Author-URI:  https://m-karim.ir
  * License:     GPL-2.0-or-later
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ZANJIR_VERSION', '2.3.0' );
+define( 'ZANJIR_VERSION', '2.3.1' );
 define( 'ZANJIR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -67,5 +67,8 @@ function zanjir() {
 
 register_activation_hook( __FILE__, array( 'Zanjir', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'Zanjir', 'deactivate' ) );
+
+// Ensure schema exists even if activation was skipped or tables were dropped.
+add_action( 'plugins_loaded', array( 'Zanjir_DB', 'maybe_upgrade' ), 5 );
 
 zanjir();

@@ -74,6 +74,8 @@ class Zanjir_Registration {
 	public function register( $user_id, $national_id, $referral_code = '' ) {
 		global $wpdb;
 
+		Zanjir_DB::maybe_upgrade();
+
 		$table = $wpdb->prefix . 'zanjir_affiliates';
 
 		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$table} WHERE user_id = %d", $user_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -96,34 +98,46 @@ class Zanjir_Registration {
 			return new WP_Error( 'duplicate_national_id', __( 'This national ID is already registered.', 'zanjir' ) );
 		}
 
-		$now    = current_time( 'mysql', true );
-		$insert = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$table,
-			array(
-				'user_id'          => $user_id,
-				'type'             => 'affiliate',
-				'status'           => 'pending',
-				'national_id_hash' => $nid['hash'],
-				'national_id_enc'  => $nid['encrypted'] ? $nid['encrypted'] : null,
-				'recruit_enabled'  => 0,
-				'annual_sales'     => 0,
-				'created_at'       => $now,
-				'updated_at'       => $now,
-			),
-			array( '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s' )
-		);
-
-		if ( ! $insert ) {
-			return new WP_Error( 'db_error', __( 'Registration failed. Please try again.', 'zanjir' ) );
-		}
-
-		$affiliate_id = $wpdb->insert_id;
-
+		// Validate referrer before insert so a locked/invalid parent cannot leave an orphan pending row.
 		if ( $referral_code ) {
 			$parent_aff_id = Zanjir_Referral_Code::lookup_affiliate( $referral_code );
 			if ( $parent_aff_id && ! Zanjir_Recruit_Service::can_recruit( $parent_aff_id ) ) {
 				return new WP_Error( 'recruit_locked', __( 'This referrer is not yet allowed to recruit.', 'zanjir' ) );
 			}
+		}
+
+		$now  = current_time( 'mysql', true );
+		$row  = array(
+			'user_id'          => $user_id,
+			'type'             => 'affiliate',
+			'status'           => 'pending',
+			'national_id_hash' => $nid['hash'],
+			'recruit_enabled'  => 0,
+			'annual_sales'     => 0,
+			'created_at'       => $now,
+			'updated_at'       => $now,
+		);
+		$format = array( '%d', '%s', '%s', '%s', '%d', '%d', '%s', '%s' );
+
+		// Only store ciphertext when encryption succeeded; omit NULL to avoid wpdb format quirks.
+		if ( ! empty( $nid['encrypted'] ) ) {
+			$row['national_id_enc'] = $nid['encrypted'];
+			$format[]               = '%s';
+		}
+
+		$insert = $wpdb->insert( $table, $row, $format ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
+		if ( ! $insert ) {
+			if ( $wpdb->last_error && false !== stripos( $wpdb->last_error, 'Duplicate' ) ) {
+				return new WP_Error( 'already_registered', __( 'You are already registered as an affiliate.', 'zanjir' ) );
+			}
+
+			return new WP_Error( 'db_error', __( 'Registration failed. Please try again.', 'zanjir' ) );
+		}
+
+		$affiliate_id = (int) $wpdb->insert_id;
+
+		if ( $referral_code ) {
 			$this->link_parent( $affiliate_id, $referral_code );
 		}
 

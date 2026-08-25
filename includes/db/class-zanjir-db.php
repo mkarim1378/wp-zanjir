@@ -35,13 +35,31 @@ class Zanjir_DB {
 
 	/**
 	 * Run migration if needed.
+	 *
+	 * Also recreates schema when the version option is set but the core
+	 * affiliates table is missing (e.g. failed/partial activation).
 	 */
 	public static function maybe_upgrade() {
 		$current = self::get_version();
-		if ( version_compare( $current, self::DB_VERSION, '<' ) ) {
+		if ( version_compare( $current, self::DB_VERSION, '<' ) || ! self::table_exists( 'affiliates' ) ) {
 			self::create_tables();
 			update_option( 'zanjir_db_version', self::DB_VERSION );
 		}
+	}
+
+	/**
+	 * Whether a plugin table exists.
+	 *
+	 * @param string $name Table short name without prefix (e.g. affiliates).
+	 * @return bool
+	 */
+	public static function table_exists( $name ) {
+		global $wpdb;
+
+		$table = self::prefix() . $name;
+		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
+		return ( $found === $table );
 	}
 
 	/**
