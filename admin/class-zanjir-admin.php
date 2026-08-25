@@ -27,7 +27,7 @@ class Zanjir_Admin {
 	}
 
 	/**
-	 * Enqueue admin CSS on Zanjir screens.
+	 * Enqueue admin CSS/JS on Zanjir screens.
 	 *
 	 * @param string $hook
 	 */
@@ -42,6 +42,16 @@ class Zanjir_Admin {
 			array(),
 			ZANJIR_VERSION
 		);
+
+		if ( 'toplevel_page_zanjir' === $hook ) {
+			wp_enqueue_script(
+				'zanjir-admin-settings',
+				ZANJIR_PLUGIN_URL . 'assets/js/zanjir-admin-settings.js',
+				array(),
+				ZANJIR_VERSION,
+				true
+			);
+		}
 	}
 
 	/**
@@ -114,7 +124,7 @@ class Zanjir_Admin {
 	}
 
 	/**
-	 * Register settings fields.
+	 * Register settings (single option; UI is custom-rendered).
 	 */
 	public function register_settings() {
 		register_setting( 'zanjir_settings_group', Zanjir_Settings::OPTION_KEY, array(
@@ -123,203 +133,268 @@ class Zanjir_Admin {
 			'default'           => Zanjir_Settings::defaults(),
 			'capability'        => Zanjir_Roles::CAP_MANAGE,
 		) );
-
-		add_settings_section(
-			'zanjir_commission',
-			__( 'Commission', 'zanjir' ),
-			array( $this, 'commission_section' ),
-			'zanjir-settings'
-		);
-
-		add_settings_field(
-			'tree_depth',
-			__( 'Tree Depth', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_commission',
-			array( 'key' => 'tree_depth', 'min' => 1, 'max' => 3 )
-		);
-
-		add_settings_field(
-			'tree_cap',
-			__( 'Tree Cap (basis-10000)', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_commission',
-			array( 'key' => 'tree_cap', 'min' => 0, 'max' => 10000 )
-		);
-
-		add_settings_field(
-			'staff_rate',
-			__( 'Staff Override (basis-10000)', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_commission',
-			array( 'key' => 'staff_rate', 'min' => 0, 'max' => 10000 )
-		);
-
-		add_settings_field(
-			'bonus_pool',
-			__( 'Bonus Pool (basis-10000)', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_commission',
-			array( 'key' => 'bonus_pool', 'min' => 0, 'max' => 10000 )
-		);
-
-		add_settings_section(
-			'zanjir_discount',
-			__( 'Discount & Double-Dip', 'zanjir' ),
-			array( $this, 'discount_section' ),
-			'zanjir-settings'
-		);
-
-		add_settings_field(
-			'discount_enabled',
-			__( 'Enable Referral Discount', 'zanjir' ),
-			array( $this, 'render_checkbox_field' ),
-			'zanjir-settings',
-			'zanjir_discount',
-			array( 'key' => 'discount_enabled' )
-		);
-
-		add_settings_field(
-			'coupon_compat',
-			__( 'Coupon Compatibility', 'zanjir' ),
-			array( $this, 'render_checkbox_field' ),
-			'zanjir-settings',
-			'zanjir_discount',
-			array( 'key' => 'coupon_compat' )
-		);
-
-		add_settings_field(
-			'max_discount',
-			__( 'Max Total Discount (basis-10000)', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_discount',
-			array( 'key' => 'max_discount', 'min' => 0, 'max' => 10000 )
-		);
-
-		add_settings_field(
-			'double_dip',
-			__( 'Double-Dip (Discount + Commission)', 'zanjir' ),
-			array( $this, 'render_checkbox_field' ),
-			'zanjir-settings',
-			'zanjir_discount',
-			array( 'key' => 'double_dip', 'description' => __( 'WARNING: When disabled, orders with referral discount will NOT generate commissions.', 'zanjir' ) )
-		);
-
-		add_settings_section(
-			'zanjir_ops',
-			__( 'Operations', 'zanjir' ),
-			array( $this, 'ops_section' ),
-			'zanjir-settings'
-		);
-
-		add_settings_field(
-			'refund_window',
-			__( 'Refund window (days)', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_ops',
-			array( 'key' => 'refund_window', 'min' => 0, 'max' => 365 )
-		);
-
-		add_settings_field(
-			'annual_cap',
-			__( 'Annual recruit cap (Rial)', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_ops',
-			array( 'key' => 'annual_cap', 'min' => 0, 'max' => 999999999999 )
-		);
-
-		add_settings_field(
-			'affiliate_code_len',
-			__( 'Referral code length', 'zanjir' ),
-			array( $this, 'render_number_field' ),
-			'zanjir-settings',
-			'zanjir_ops',
-			array( 'key' => 'affiliate_code_len', 'min' => 4, 'max' => 32 )
-		);
-
-		add_settings_section(
-			'zanjir_matrix',
-			__( 'Commission matrix', 'zanjir' ),
-			array( $this, 'matrix_section' ),
-			'zanjir-settings'
-		);
-
-		add_settings_field(
-			'matrix',
-			__( 'Depth × position rates', 'zanjir' ),
-			array( $this, 'render_matrix_field' ),
-			'zanjir-settings',
-			'zanjir_matrix'
-		);
 	}
 
 	/**
-	 * Render the settings page.
+	 * Render the unified settings page.
 	 */
 	public function render_settings_page() {
+		if ( ! Zanjir_Roles::can_manage() ) {
+			return;
+		}
+
 		$settings = Zanjir_Settings::all();
-		$total    = (int) $settings['tree_cap'] + (int) $settings['staff_rate'] + (int) $settings['bonus_pool'];
+		$tree     = (int) $settings['tree_cap'];
+		$staff    = (int) $settings['staff_rate'];
+		$bonus    = (int) $settings['bonus_pool'];
+		$total    = $tree + $staff + $bonus;
+		$pct      = $total / 100;
+		$over     = $total > 10000;
+		$tab      = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'commission'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$allowed  = array( 'commission', 'matrix', 'discount', 'operations' );
+		if ( ! in_array( $tab, $allowed, true ) ) {
+			$tab = 'commission';
+		}
+
+		$tabs = array(
+			'commission' => array(
+				'label' => __( 'Commission & budget', 'zanjir' ),
+				'hint'  => __( 'Tree depth and share of each order', 'zanjir' ),
+				'icon'  => 'dashicons-chart-pie',
+			),
+			'matrix'     => array(
+				'label' => __( 'Commission matrix', 'zanjir' ),
+				'hint'  => __( 'Depth × position rate table', 'zanjir' ),
+				'icon'  => 'dashicons-networking',
+			),
+			'discount'   => array(
+				'label' => __( 'Discount & Double-Dip', 'zanjir' ),
+				'hint'  => __( 'Referral discount rules', 'zanjir' ),
+				'icon'  => 'dashicons-tag',
+			),
+			'operations' => array(
+				'label' => __( 'Operations', 'zanjir' ),
+				'hint'  => __( 'Refund window, caps, codes', 'zanjir' ),
+				'icon'  => 'dashicons-admin-generic',
+			),
+		);
 		?>
-		<div class="wrap">
-			<h1><?php esc_html_e( 'Zanjir Settings', 'zanjir' ); ?></h1>
-			<?php settings_errors( 'zanjir_settings' ); ?>
-			<div class="zanjir-budget-summary">
-				<?php
-				printf(
-					/* translators: 1: tree cap, 2: staff rate, 3: bonus pool, 4: total basis-10000 */
-					esc_html__( 'Budget: tree %1$d + staff %2$d + bonus %3$d = %4$d / 10000 (%5$s%%).', 'zanjir' ),
-					(int) $settings['tree_cap'],
-					(int) $settings['staff_rate'],
-					(int) $settings['bonus_pool'],
-					$total,
-					esc_html( number_format_i18n( $total / 100, 2 ) )
-				);
-				?>
+		<div class="wrap zanjir-settings-wrap">
+			<div class="zanjir-settings-app" data-zanjir-settings>
+				<header class="zanjir-settings-hero">
+					<div class="zanjir-settings-hero__text">
+						<p class="zanjir-settings-eyebrow"><?php esc_html_e( 'Zanjir', 'zanjir' ); ?></p>
+						<h1><?php esc_html_e( 'Zanjir Settings', 'zanjir' ); ?></h1>
+						<p class="zanjir-settings-lead">
+							<?php esc_html_e( 'All commission, discount, and operations options in one place. Switch sections without leaving this page — one save covers everything.', 'zanjir' ); ?>
+						</p>
+					</div>
+					<div class="zanjir-budget-card<?php echo $over ? ' is-over' : ''; ?>" data-budget-card>
+						<div class="zanjir-budget-card__ring" aria-hidden="true">
+							<svg viewBox="0 0 36 36" class="zanjir-budget-ring">
+								<path class="zanjir-budget-ring__track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+								<path class="zanjir-budget-ring__value" data-budget-ring stroke-dasharray="<?php echo esc_attr( min( 100, $pct ) . ', 100' ); ?>" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+							</svg>
+							<div class="zanjir-budget-ring__label">
+								<span data-budget-pct><?php echo esc_html( number_format_i18n( $pct, 1 ) ); ?></span><small>%</small>
+							</div>
+						</div>
+						<div class="zanjir-budget-card__meta">
+							<p class="zanjir-budget-card__title"><?php esc_html_e( 'Order budget', 'zanjir' ); ?></p>
+							<p class="zanjir-budget-card__sum">
+								<span data-budget-total><?php echo esc_html( (string) $total ); ?></span>
+								<span class="zanjir-budget-card__of">/ 10000</span>
+							</p>
+							<ul class="zanjir-budget-legend" aria-label="<?php esc_attr_e( 'Budget breakdown', 'zanjir' ); ?>">
+								<li><i class="is-tree"></i> <?php esc_html_e( 'Tree', 'zanjir' ); ?> <strong data-budget-tree><?php echo esc_html( (string) $tree ); ?></strong></li>
+								<li><i class="is-staff"></i> <?php esc_html_e( 'Staff', 'zanjir' ); ?> <strong data-budget-staff><?php echo esc_html( (string) $staff ); ?></strong></li>
+								<li><i class="is-bonus"></i> <?php esc_html_e( 'Bonus', 'zanjir' ); ?> <strong data-budget-bonus><?php echo esc_html( (string) $bonus ); ?></strong></li>
+							</ul>
+							<p class="zanjir-budget-hint<?php echo $over ? ' is-visible' : ''; ?>" data-budget-hint>
+								<?php esc_html_e( 'Total exceeds 10000 (100%). Reduce shares before saving.', 'zanjir' ); ?>
+							</p>
+						</div>
+					</div>
+				</header>
+
+				<?php settings_errors( 'zanjir_settings' ); ?>
+
+				<form method="post" action="options.php" class="zanjir-settings-form" id="zanjir-settings-form">
+					<?php settings_fields( 'zanjir_settings_group' ); ?>
+
+					<div class="zanjir-settings-shell">
+						<nav class="zanjir-settings-nav" aria-label="<?php esc_attr_e( 'Settings sections', 'zanjir' ); ?>">
+							<?php foreach ( $tabs as $slug => $meta ) : ?>
+								<button
+									type="button"
+									class="zanjir-settings-nav__item<?php echo $tab === $slug ? ' is-active' : ''; ?>"
+									data-tab="<?php echo esc_attr( $slug ); ?>"
+									aria-selected="<?php echo $tab === $slug ? 'true' : 'false'; ?>"
+								>
+									<span class="dashicons <?php echo esc_attr( $meta['icon'] ); ?>" aria-hidden="true"></span>
+									<span class="zanjir-settings-nav__copy">
+										<span class="zanjir-settings-nav__label"><?php echo esc_html( $meta['label'] ); ?></span>
+										<span class="zanjir-settings-nav__hint"><?php echo esc_html( $meta['hint'] ); ?></span>
+									</span>
+								</button>
+							<?php endforeach; ?>
+						</nav>
+
+						<div class="zanjir-settings-panels">
+							<section class="zanjir-settings-panel<?php echo 'commission' === $tab ? ' is-active' : ''; ?>" data-panel="commission" <?php echo 'commission' === $tab ? '' : 'hidden'; ?>>
+								<div class="zanjir-panel-head">
+									<h2><?php esc_html_e( 'Commission & budget', 'zanjir' ); ?></h2>
+									<p><?php esc_html_e( 'Configure commission rates and tree structure. Values use basis-10000 (10000 = 100%).', 'zanjir' ); ?></p>
+								</div>
+								<div class="zanjir-field-grid">
+									<?php
+									$this->render_setting_number(
+										array(
+											'key'         => 'tree_depth',
+											'label'       => __( 'Tree Depth', 'zanjir' ),
+											'description' => __( 'How many upline levels earn from a sale (1–3).', 'zanjir' ),
+											'min'         => 1,
+											'max'         => 3,
+										)
+									);
+									$this->render_setting_number(
+										array(
+											'key'         => 'tree_cap',
+											'label'       => __( 'Tree Cap (basis-10000)', 'zanjir' ),
+											'description' => __( 'Total share allocated to the referral tree.', 'zanjir' ),
+											'min'         => 0,
+											'max'         => 10000,
+											'budget'      => 'tree',
+										)
+									);
+									$this->render_setting_number(
+										array(
+											'key'         => 'staff_rate',
+											'label'       => __( 'Staff Override (basis-10000)', 'zanjir' ),
+											'description' => __( 'Fixed share for the assigned staff member.', 'zanjir' ),
+											'min'         => 0,
+											'max'         => 10000,
+											'budget'      => 'staff',
+										)
+									);
+									$this->render_setting_number(
+										array(
+											'key'         => 'bonus_pool',
+											'label'       => __( 'Bonus Pool (basis-10000)', 'zanjir' ),
+											'description' => __( 'Pool used by bonus plans when targets are met.', 'zanjir' ),
+											'min'         => 0,
+											'max'         => 10000,
+											'budget'      => 'bonus',
+										)
+									);
+									?>
+								</div>
+							</section>
+
+							<section class="zanjir-settings-panel<?php echo 'matrix' === $tab ? ' is-active' : ''; ?>" data-panel="matrix" <?php echo 'matrix' === $tab ? '' : 'hidden'; ?>>
+								<div class="zanjir-panel-head">
+									<h2><?php esc_html_e( 'Commission matrix', 'zanjir' ); ?></h2>
+									<p><?php esc_html_e( 'Each row depth must match the number of rates, rates must sum to tree_cap, and the seller (first rate) must be highest.', 'zanjir' ); ?></p>
+								</div>
+								<?php $this->render_matrix_field(); ?>
+							</section>
+
+							<section class="zanjir-settings-panel<?php echo 'discount' === $tab ? ' is-active' : ''; ?>" data-panel="discount" <?php echo 'discount' === $tab ? '' : 'hidden'; ?>>
+								<div class="zanjir-panel-head">
+									<h2><?php esc_html_e( 'Discount & Double-Dip', 'zanjir' ); ?></h2>
+									<p><?php esc_html_e( 'Configure referral discount and double-dip behavior.', 'zanjir' ); ?></p>
+								</div>
+								<div class="zanjir-field-stack">
+									<?php
+									$this->render_setting_toggle(
+										array(
+											'key'         => 'discount_enabled',
+											'label'       => __( 'Enable Referral Discount', 'zanjir' ),
+											'description' => __( 'Allow affiliates to offer a checkout discount via their referral code.', 'zanjir' ),
+										)
+									);
+									$this->render_setting_toggle(
+										array(
+											'key'         => 'coupon_compat',
+											'label'       => __( 'Coupon Compatibility', 'zanjir' ),
+											'description' => __( 'Allow WooCommerce coupons together with the referral discount.', 'zanjir' ),
+										)
+									);
+									$this->render_setting_toggle(
+										array(
+											'key'         => 'double_dip',
+											'label'       => __( 'Double-Dip (Discount + Commission)', 'zanjir' ),
+											'description' => __( 'WARNING: When disabled, orders with referral discount will NOT generate commissions.', 'zanjir' ),
+											'warn'        => true,
+										)
+									);
+									?>
+									<div class="zanjir-field-grid zanjir-field-grid--single">
+										<?php
+										$this->render_setting_number(
+											array(
+												'key'         => 'max_discount',
+												'label'       => __( 'Max Total Discount (basis-10000)', 'zanjir' ),
+												'description' => __( 'Ceiling for referral discount + other discounts when compatibility is on.', 'zanjir' ),
+												'min'         => 0,
+												'max'         => 10000,
+											)
+										);
+										?>
+									</div>
+								</div>
+							</section>
+
+							<section class="zanjir-settings-panel<?php echo 'operations' === $tab ? ' is-active' : ''; ?>" data-panel="operations" <?php echo 'operations' === $tab ? '' : 'hidden'; ?>>
+								<div class="zanjir-panel-head">
+									<h2><?php esc_html_e( 'Operations', 'zanjir' ); ?></h2>
+									<p><?php esc_html_e( 'Return window, recruitment cap, and referral code length.', 'zanjir' ); ?></p>
+								</div>
+								<div class="zanjir-field-grid">
+									<?php
+									$this->render_setting_number(
+										array(
+											'key'         => 'refund_window',
+											'label'       => __( 'Refund window (days)', 'zanjir' ),
+											'description' => __( 'Days before pending commission becomes payable.', 'zanjir' ),
+											'min'         => 0,
+											'max'         => 365,
+										)
+									);
+									$this->render_setting_number(
+										array(
+											'key'         => 'annual_cap',
+											'label'       => __( 'Annual recruit cap (Rial)', 'zanjir' ),
+											'description' => __( 'Yearly recruitment earnings ceiling per affiliate (0 = unlimited).', 'zanjir' ),
+											'min'         => 0,
+											'max'         => 999999999999,
+										)
+									);
+									$this->render_setting_number(
+										array(
+											'key'         => 'affiliate_code_len',
+											'label'       => __( 'Referral code length', 'zanjir' ),
+											'description' => __( 'Characters in newly generated referral codes (4–32).', 'zanjir' ),
+											'min'         => 4,
+											'max'         => 32,
+										)
+									);
+									?>
+								</div>
+							</section>
+						</div>
+					</div>
+
+					<footer class="zanjir-settings-footer">
+						<p class="zanjir-settings-footer__note">
+							<?php esc_html_e( 'Changes apply after you save. Matrix rows are validated against the tree cap.', 'zanjir' ); ?>
+						</p>
+						<?php submit_button( __( 'Save all settings', 'zanjir' ), 'primary large', 'submit', false ); ?>
+					</footer>
+				</form>
 			</div>
-			<form method="post" action="options.php">
-				<?php
-				settings_fields( 'zanjir_settings_group' );
-				do_settings_sections( 'zanjir-settings' );
-				submit_button();
-				?>
-			</form>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Commission section description.
-	 */
-	public function commission_section() {
-		echo '<p>' . esc_html__( 'Configure commission rates and tree structure.', 'zanjir' ) . '</p>';
-	}
-
-	/**
-	 * Discount section description.
-	 */
-	public function discount_section() {
-		echo '<p>' . esc_html__( 'Configure referral discount and double-dip behavior.', 'zanjir' ) . '</p>';
-	}
-
-	/**
-	 * Operations section description.
-	 */
-	public function ops_section() {
-		echo '<p>' . esc_html__( 'Return window, recruitment cap, and referral code length.', 'zanjir' ) . '</p>';
-	}
-
-	/**
-	 * Matrix section description.
-	 */
-	public function matrix_section() {
-		echo '<p>' . esc_html__( 'Each row depth must match the number of rates, rates must sum to tree_cap, and the seller (first rate) must be highest.', 'zanjir' ) . '</p>';
 	}
 
 	/**
@@ -329,97 +404,147 @@ class Zanjir_Admin {
 		$matrix = Zanjir_Matrix::load();
 		$option = Zanjir_Settings::OPTION_KEY;
 		?>
-		<table class="zanjir-matrix-editor">
-			<thead>
-				<tr>
-					<th scope="col"><?php esc_html_e( 'Depth', 'zanjir' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Tree cap', 'zanjir' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Rates (basis-10000, seller → upline)', 'zanjir' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
+		<div class="zanjir-matrix-board">
 			<?php foreach ( $matrix as $i => $row ) : ?>
 				<?php
 				$depth = (int) $row['depth'];
 				$cap   = isset( $row['tree_cap'] ) ? (int) $row['tree_cap'] : (int) Zanjir_Settings::get( 'tree_cap', 2000 );
 				$rates = array_pad( array_map( 'intval', $row['rates'] ), 3, 0 );
 				$rates = array_slice( $rates, 0, 3 );
+				$sum   = (int) array_sum( array_slice( $rates, 0, $depth ) );
+				$ok    = ( $sum === $cap );
 				?>
-				<tr>
-					<td>
-						<label class="screen-reader-text" for="zanjir-matrix-depth-<?php echo (int) $i; ?>"><?php esc_html_e( 'Depth', 'zanjir' ); ?></label>
-						<input id="zanjir-matrix-depth-<?php echo (int) $i; ?>" type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][depth]" value="<?php echo esc_attr( (string) $depth ); ?>" min="1" max="3" />
-					</td>
-					<td>
-						<label class="screen-reader-text" for="zanjir-matrix-cap-<?php echo (int) $i; ?>"><?php esc_html_e( 'Tree cap', 'zanjir' ); ?></label>
-						<input id="zanjir-matrix-cap-<?php echo (int) $i; ?>" type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][tree_cap]" value="<?php echo esc_attr( (string) $cap ); ?>" min="0" max="10000" />
-					</td>
-					<td>
-						<?php for ( $r = 0; $r < 3; $r++ ) : ?>
-							<label>
-								<span class="screen-reader-text">
-									<?php
-									printf(
-										/* translators: %d: tier number */
-										esc_html__( 'Tier %d', 'zanjir' ),
-										$r + 1
-									);
-									?>
-								</span>
-								<input type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][rates][<?php echo (int) $r; ?>]" value="<?php echo esc_attr( (string) $rates[ $r ] ); ?>" min="0" max="10000" aria-label="<?php echo esc_attr( sprintf( __( 'Tier %d', 'zanjir' ), $r + 1 ) ); ?>" />
-							</label>
-						<?php endfor; ?>
-						<p class="description">
+				<article
+					class="zanjir-matrix-card"
+					data-matrix-row="<?php echo (int) $i; ?>"
+					data-ok-label="<?php echo esc_attr__( 'Balanced', 'zanjir' ); ?>"
+					data-bad-label="<?php echo esc_attr__( 'Sum must equal tree cap', 'zanjir' ); ?>"
+				>
+					<header class="zanjir-matrix-card__head">
+						<span class="zanjir-matrix-card__badge"><?php echo esc_html( sprintf( /* translators: %d: row number */ __( 'Row %d', 'zanjir' ), $i + 1 ) ); ?></span>
+						<span class="zanjir-matrix-card__status<?php echo $ok ? ' is-ok' : ' is-bad'; ?>" data-matrix-status>
+							<?php echo $ok ? esc_html__( 'Balanced', 'zanjir' ) : esc_html__( 'Sum must equal tree cap', 'zanjir' ); ?>
+						</span>
+					</header>
+					<div class="zanjir-matrix-card__grid">
+						<label class="zanjir-field">
+							<span class="zanjir-field__label"><?php esc_html_e( 'Depth', 'zanjir' ); ?></span>
+							<input id="zanjir-matrix-depth-<?php echo (int) $i; ?>" class="zanjir-field__input" type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][depth]" value="<?php echo esc_attr( (string) $depth ); ?>" min="1" max="3" data-matrix-depth />
+						</label>
+						<label class="zanjir-field">
+							<span class="zanjir-field__label"><?php esc_html_e( 'Tree cap', 'zanjir' ); ?></span>
+							<input id="zanjir-matrix-cap-<?php echo (int) $i; ?>" class="zanjir-field__input" type="number" name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][tree_cap]" value="<?php echo esc_attr( (string) $cap ); ?>" min="0" max="10000" data-matrix-cap />
+						</label>
+					</div>
+					<div class="zanjir-matrix-rates">
+						<p class="zanjir-matrix-rates__title"><?php esc_html_e( 'Rates (basis-10000, seller → upline)', 'zanjir' ); ?></p>
+						<div class="zanjir-matrix-rates__row">
+							<?php for ( $r = 0; $r < 3; $r++ ) : ?>
+								<label class="zanjir-field zanjir-field--tier">
+									<span class="zanjir-field__label">
+										<?php
+										printf(
+											/* translators: %d: tier number */
+											esc_html__( 'Tier %d', 'zanjir' ),
+											$r + 1
+										);
+										?>
+									</span>
+									<input
+										type="number"
+										class="zanjir-field__input"
+										name="<?php echo esc_attr( $option ); ?>[matrix][<?php echo (int) $i; ?>][rates][<?php echo (int) $r; ?>]"
+										value="<?php echo esc_attr( (string) $rates[ $r ] ); ?>"
+										min="0"
+										max="10000"
+										data-matrix-rate
+										aria-label="<?php echo esc_attr( sprintf( __( 'Tier %d', 'zanjir' ), $r + 1 ) ); ?>"
+									/>
+								</label>
+							<?php endfor; ?>
+						</div>
+						<p
+							class="zanjir-matrix-card__foot"
+							data-matrix-foot
+							data-tpl="<?php echo esc_attr__( 'Using first %1$d rate(s); sum = %2$d (must equal tree cap).', 'zanjir' ); ?>"
+						>
 							<?php
 							printf(
 								/* translators: 1: depth, 2: sum of first N rates */
 								esc_html__( 'Using first %1$d rate(s); sum = %2$d (must equal tree cap).', 'zanjir' ),
 								$depth,
-								(int) array_sum( array_slice( $rates, 0, $depth ) )
+								$sum
 							);
 							?>
 						</p>
-					</td>
-				</tr>
+					</div>
+				</article>
 			<?php endforeach; ?>
-			</tbody>
-		</table>
+		</div>
 		<?php
 	}
 
 	/**
-	 * Render a number input field.
+	 * Number field card.
 	 *
 	 * @param array $args Field arguments.
 	 */
-	public function render_number_field( $args ) {
-		$value = Zanjir_Settings::get( $args['key'], '' );
-		printf(
-			'<input type="number" name="%s[%s]" value="%s" min="%d" max="%d" class="small-text" />',
-			esc_attr( Zanjir_Settings::OPTION_KEY ),
-			esc_attr( $args['key'] ),
-			esc_attr( $value ),
-			intval( $args['min'] ),
-			intval( $args['max'] )
-		);
+	private function render_setting_number( $args ) {
+		$key   = $args['key'];
+		$value = Zanjir_Settings::get( $key, '' );
+		$id    = 'zanjir-setting-' . $key;
+		?>
+		<label class="zanjir-field zanjir-field--card" for="<?php echo esc_attr( $id ); ?>">
+			<span class="zanjir-field__label"><?php echo esc_html( $args['label'] ); ?></span>
+			<?php if ( ! empty( $args['description'] ) ) : ?>
+				<span class="zanjir-field__help"><?php echo esc_html( $args['description'] ); ?></span>
+			<?php endif; ?>
+			<input
+				id="<?php echo esc_attr( $id ); ?>"
+				class="zanjir-field__input"
+				type="number"
+				name="<?php echo esc_attr( Zanjir_Settings::OPTION_KEY ); ?>[<?php echo esc_attr( $key ); ?>]"
+				value="<?php echo esc_attr( (string) $value ); ?>"
+				min="<?php echo esc_attr( (string) intval( $args['min'] ) ); ?>"
+				max="<?php echo esc_attr( (string) intval( $args['max'] ) ); ?>"
+				<?php if ( ! empty( $args['budget'] ) ) : ?>
+					data-budget-input="<?php echo esc_attr( $args['budget'] ); ?>"
+				<?php endif; ?>
+			/>
+		</label>
+		<?php
 	}
 
 	/**
-	 * Render a checkbox field.
+	 * Toggle checkbox card.
 	 *
 	 * @param array $args Field arguments.
 	 */
-	public function render_checkbox_field( $args ) {
-		$value = Zanjir_Settings::get( $args['key'], 0 );
-		printf(
-			'<input type="checkbox" name="%s[%s]" value="1" %s />',
-			esc_attr( Zanjir_Settings::OPTION_KEY ),
-			esc_attr( $args['key'] ),
-			checked( 1, $value, false )
-		);
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
+	private function render_setting_toggle( $args ) {
+		$key   = $args['key'];
+		$value = (int) Zanjir_Settings::get( $key, 0 );
+		$id    = 'zanjir-setting-' . $key;
+		$warn  = ! empty( $args['warn'] );
+		?>
+		<label class="zanjir-toggle<?php echo $warn ? ' zanjir-toggle--warn' : ''; ?>" for="<?php echo esc_attr( $id ); ?>">
+			<span class="zanjir-toggle__copy">
+				<span class="zanjir-toggle__label"><?php echo esc_html( $args['label'] ); ?></span>
+				<?php if ( ! empty( $args['description'] ) ) : ?>
+					<span class="zanjir-toggle__help"><?php echo esc_html( $args['description'] ); ?></span>
+				<?php endif; ?>
+			</span>
+			<span class="zanjir-toggle__control">
+				<input
+					id="<?php echo esc_attr( $id ); ?>"
+					type="checkbox"
+					name="<?php echo esc_attr( Zanjir_Settings::OPTION_KEY ); ?>[<?php echo esc_attr( $key ); ?>]"
+					value="1"
+					<?php checked( 1, $value ); ?>
+				/>
+				<span class="zanjir-toggle__track" aria-hidden="true"><span class="zanjir-toggle__thumb"></span></span>
+			</span>
+		</label>
+		<?php
 	}
 
 	/**

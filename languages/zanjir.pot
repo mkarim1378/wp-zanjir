@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Zanjir 2.2.3\n"
+"Project-Id-Version: Zanjir 2.3.0\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -89,6 +89,84 @@ msgid "Depth × position rates"
 msgstr ""
 
 msgid "Budget: tree %1$d + staff %2$d + bonus %3$d = %4$d / 10000 (%5$s%%)."
+msgstr ""
+
+msgid "Commission & budget"
+msgstr ""
+
+msgid "Tree depth and share of each order"
+msgstr ""
+
+msgid "Depth × position rate table"
+msgstr ""
+
+msgid "Referral discount rules"
+msgstr ""
+
+msgid "Refund window, caps, codes"
+msgstr ""
+
+msgid "All commission, discount, and operations options in one place. Switch sections without leaving this page — one save covers everything."
+msgstr ""
+
+msgid "Order budget"
+msgstr ""
+
+msgid "Budget breakdown"
+msgstr ""
+
+msgid "Total exceeds 10000 (100%). Reduce shares before saving."
+msgstr ""
+
+msgid "Settings sections"
+msgstr ""
+
+msgid "Configure commission rates and tree structure. Values use basis-10000 (10000 = 100%)."
+msgstr ""
+
+msgid "How many upline levels earn from a sale (1–3)."
+msgstr ""
+
+msgid "Total share allocated to the referral tree."
+msgstr ""
+
+msgid "Fixed share for the assigned staff member."
+msgstr ""
+
+msgid "Pool used by bonus plans when targets are met."
+msgstr ""
+
+msgid "Allow affiliates to offer a checkout discount via their referral code."
+msgstr ""
+
+msgid "Allow WooCommerce coupons together with the referral discount."
+msgstr ""
+
+msgid "Ceiling for referral discount + other discounts when compatibility is on."
+msgstr ""
+
+msgid "Days before pending commission becomes payable."
+msgstr ""
+
+msgid "Yearly recruitment earnings ceiling per affiliate (0 = unlimited)."
+msgstr ""
+
+msgid "Characters in newly generated referral codes (4–32)."
+msgstr ""
+
+msgid "Changes apply after you save. Matrix rows are validated against the tree cap."
+msgstr ""
+
+msgid "Save all settings"
+msgstr ""
+
+msgid "Row %d"
+msgstr ""
+
+msgid "Balanced"
+msgstr ""
+
+msgid "Sum must equal tree cap"
 msgstr ""
 
 msgid "Configure commission rates and tree structure."

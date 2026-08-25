@@ -34,6 +34,32 @@ $entries = array(
 	'Commission matrix'                                           => 'ماتریس پورسانت',
 	'Depth × position rates'                                      => 'نرخ‌های عمق × جایگاه',
 	'Budget: tree %1$d + staff %2$d + bonus %3$d = %4$d / 10000 (%5$s%%).' => 'بودجه: درخت %1$d + پرسنل %2$d + پاداش %3$d = %4$d / ۱۰۰۰۰ (%5$s٪).',
+	'Commission & budget'                                         => 'پورسانت و بودجه',
+	'Tree depth and share of each order'                          => 'عمق درخت و سهم هر سفارش',
+	'Depth × position rate table'                                 => 'جدول نرخ عمق × جایگاه',
+	'Referral discount rules'                                     => 'قوانین تخفیف معرف',
+	'Refund window, caps, codes'                                  => 'پنجره مرجوعی، سقف‌ها و کدها',
+	'All commission, discount, and operations options in one place. Switch sections without leaving this page — one save covers everything.' => 'همهٔ گزینه‌های پورسانت، تخفیف و عملیات در یک صفحه. بین بخش‌ها جابه‌جا شوید؛ یک ذخیره همه را ثبت می‌کند.',
+	'Order budget'                                                => 'بودجه سفارش',
+	'Budget breakdown'                                            => 'جزئیات بودجه',
+	'Total exceeds 10000 (100%). Reduce shares before saving.'    => 'جمع از ۱۰۰۰۰ (۱۰۰٪) بیشتر است. قبل از ذخیره سهم‌ها را کم کنید.',
+	'Settings sections'                                           => 'بخش‌های تنظیمات',
+	'Configure commission rates and tree structure. Values use basis-10000 (10000 = 100%).' => 'نرخ پورسانت و ساختار درخت را تنظیم کنید. مقادیر بر مبنای ۱۰۰۰۰ هستند (۱۰۰۰۰ = ۱۰۰٪).',
+	'How many upline levels earn from a sale (1–3).'              => 'چند لایه بالادست از فروش سهم می‌برند (۱ تا ۳).',
+	'Total share allocated to the referral tree.'                 => 'کل سهم اختصاص‌یافته به درخت معرف.',
+	'Fixed share for the assigned staff member.'                  => 'سهم ثابت برای پرسنل تخصیص‌یافته.',
+	'Pool used by bonus plans when targets are met.'              => 'صندوق مورد استفاده پلن‌های پاداش هنگام رسیدن به هدف.',
+	'Allow affiliates to offer a checkout discount via their referral code.' => 'اجازه دهید افیلیت‌ها با کد معرف در تسویه‌حساب تخفیف بدهند.',
+	'Allow WooCommerce coupons together with the referral discount.' => 'اجازه استفاده هم‌زمان کوپن ووکامرس با تخفیف معرف.',
+	'Ceiling for referral discount + other discounts when compatibility is on.' => 'سقف مجموع تخفیف معرف و سایر تخفیف‌ها وقتی سازگاری روشن است.',
+	'Days before pending commission becomes payable.'             => 'تعداد روز تا تبدیل پورسانت در انتظار به قابل پرداخت.',
+	'Yearly recruitment earnings ceiling per affiliate (0 = unlimited).' => 'سقف درآمد جذب سالانه هر افیلیت (۰ = نامحدود).',
+	'Characters in newly generated referral codes (4–32).'        => 'تعداد کاراکتر کدهای معرف جدید (۴ تا ۳۲).',
+	'Changes apply after you save. Matrix rows are validated against the tree cap.' => 'تغییرات بعد از ذخیره اعمال می‌شوند. ردیف‌های ماتریس با سقف درخت اعتبارسنجی می‌شوند.',
+	'Save all settings'                                           => 'ذخیره همه تنظیمات',
+	'Row %d'                                                      => 'ردیف %d',
+	'Balanced'                                                    => 'متوازن',
+	'Sum must equal tree cap'                                     => 'مجموع باید برابر سقف درخت باشد',
 	'Configure commission rates and tree structure.'              => 'نرخ پورسانت و ساختار درخت را تنظیم کنید.',
 	'Configure referral discount and double-dip behavior.'        => 'تخفیف معرف و رفتار دابل‌دیپ را تنظیم کنید.',
 	'Return window, recruitment cap, and referral code length.'   => 'پنجره مرجوعی، سقف جذب و طول کد معرف.',
@@ -224,7 +250,7 @@ if ( ! is_dir( $dir ) ) {
 }
 
 $header = "msgid \"\"\nmsgstr \"\"\n"
-	. "\"Project-Id-Version: Zanjir 2.2.3\\n\"\n"
+	. "\"Project-Id-Version: Zanjir 2.3.0\\n\"\n"
 	. "\"Language: fa_IR\\n\"\n"
 	. "\"MIME-Version: 1.0\\n\"\n"
 	. "\"Content-Type: text/plain; charset=UTF-8\\n\"\n"
