@@ -236,6 +236,12 @@ class Zanjir_Commission_Engine {
 		}
 
 		$completed = $order->get_date_completed();
+		if ( ! $completed && 'processing' === Zanjir_Commission_Lifecycle::commission_trigger_status() ) {
+			$completed = $order->get_date_paid();
+			if ( ! $completed ) {
+				$completed = $order->get_date_created();
+			}
+		}
 		if ( ! $completed ) {
 			return null;
 		}

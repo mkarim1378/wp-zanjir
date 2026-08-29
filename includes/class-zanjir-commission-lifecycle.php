@@ -20,16 +20,32 @@ class Zanjir_Commission_Lifecycle {
 	 * @param Zanjir_Loader $loader
 	 */
 	public function __construct( $loader ) {
-		$loader->add_action( 'woocommerce_order_status_completed', $this, 'on_order_completed' );
+		$loader->add_action( 'woocommerce_order_status_completed', $this, 'on_order_status_trigger' );
+		$loader->add_action( 'woocommerce_order_status_processing', $this, 'on_order_status_trigger' );
 		$loader->add_action( self::CRON_HOOK, $this, 'check_return_window' );
 	}
 
 	/**
-	 * Hook: create pending commissions and schedule return window check.
+	 * Configured WooCommerce status that creates pending commissions.
+	 *
+	 * @return string processing|completed
+	 */
+	public static function commission_trigger_status() {
+		$status = Zanjir_Settings::get( 'commission_trigger_status', 'completed' );
+		return in_array( $status, array( 'processing', 'completed' ), true ) ? $status : 'completed';
+	}
+
+	/**
+	 * Hook: create pending commissions when the configured order status is reached.
 	 *
 	 * @param int $order_id
 	 */
-	public function on_order_completed( $order_id ) {
+	public function on_order_status_trigger( $order_id ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order || ! $order->has_status( self::commission_trigger_status() ) ) {
+			return;
+		}
+
 		$snapshot = Zanjir_Order_Observer::get_snapshot( $order_id );
 		if ( ! $snapshot ) {
 			return;

@@ -55,13 +55,16 @@ class Zanjir_Referral_Code {
 
 			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$table} WHERE code = %s", $code ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			if ( ! $exists ) {
+				$global_discount = (int) Zanjir_Settings::get( 'discount_enabled', 0 );
+				$default_rate    = (int) Zanjir_Settings::get( 'default_discount_rate', 0 );
+
 				$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$table,
 					array(
 						'affiliate_id'     => $affiliate_id,
 						'code'             => $code,
-						'discount_enabled' => 0,
-						'discount_rate'    => 0,
+						'discount_enabled' => $global_discount ? 1 : 0,
+						'discount_rate'    => $global_discount ? $default_rate : 0,
 						'active'           => 1,
 						'created_at'       => current_time( 'mysql', true ),
 					),
@@ -120,6 +123,42 @@ class Zanjir_Referral_Code {
 		}
 
 		return add_query_arg( 'ref', $row->code, home_url( '/' ) );
+	}
+
+	/**
+	 * Update referral discount settings for an affiliate.
+	 *
+	 * @param int  $affiliate_id
+	 * @param bool $enabled
+	 * @param int  $rate Basis-10000.
+	 * @return true|WP_Error
+	 */
+	public static function update_discount( $affiliate_id, $enabled, $rate ) {
+		global $wpdb;
+
+		$row = self::get_by_affiliate( $affiliate_id );
+		if ( ! $row ) {
+			return new WP_Error( 'no_referral_code', __( 'Affiliate has no referral code.', 'zanjir' ) );
+		}
+
+		$rate = max( 0, min( 10000, (int) $rate ) );
+
+		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			self::table(),
+			array(
+				'discount_enabled' => $enabled ? 1 : 0,
+				'discount_rate'    => $rate,
+			),
+			array( 'id' => (int) $row->id ),
+			array( '%d', '%d' ),
+			array( '%d' )
+		);
+
+		if ( false === $updated ) {
+			return new WP_Error( 'db_error', __( 'Could not update referral discount.', 'zanjir' ) );
+		}
+
+		return true;
 	}
 
 	/**

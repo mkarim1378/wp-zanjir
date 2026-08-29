@@ -24,6 +24,7 @@ class Zanjir_Admin {
 		$loader->add_action( 'admin_post_zanjir_fraud_review', $this, 'handle_fraud_review' );
 		$loader->add_action( 'admin_post_zanjir_bonus_create', $this, 'handle_bonus_create' );
 		$loader->add_action( 'admin_post_zanjir_set_affiliate_type', $this, 'handle_set_affiliate_type' );
+		$loader->add_action( 'admin_post_zanjir_affiliate_discount', $this, 'handle_affiliate_discount' );
 	}
 
 	/**
@@ -313,6 +314,21 @@ class Zanjir_Admin {
 											'description' => __( 'Allow affiliates to offer a checkout discount via their referral code.', 'zanjir' ),
 										)
 									);
+									?>
+									<div class="zanjir-field-grid zanjir-field-grid--single">
+										<?php
+										$this->render_setting_number(
+											array(
+												'key'         => 'default_discount_rate',
+												'label'       => __( 'Default referral discount (basis-10000)', 'zanjir' ),
+												'description' => __( 'Applied to newly generated referral codes when global discount is enabled.', 'zanjir' ),
+												'min'         => 0,
+												'max'         => 10000,
+											)
+										);
+										?>
+									</div>
+									<?php
 									$this->render_setting_toggle(
 										array(
 											'key'         => 'coupon_compat',
@@ -359,6 +375,17 @@ class Zanjir_Admin {
 											'description' => __( 'Days before pending commission becomes payable.', 'zanjir' ),
 											'min'         => 0,
 											'max'         => 365,
+										)
+									);
+									$this->render_setting_select(
+										array(
+											'key'         => 'commission_trigger_status',
+											'label'       => __( 'Commission trigger status', 'zanjir' ),
+											'description' => __( 'WooCommerce order status that creates pending commissions.', 'zanjir' ),
+											'options'     => array(
+												'completed'  => __( 'Completed', 'zanjir' ),
+												'processing' => __( 'Processing (after payment)', 'zanjir' ),
+											),
 										)
 									);
 									$this->render_setting_number(
@@ -548,6 +575,37 @@ class Zanjir_Admin {
 	}
 
 	/**
+	 * Select field card.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	private function render_setting_select( $args ) {
+		$key     = $args['key'];
+		$value   = Zanjir_Settings::get( $key, '' );
+		$id      = 'zanjir-setting-' . $key;
+		$options = isset( $args['options'] ) && is_array( $args['options'] ) ? $args['options'] : array();
+		?>
+		<label class="zanjir-field zanjir-field--card" for="<?php echo esc_attr( $id ); ?>">
+			<span class="zanjir-field__label"><?php echo esc_html( $args['label'] ); ?></span>
+			<?php if ( ! empty( $args['description'] ) ) : ?>
+				<span class="zanjir-field__help"><?php echo esc_html( $args['description'] ); ?></span>
+			<?php endif; ?>
+			<select
+				id="<?php echo esc_attr( $id ); ?>"
+				class="zanjir-field__input"
+				name="<?php echo esc_attr( Zanjir_Settings::OPTION_KEY ); ?>[<?php echo esc_attr( $key ); ?>]"
+			>
+				<?php foreach ( $options as $opt_value => $opt_label ) : ?>
+					<option value="<?php echo esc_attr( (string) $opt_value ); ?>" <?php selected( (string) $value, (string) $opt_value ); ?>>
+						<?php echo esc_html( $opt_label ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</label>
+		<?php
+	}
+
+	/**
 	 * Sanitize settings before save.
 	 *
 	 * @param array $input Raw input.
@@ -581,7 +639,10 @@ class Zanjir_Admin {
 		}
 
 		$sanitized['refund_window']      = isset( $input['refund_window'] ) ? absint( $input['refund_window'] ) : (int) ( isset( $current['refund_window'] ) ? $current['refund_window'] : $defaults['refund_window'] );
+		$trigger                         = isset( $input['commission_trigger_status'] ) ? sanitize_key( $input['commission_trigger_status'] ) : ( isset( $current['commission_trigger_status'] ) ? $current['commission_trigger_status'] : $defaults['commission_trigger_status'] );
+		$sanitized['commission_trigger_status'] = in_array( $trigger, array( 'processing', 'completed' ), true ) ? $trigger : 'completed';
 		$sanitized['discount_enabled']   = ! empty( $input['discount_enabled'] ) ? 1 : 0;
+		$sanitized['default_discount_rate'] = isset( $input['default_discount_rate'] ) ? min( 10000, absint( $input['default_discount_rate'] ) ) : (int) ( isset( $current['default_discount_rate'] ) ? $current['default_discount_rate'] : $defaults['default_discount_rate'] );
 		$sanitized['coupon_compat']      = ! empty( $input['coupon_compat'] ) ? 1 : 0;
 		$sanitized['double_dip']         = ! empty( $input['double_dip'] ) ? 1 : 0;
 		$sanitized['max_discount']       = isset( $input['max_discount'] ) ? absint( $input['max_discount'] ) : (int) $current['max_discount'];
@@ -864,7 +925,10 @@ class Zanjir_Admin {
 
 		global $wpdb;
 		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}zanjir_affiliates ORDER BY id DESC LIMIT 100"
+			"SELECT a.*, rc.code AS referral_code, rc.discount_enabled AS code_discount_enabled, rc.discount_rate AS code_discount_rate
+			 FROM {$wpdb->prefix}zanjir_affiliates a
+			 LEFT JOIN {$wpdb->prefix}zanjir_referral_codes rc ON rc.affiliate_id = a.id AND rc.active = 1
+			 ORDER BY a.id DESC LIMIT 100"
 		);
 		?>
 		<div class="wrap">
@@ -877,12 +941,14 @@ class Zanjir_Admin {
 						<th><?php esc_html_e( 'Type', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Recruit', 'zanjir' ); ?></th>
+						<th><?php esc_html_e( 'Referral code', 'zanjir' ); ?></th>
+						<th><?php esc_html_e( 'Discount', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Actions', 'zanjir' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 				<?php if ( empty( $rows ) ) : ?>
-					<tr><td colspan="6"><?php esc_html_e( 'No affiliates yet.', 'zanjir' ); ?></td></tr>
+					<tr><td colspan="8"><?php esc_html_e( 'No affiliates yet.', 'zanjir' ); ?></td></tr>
 				<?php else : ?>
 					<?php foreach ( $rows as $row ) : ?>
 						<tr>
@@ -891,6 +957,32 @@ class Zanjir_Admin {
 							<td><?php echo esc_html( Zanjir_I18n::label( $row->type ) ); ?></td>
 							<td><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></td>
 							<td><?php echo ! empty( $row->recruit_enabled ) ? esc_html__( 'yes', 'zanjir' ) : esc_html__( 'no', 'zanjir' ); ?></td>
+							<td><?php echo $row->referral_code ? esc_html( $row->referral_code ) : '—'; ?></td>
+							<td>
+								<?php if ( 'approved' === $row->status && $row->referral_code ) : ?>
+									<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="zanjir-inline-form">
+										<input type="hidden" name="action" value="zanjir_affiliate_discount" />
+										<input type="hidden" name="affiliate_id" value="<?php echo esc_attr( (string) $row->id ); ?>" />
+										<?php wp_nonce_field( 'zanjir_affiliate_discount_' . (int) $row->id ); ?>
+										<label>
+											<input type="checkbox" name="discount_enabled" value="1" <?php checked( 1, (int) $row->code_discount_enabled ); ?> />
+											<?php esc_html_e( 'On', 'zanjir' ); ?>
+										</label>
+										<input
+											type="number"
+											name="discount_rate"
+											min="0"
+											max="10000"
+											value="<?php echo esc_attr( (string) (int) $row->code_discount_rate ); ?>"
+											style="width:5em"
+											title="<?php esc_attr_e( 'Rate (basis-10000)', 'zanjir' ); ?>"
+										/>
+										<?php submit_button( __( 'Save', 'zanjir' ), 'secondary small', 'submit', false ); ?>
+									</form>
+								<?php else : ?>
+									—
+								<?php endif; ?>
+							</td>
 							<td>
 								<?php if ( 'pending' === $row->status ) : ?>
 									<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=zanjir_approve_affiliate&affiliate_id=' . (int) $row->id ), Zanjir_Registration::ADMIN_NONCE . (int) $row->id ) ); ?>">
@@ -1072,7 +1164,7 @@ class Zanjir_Admin {
 		}
 		check_admin_referer( 'zanjir_bonus_create' );
 
-		Zanjir_Bonus_Service::create_plan(
+		$result = Zanjir_Bonus_Service::create_plan(
 			array(
 				'title'        => isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '',
 				'metric'       => isset( $_POST['metric'] ) ? sanitize_key( wp_unslash( $_POST['metric'] ) ) : 'sales_volume',
@@ -1081,8 +1173,44 @@ class Zanjir_Admin {
 				'reward_value' => isset( $_POST['reward_value'] ) ? absint( $_POST['reward_value'] ) : 0,
 			)
 		);
+		if ( is_wp_error( $result ) ) {
+			wp_safe_redirect(
+				admin_url(
+					'admin.php?page=zanjir-bonus&error=' . rawurlencode( $result->get_error_code() )
+				)
+			);
+			exit;
+		}
 
 		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-bonus&done=created' ) );
+		exit;
+	}
+
+	/**
+	 * Update per-affiliate referral discount.
+	 */
+	public function handle_affiliate_discount() {
+		if ( ! Zanjir_Roles::can_manage() ) {
+			wp_die( esc_html__( 'Unauthorized.', 'zanjir' ) );
+		}
+
+		$affiliate_id = isset( $_POST['affiliate_id'] ) ? absint( $_POST['affiliate_id'] ) : 0;
+		check_admin_referer( 'zanjir_affiliate_discount_' . $affiliate_id );
+
+		$enabled = ! empty( $_POST['discount_enabled'] );
+		$rate    = isset( $_POST['discount_rate'] ) ? absint( $_POST['discount_rate'] ) : 0;
+
+		$result = Zanjir_Referral_Code::update_discount( $affiliate_id, $enabled, $rate );
+		if ( is_wp_error( $result ) ) {
+			wp_safe_redirect(
+				admin_url(
+					'admin.php?page=zanjir-affiliates&error=' . rawurlencode( $result->get_error_code() )
+				)
+			);
+			exit;
+		}
+
+		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-affiliates&done=discount' ) );
 		exit;
 	}
 

@@ -103,9 +103,11 @@ class Zanjir_Recruit_Service {
 	}
 
 	/**
-	 * Recalc all approved affiliates.
+	 * Recalc all approved affiliates; reset annual_sales at calendar year boundary.
 	 */
 	public function recalc_all() {
+		self::maybe_reset_annual_sales();
+
 		global $wpdb;
 
 		$ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -119,6 +121,35 @@ class Zanjir_Recruit_Service {
 		foreach ( $ids as $id ) {
 			self::refresh_recruit_flag( (int) $id );
 		}
+	}
+
+	/**
+	 * Zero annual_sales once per calendar year, then refresh recruit flags.
+	 */
+	public static function maybe_reset_annual_sales() {
+		global $wpdb;
+
+		$current_year = (int) gmdate( 'Y' );
+		$stored_year  = get_option( 'zanjir_annual_sales_year', null );
+
+		if ( null === $stored_year ) {
+			update_option( 'zanjir_annual_sales_year', $current_year, false );
+			return;
+		}
+
+		$stored_year = (int) $stored_year;
+		if ( $stored_year >= $current_year ) {
+			return;
+		}
+
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}zanjir_affiliates SET annual_sales = 0, updated_at = %s",
+				current_time( 'mysql', true )
+			)
+		);
+
+		update_option( 'zanjir_annual_sales_year', $current_year, false );
 	}
 
 	/**

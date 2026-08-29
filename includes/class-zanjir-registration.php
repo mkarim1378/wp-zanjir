@@ -206,7 +206,7 @@ class Zanjir_Registration {
 			Zanjir_Tree_Service::insert( $affiliate_id );
 		}
 
-		wp_safe_redirect( admin_url( 'admin.php?page=zanjir&status=approved' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-affiliates&status=approved' ) );
 		exit;
 	}
 
@@ -231,7 +231,7 @@ class Zanjir_Registration {
 		delete_option( 'zanjir_pending_parent_' . $affiliate_id );
 		Zanjir_Tree_Service::remove( $affiliate_id );
 
-		wp_safe_redirect( admin_url( 'admin.php?page=zanjir&status=rejected' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-affiliates&status=rejected' ) );
 		exit;
 	}
 

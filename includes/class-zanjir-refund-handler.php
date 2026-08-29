@@ -27,29 +27,13 @@ class Zanjir_Refund_Handler {
 	public function on_order_refunded( $order_id, $refund_id ) {
 		unset( $refund_id );
 
-		$order = wc_get_order( $order_id );
-		if ( ! $order ) {
-			return;
-		}
-
 		$snapshot = Zanjir_Order_Observer::get_snapshot( $order_id );
 		if ( ! $snapshot ) {
 			return;
 		}
 
-		$completed = $order->get_date_completed();
-		if ( ! $completed ) {
-			return;
-		}
-
-		$window = (int) Zanjir_Settings::get( 'refund_window', 10 );
-		$end    = clone $completed;
-		$end->modify( "+{$window} days" );
-		$now = new DateTime( current_time( 'mysql', true ) );
-
-		if ( $now <= $end ) {
-			Zanjir_Commission_Lifecycle::void_commissions( $order_id );
-		}
+		// Claw back pending and payable commissions regardless of return window.
+		Zanjir_Commission_Lifecycle::void_commissions( $order_id );
 	}
 
 	/**

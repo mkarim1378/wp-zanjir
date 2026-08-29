@@ -92,6 +92,9 @@ class Zanjir {
 	 */
 	private function define_admin_hooks() {
 		if ( is_admin() ) {
+			require_once ZANJIR_PLUGIN_DIR . 'admin/class-zanjir-admin-notices.php';
+			new Zanjir_Admin_Notices( $this->loader );
+
 			require_once ZANJIR_PLUGIN_DIR . 'admin/class-zanjir-admin.php';
 			new Zanjir_Admin( $this->loader );
 

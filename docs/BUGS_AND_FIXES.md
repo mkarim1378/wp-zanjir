@@ -74,39 +74,39 @@
 
 ## P1 — بالا (مسیر اصلی کاربر / feature شکسته)
 
-### 5. پورسانت فقط روی وضعیت `completed` ساخته می‌شود
+### 5. پورسانت فقط روی وضعیت `completed` ساخته می‌شود ✅ فیکس شد
 
 **محل:** `includes/class-zanjir-commission-lifecycle.php` — `woocommerce_order_status_completed`
 
 **مشکل:** فروشگاه‌هایی که بعد از پرداخت سفارش را `processing` نگه می‌دارند (رایج در ایران)، تا تکمیل دستی هیچ پورسانت pending نمی‌گیرند. اسنپ‌شات در checkout ساخته می‌شود ولی commission row خیر.
 
-**راه‌حل پیشنهادی:**
-- تنظیم «وضعیت محرک پورسانت» (`processing` | `completed`) در Operations.
-- یا hook روی هر دو با idempotency (`has_commissions`).
+**راه‌حل اعمال‌شده:**
+- تنظیم «Commission trigger status» (`processing` | `completed`) در Operations.
+- hook روی هر دو status با idempotency (`has_commissions`).
+- `get_return_window_end()` برای trigger=`processing` از تاریخ پرداخت/ایجاد سفارش استفاده می‌کند.
 
 ---
 
-### 6. پس از پایان پنجرهٔ مرجوعی، refund دیگر پورسانت را void نمی‌کند
+### 6. پس از پایان پنجرهٔ مرجوعی، refund دیگر پورسانت را void نمی‌کند ✅ فیکس شد
 
 **محل:** `includes/class-zanjir-refund-handler.php` — `on_order_refunded()`
 
 **مشکل:** فقط وقتی `$now <= $end` (داخل پنجره) void می‌شود. اگر cron قبلاً پورسانت را `payable` کرده باشد و بعداً مشتری مرجوعی کند، handler کاری نمی‌کند — در حالی که QA و مستندات «clawback از payable» را ذکر می‌کنند.
 
-**راه‌حل پیشنهادی:**
-- خارج از پنجره هم روی refund کامل (یا سیاست تعریف‌شده) `void_commissions` را صدا بزنید — که همین حالا bucket `payable` را debit می‌کند.
-- برای مرجوعی جزئی، سیاست را explicit کنید (void کامل vs نسبی).
+**راه‌حل اعمال‌شده:**
+- `void_commissions()` همیشه روی refund صدا زده می‌شود (pending + payable clawback).
 
 ---
 
-### 7. `annual_sales` سالانه reset نمی‌شود — سقف «سالانه» در عمل مادام‌العمر است
+### 7. `annual_sales` سالانه reset نمی‌شود — سقف «سالانه» در عمل مادام‌العمر است ✅ فیکس شد
 
 **محل:** `includes/class-zanjir-recruit-service.php` — `add_sales()`, cron `zanjir_recalc_annual_cap`
 
 **مشکل:** `annual_sales` فقط increment می‌شود؛ cron فقط `recruit_enabled` را refresh می‌کند، نه reset سالانه. افیلیت یک‌بار به سقف برسد، برای همیشه `recruit_enabled = 1` می‌ماند حتی در سال بعد با فروش صفر.
 
-**راه‌حل پیشنهادی:**
-- در cron سالانه (یا اول هر سال شمسی/میلادی قابل تنظیم) `annual_sales = 0` و recalc `recruit_enabled`.
-- یا محاسبهٔ rolling 12-month از `order_snapshots` به‌جای counter ساده.
+**راه‌حل اعمال‌شده:**
+- در cron روزانه، اگر سال تقویمی عوض شده باشد: `annual_sales = 0` + recalc `recruit_enabled`.
+- option `zanjir_annual_sales_year` برای جلوگیری از reset اشتباه در اولین اجرا پس از آپگرید.
 
 ---
 
@@ -127,40 +127,39 @@
 
 ---
 
-### 9. تخفیف per-code فقط از DB — بدون UI ادمین
+### 9. تخفیف per-code فقط از DB — بدون UI ادمین ✅ فیکس شد
 
 **محل:** `zanjir_referral_codes.discount_enabled`, `discount_rate`  
 **مستند:** `docs/USER_GUIDE.md` §۱۱
 
 **مشکل:** تنظیم سراسری «فعال‌سازی تخفیف معرف» روشن است ولی کدهای تولیدشده `discount_rate = 0` دارند. مدیر بدون SQL تخفیف فعال نمی‌کند — feature در عمل غیرقابل استفاده.
 
-**راه‌حل پیشنهادی:**
-- در صفحه Affiliates: ستون/مودال «نرخ تخفیف (basis-10000)» + toggle.
-- یا نرخ پیش‌فرض سراسری در تنظیمات که روی کدهای جدید اعمال شود.
+**راه‌حل اعمال‌شده:**
+- ستون Discount در صفحه Affiliates با toggle + نرخ (basis-10000).
+- `default_discount_rate` سراسری برای کدهای جدید.
+- `Zanjir_Referral_Code::update_discount()`.
 
 ---
 
-### 10. خطاهای settlement/bonus در admin نمایش داده نمی‌شوند
+### 10. خطاهای settlement/bonus در admin نمایش داده نمی‌شوند ✅ فیکس شد
 
 **محل:** `admin/class-zanjir-admin.php` — `handle_settlement_prepare()`, `handle_bonus_create()`
 
 **مشکل:** `prepare_batch()` و `create_plan()` می‌توانند `WP_Error` برگردانند؛ handler نتیجه را چک نمی‌کند و همیشه redirect با `done=prepared` / `done=created` می‌زند.
 
-**راه‌حل پیشنهادی:**
-- چک `is_wp_error( $result )` و redirect با `?error=...` یا `set_transient` + `admin_notices`.
+**راه‌حل اعمال‌شده:**
+- `handle_bonus_create()` چک `is_wp_error` دارد.
+- کلاس `Zanjir_Admin_Notices` برای نمایش `?done=` و `?error=` روی صفحات Zanjir.
 
 ---
 
-### 11. ریدایرکت اشتباه بعد از تأیید افیلیت
+### 11. ریدایرکت اشتباه بعد از تأیید افیلیت ✅ فیکس شد
 
 **محل:** `includes/class-zanjir-registration.php` — `handle_approve()` خط 209
 
 **مشکل:** بعد از Approve به `admin.php?page=zanjir` (تنظیمات) می‌رود، نه `zanjir-affiliates`. رد افیلیت همین مشکل را دارد.
 
-**راه‌حل پیشنهادی:**
-```php
-wp_safe_redirect( admin_url( 'admin.php?page=zanjir-affiliates&status=approved' ) );
-```
+**راه‌حل اعمال‌شده:** redirect به `admin.php?page=zanjir-affiliates&status=approved|rejected`.
 
 ---
 
@@ -368,12 +367,12 @@ if ( has_shortcode( $content, 'zanjir_dashboard' ) || apply_filters( 'zanjir_for
 2. ~~Server-side budget validation~~ — **فیکس شد**
 3. ~~Transaction / lock برداشت~~ — **فیکس شد**
 
-### اسپرینت 2 — مسیر اصلی (P1)
-4. Commission trigger status  
-5. Refund clawback بعد از پنجره  
-6. annual_sales reset  
-7. UI تخفیف per affiliate  
-8. Admin error notices + redirect fix  
+### اسپرینت 2 — مسیر اصلی (P1) ✅
+4. ~~Commission trigger status~~ — **فیکس شد**
+5. ~~Refund clawback بعد از پنجره~~ — **فیکس شد**
+6. ~~annual_sales reset~~ — **فیکس شد**
+7. ~~UI تخفیف per affiliate~~ — **فیکس شد**
+8. ~~Admin error notices + redirect fix~~ — **فیکس شد**
 
 ### اسپرینت 3 — reliability (P2)
 9. Cron fallback  
