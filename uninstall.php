@@ -15,6 +15,7 @@ $tables = array(
 	'bonus_plans',
 	'withdrawals',
 	'settlements',
+	'settlement_items',
 	'wallet_ledger',
 	'commissions',
 	'order_snapshots',

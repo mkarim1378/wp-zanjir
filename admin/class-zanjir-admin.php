@@ -566,6 +566,20 @@ class Zanjir_Admin {
 		$sanitized['tree_cap']           = isset( $input['tree_cap'] ) ? absint( $input['tree_cap'] ) : (int) $current['tree_cap'];
 		$sanitized['staff_rate']         = isset( $input['staff_rate'] ) ? absint( $input['staff_rate'] ) : (int) $current['staff_rate'];
 		$sanitized['bonus_pool']         = isset( $input['bonus_pool'] ) ? absint( $input['bonus_pool'] ) : (int) $current['bonus_pool'];
+
+		$budget_total = (int) $sanitized['tree_cap'] + (int) $sanitized['staff_rate'] + (int) $sanitized['bonus_pool'];
+		if ( $budget_total > 10000 ) {
+			add_settings_error(
+				'zanjir_settings',
+				'zanjir_budget_over',
+				__( 'Order budget (tree + staff + bonus) cannot exceed 10000 (100%). Settings were not saved.', 'zanjir' ),
+				'error'
+			);
+			$sanitized['tree_cap']   = (int) $current['tree_cap'];
+			$sanitized['staff_rate'] = (int) $current['staff_rate'];
+			$sanitized['bonus_pool'] = (int) $current['bonus_pool'];
+		}
+
 		$sanitized['refund_window']      = isset( $input['refund_window'] ) ? absint( $input['refund_window'] ) : (int) ( isset( $current['refund_window'] ) ? $current['refund_window'] : $defaults['refund_window'] );
 		$sanitized['discount_enabled']   = ! empty( $input['discount_enabled'] ) ? 1 : 0;
 		$sanitized['coupon_compat']      = ! empty( $input['coupon_compat'] ) ? 1 : 0;
@@ -628,8 +642,11 @@ class Zanjir_Admin {
 			return;
 		}
 
-		$payable = Zanjir_Settlement_Service::payable_total();
-		$list    = Zanjir_Settlement_Service::list_recent( 30 );
+		$payable       = Zanjir_Settlement_Service::payable_total();
+		$period_start  = gmdate( 'Y-m-01' );
+		$period_end    = gmdate( 'Y-m-t' );
+		$period_payable = Zanjir_Settlement_Service::payable_total_in_period( $period_start, $period_end );
+		$list          = Zanjir_Settlement_Service::list_recent( 30 );
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Zanjir Settlements', 'zanjir' ); ?></h1>
@@ -637,8 +654,19 @@ class Zanjir_Admin {
 				<?php
 				printf(
 					/* translators: %s: payable total in Rial */
-					esc_html__( 'Current payable total: %s Rial', 'zanjir' ),
+					esc_html__( 'Current payable total (all periods): %s Rial', 'zanjir' ),
 					esc_html( number_format_i18n( $payable ) )
+				);
+				?>
+			</p>
+			<p>
+				<?php
+				printf(
+					/* translators: 1: period start, 2: period end, 3: payable total in Rial */
+					esc_html__( 'Payable in default period (%1$s → %2$s): %3$s Rial', 'zanjir' ),
+					esc_html( $period_start ),
+					esc_html( $period_end ),
+					esc_html( number_format_i18n( $period_payable ) )
 				);
 				?>
 			</p>
@@ -663,6 +691,7 @@ class Zanjir_Admin {
 					<tr>
 						<th><?php esc_html_e( 'ID', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Period', 'zanjir' ); ?></th>
+						<th><?php esc_html_e( 'Commissions', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Total', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Actions', 'zanjir' ); ?></th>
@@ -670,12 +699,13 @@ class Zanjir_Admin {
 				</thead>
 				<tbody>
 				<?php if ( empty( $list ) ) : ?>
-					<tr><td colspan="5"><?php esc_html_e( 'No settlements yet.', 'zanjir' ); ?></td></tr>
+					<tr><td colspan="6"><?php esc_html_e( 'No settlements yet.', 'zanjir' ); ?></td></tr>
 				<?php else : ?>
 					<?php foreach ( $list as $row ) : ?>
 						<tr>
 							<td><?php echo esc_html( (string) $row->id ); ?></td>
 							<td><?php echo esc_html( $row->period_start . ' → ' . $row->period_end ); ?></td>
+							<td><?php echo esc_html( (string) Zanjir_Settlement_Service::item_count( (int) $row->id ) ); ?></td>
 							<td><?php echo esc_html( number_format_i18n( (int) $row->total_amount ) ); ?></td>
 							<td><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></td>
 							<td>
@@ -773,7 +803,16 @@ class Zanjir_Admin {
 		$start = isset( $_POST['period_start'] ) ? sanitize_text_field( wp_unslash( $_POST['period_start'] ) ) : '';
 		$end   = isset( $_POST['period_end'] ) ? sanitize_text_field( wp_unslash( $_POST['period_end'] ) ) : '';
 
-		Zanjir_Settlement_Service::prepare_batch( $start, $end );
+		$result = Zanjir_Settlement_Service::prepare_batch( $start, $end );
+		if ( is_wp_error( $result ) ) {
+			wp_safe_redirect(
+				admin_url(
+					'admin.php?page=zanjir-settlements&error=' . rawurlencode( $result->get_error_code() )
+				)
+			);
+			exit;
+		}
+
 		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-settlements&done=prepared' ) );
 		exit;
 	}
@@ -801,7 +840,16 @@ class Zanjir_Admin {
 		}
 		$id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
 		check_admin_referer( 'zanjir_settlement_' . $id );
-		Zanjir_Settlement_Service::approve( $id, get_current_user_id() );
+		$result = Zanjir_Settlement_Service::approve( $id, get_current_user_id() );
+		if ( is_wp_error( $result ) ) {
+			wp_safe_redirect(
+				admin_url(
+					'admin.php?page=zanjir-settlements&error=' . rawurlencode( $result->get_error_code() )
+				)
+			);
+			exit;
+		}
+
 		wp_safe_redirect( admin_url( 'admin.php?page=zanjir-settlements&done=approved' ) );
 		exit;
 	}

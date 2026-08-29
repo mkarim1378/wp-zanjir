@@ -12,7 +12,7 @@ class Zanjir_DB {
 	/**
 	 * Current database version.
 	 */
-	const DB_VERSION = '1.0.0';
+	const DB_VERSION = '1.1.0';
 
 	/**
 	 * Get the table prefix.
@@ -197,6 +197,17 @@ CREATE TABLE {$p}settlements (
   KEY idx_status (status)
 ) $charset;
 
+CREATE TABLE {$p}settlement_items (
+  id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  settlement_id  BIGINT UNSIGNED NOT NULL,
+  commission_id  BIGINT UNSIGNED NOT NULL,
+  amount         BIGINT UNSIGNED NOT NULL,
+  created_at     DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_commission (commission_id),
+  KEY idx_settlement (settlement_id)
+) $charset;
+
 CREATE TABLE {$p}bonus_plans (
   id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   title          VARCHAR(128) NOT NULL,
@@ -246,6 +257,7 @@ CREATE TABLE {$p}fraud_logs (
 			'wallet_ledger',
 			'withdrawals',
 			'settlements',
+			'settlement_items',
 			'bonus_plans',
 			'fraud_logs',
 		);

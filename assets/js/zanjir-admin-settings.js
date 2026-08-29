@@ -15,6 +15,7 @@
 	var ring = root.querySelector('[data-budget-ring]');
 	var card = root.querySelector('[data-budget-card]');
 	var hint = root.querySelector('[data-budget-hint]');
+	var saveBtn = root.querySelector('#zanjir-settings-form [type="submit"]');
 
 	function setTab(slug) {
 		navItems.forEach(function (btn) {
@@ -86,12 +87,17 @@
 		if (hint) {
 			hint.classList.toggle('is-visible', over);
 		}
+		if (saveBtn) {
+			saveBtn.disabled = over;
+		}
 	}
 
 	budgetInputs.forEach(function (input) {
 		input.addEventListener('input', updateBudget);
 		input.addEventListener('change', updateBudget);
 	});
+
+	updateBudget();
 
 	function updateMatrixRow(row) {
 		var depthEl = row.querySelector('[data-matrix-depth]');

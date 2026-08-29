@@ -77,11 +77,30 @@ class Zanjir_Withdrawal_Service {
 			return new WP_Error( 'invalid_amount', __( 'Invalid withdrawal amount.', 'zanjir' ) );
 		}
 
-		if ( $amount > self::available_balance( $affiliate_id ) ) {
-			return new WP_Error( 'insufficient_balance', __( 'Insufficient withdrawable balance.', 'zanjir' ) );
+		$affiliate_id = (int) $affiliate_id;
+		$iban         = sanitize_text_field( $iban );
+
+		if ( false === $wpdb->query( 'START TRANSACTION' ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			return new WP_Error( 'db_error', __( 'Could not start withdrawal transaction.', 'zanjir' ) );
 		}
 
-		$iban = sanitize_text_field( $iban );
+		// Lock affiliate row and existing open withdrawal rows to serialize concurrent requests.
+		$affiliates_table = $wpdb->prefix . 'zanjir_affiliates';
+		$wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT id FROM {$affiliates_table} WHERE id = %d FOR UPDATE",
+			$affiliate_id
+		) );
+
+		$wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			'SELECT id FROM ' . self::table() . " WHERE affiliate_id = %d AND status = 'requested' FOR UPDATE",
+			$affiliate_id
+		) );
+
+		$available = self::available_balance( $affiliate_id );
+		if ( $amount > $available ) {
+			$wpdb->query( 'ROLLBACK' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			return new WP_Error( 'insufficient_balance', __( 'Insufficient withdrawable balance.', 'zanjir' ) );
+		}
 
 		$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			self::table(),
@@ -96,10 +115,24 @@ class Zanjir_Withdrawal_Service {
 		);
 
 		if ( ! $inserted ) {
+			$wpdb->query( 'ROLLBACK' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			return new WP_Error( 'db_error', __( 'Could not create withdrawal request.', 'zanjir' ) );
 		}
 
-		$id = (int) $wpdb->insert_id;
+		$id       = (int) $wpdb->insert_id;
+		$reserved = self::sum_open_requests( $affiliate_id );
+		$balance  = Zanjir_Ledger::get_withdrawable( $affiliate_id );
+
+		if ( $reserved > $balance ) {
+			$wpdb->delete( self::table(), array( 'id' => $id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( 'ROLLBACK' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			return new WP_Error( 'insufficient_balance', __( 'Insufficient withdrawable balance.', 'zanjir' ) );
+		}
+
+		if ( false === $wpdb->query( 'COMMIT' ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( 'ROLLBACK' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			return new WP_Error( 'db_error', __( 'Could not finalize withdrawal request.', 'zanjir' ) );
+		}
 
 		/**
 		 * @param int $withdrawal_id
