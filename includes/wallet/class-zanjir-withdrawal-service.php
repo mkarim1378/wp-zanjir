@@ -78,7 +78,11 @@ class Zanjir_Withdrawal_Service {
 		}
 
 		$affiliate_id = (int) $affiliate_id;
-		$iban         = sanitize_text_field( $iban );
+		$iban         = Zanjir_Iban_Validator::normalize( $iban );
+
+		if ( '' === $iban || ! Zanjir_Iban_Validator::validate( $iban ) ) {
+			return new WP_Error( 'invalid_iban', __( 'A valid Iranian IBAN (IR + 24 digits) is required.', 'zanjir' ) );
+		}
 
 		if ( false === $wpdb->query( 'START TRANSACTION' ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			return new WP_Error( 'db_error', __( 'Could not start withdrawal transaction.', 'zanjir' ) );
@@ -108,7 +112,7 @@ class Zanjir_Withdrawal_Service {
 				'affiliate_id' => $affiliate_id,
 				'amount'       => $amount,
 				'status'       => 'requested',
-				'iban'         => $iban ? $iban : null,
+				'iban'         => $iban,
 				'requested_at' => current_time( 'mysql', true ),
 			),
 			array( '%d', '%d', '%s', '%s', '%s' )

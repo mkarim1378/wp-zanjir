@@ -10,6 +10,13 @@ defined( 'ABSPATH' ) || exit;
 class Zanjir_Public {
 
 	/**
+	 * Whether front-end assets were enqueued this request.
+	 *
+	 * @var bool
+	 */
+	private static $assets_enqueued = false;
+
+	/**
 	 * @param Zanjir_Loader $loader
 	 */
 	public function __construct( $loader ) {
@@ -18,20 +25,32 @@ class Zanjir_Public {
 	}
 
 	/**
-	 * Front-end styles (LTR + RTL).
+	 * Detect Zanjir shortcodes in post content (classic, block, or nested).
+	 *
+	 * @param string $content Post content.
+	 * @return bool
 	 */
-	public function enqueue_assets() {
-		if ( ! is_singular() ) {
-			return;
+	private function content_has_zanjir_shortcode( $content ) {
+		if ( has_shortcode( $content, 'zanjir_register' ) || has_shortcode( $content, 'zanjir_dashboard' ) ) {
+			return true;
 		}
 
-		$post = get_post();
-		if ( ! $post ) {
-			return;
+		if ( false !== strpos( $content, '[zanjir_register' ) || false !== strpos( $content, '[zanjir_dashboard' ) ) {
+			return true;
 		}
 
-		$content = $post->post_content;
-		if ( ! has_shortcode( $content, 'zanjir_register' ) && ! has_shortcode( $content, 'zanjir_dashboard' ) ) {
+		if ( false !== strpos( $content, 'zanjir_register' ) || false !== strpos( $content, 'zanjir_dashboard' ) ) {
+			return (bool) preg_match( '/<!--\s*wp:shortcode/', $content );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Enqueue dashboard/registration styles (idempotent).
+	 */
+	private function enqueue_public_assets() {
+		if ( self::$assets_enqueued ) {
 			return;
 		}
 
@@ -50,6 +69,33 @@ class Zanjir_Public {
 				ZANJIR_VERSION
 			);
 		}
+
+		self::$assets_enqueued = true;
+	}
+
+	/**
+	 * Front-end styles (LTR + RTL).
+	 */
+	public function enqueue_assets() {
+		if ( apply_filters( 'zanjir_force_enqueue', false ) ) {
+			$this->enqueue_public_assets();
+			return;
+		}
+
+		if ( ! is_singular() ) {
+			return;
+		}
+
+		$post = get_post();
+		if ( ! $post ) {
+			return;
+		}
+
+		if ( ! $this->content_has_zanjir_shortcode( $post->post_content ) ) {
+			return;
+		}
+
+		$this->enqueue_public_assets();
 	}
 
 	/**
@@ -66,6 +112,8 @@ class Zanjir_Public {
 	 * @return string
 	 */
 	public function render_register_form() {
+		$this->enqueue_public_assets();
+
 		if ( ! is_user_logged_in() ) {
 			return '<p>' . esc_html__( 'Please log in to register as an affiliate.', 'zanjir' ) . '</p>';
 		}
@@ -123,6 +171,8 @@ class Zanjir_Public {
 	 * @return string
 	 */
 	public function render_dashboard() {
+		$this->enqueue_public_assets();
+
 		if ( ! is_user_logged_in() ) {
 			return '<p>' . esc_html__( 'Please log in to view your affiliate dashboard.', 'zanjir' ) . '</p>';
 		}
@@ -187,7 +237,7 @@ class Zanjir_Public {
 				</p>
 				<p>
 					<label for="zanjir_wd_iban"><?php esc_html_e( 'IBAN', 'zanjir' ); ?></label><br />
-					<input type="text" id="zanjir_wd_iban" name="iban" />
+					<input type="text" id="zanjir_wd_iban" name="iban" required maxlength="34" pattern="IR[0-9]{24}" placeholder="IRxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
 				</p>
 				<p><button type="submit"><?php esc_html_e( 'Submit request', 'zanjir' ); ?></button></p>
 			</form>

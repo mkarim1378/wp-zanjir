@@ -165,23 +165,28 @@
 
 ## P2 — متوسط (لبه، امنیت، وابستگی cron)
 
-### 12. وابستگی کامل به WP-Cron برای آزادسازی پورسانت
+### 12. وابستگی کامل به WP-Cron برای آزادسازی پورسانت ✅ فیکس شد
 
 **محل:** `Zanjir_Commission_Lifecycle::schedule_check()`
 
 **مشکل:** اگر cron اجرا نشود، پورسانت‌ها برای همیشه `pending` می‌مانند. fallback روی `admin_init`، Action Scheduler، یا دکمه «اجرای دستی cron پنجره» وجود ندارد.
 
-**راه‌حل:** `transition_to_payable` batch برای ردیف‌هایی که `return_window_ends_at <= NOW()`؛ یا ادغام با Action Scheduler ووکامرس.
+**راه‌حل اعمال‌شده:**
+- cron روزانه `zanjir_process_due_commissions` برای batch transition.
+- fallback `admin_init` (حداکثر یک‌بار در ساعت).
+- `process_due_commissions()` برای ردیف‌های `return_window_ends_at <= NOW()`.
 
 ---
 
-### 13. `check_return_window` تاریخ پایان را دوباره validate نمی‌کند
+### 13. `check_return_window` تاریخ پایان را دوباره validate نمی‌کند ✅ فیکس شد
 
 **محل:** `includes/class-zanjir-commission-lifecycle.php` — `check_return_window()`
 
 **مشکل:** فقط `has_status('refunded')` چک می‌شود. اگر event زود trigger شود (clock skew، cron دستی)، ممکن است قبل از پایان واقعی پنجره payable شود.
 
-**راه‌حل:** قبل از transition، `return_window_ends_at <= current_time('mysql', true)` روی commissions/challenge.
+**راه‌حل اعمال‌شده:**
+- `is_order_window_elapsed()` قبل از transition.
+- `transition_to_payable()` فقط ردیف‌های due را پردازش می‌کند.
 
 ---
 
@@ -195,13 +200,13 @@
 
 ---
 
-### 15. بدون WooCommerce هیچ هشدار admin نیست
+### 15. بدون WooCommerce هیچ هشدار admin نیست ✅ فیکس شد
 
 **محل:** `includes/class-zanjir.php` — `define_public_hooks()`
 
 **مشکل:** اگر WC غیرفعال باشد، shortcodeها و hookهای checkout ثبت نمی‌شوند ولی منوی Zanjir در admin هست — به نظر «کار می‌کند» ولی هیچ سفارشی پردازش نمی‌شود.
 
-**راه‌حل:** `admin_notices` + `is_plugin_active('woocommerce/woocommerce.php')`.
+**راه‌حل اعمال‌شده:** `admin_notices` روی صفحات Zanjir وقتی WooCommerce غیرفعال است.
 
 ---
 
@@ -215,27 +220,27 @@
 
 ---
 
-### 17. بارگذاری CSS/JS shortcode با page builder / Gutenberg
+### 17. بارگذاری CSS/JS shortcode با page builder / Gutenberg ✅ فیکس شد
 
 **محل:** `public/class-zanjir-public.php` — `enqueue_assets()`
 
 **مشکل:** فقط `has_shortcode( $post->post_content, ... )` — در بلوک shortcode، Elementor، یا shortcode تودرتو asset load نمی‌شود.
 
-**راه‌حل:**
-```php
-if ( has_shortcode( $content, 'zanjir_dashboard' ) || apply_filters( 'zanjir_force_enqueue', false ) ) ...
-```
-یا enqueue در خود callback shortcode با flag static.
+**راه‌حل اعمال‌شده:**
+- تشخیص محتوای block/تودرتو + `apply_filters( 'zanjir_force_enqueue', false )`.
+- enqueue در callback shortcode با flag static.
 
 ---
 
-### 18. IBAN بدون validation و اختیاری در فرم
+### 18. IBAN بدون validation و اختیاری در فرم ✅ فیکس شد
 
 **محل:** `public/class-zanjir-public.php` — فرم برداشت
 
 **مشکل:** فیلد IBAN `required` نیست؛ format IR/chk digit validate نمی‌شود. ادمین ممکن است درخواست بدون شبا ببیند.
 
-**راه‌حل:** `required` + regex/validator ایران (۲۶ char، IR + ۲۴ رقم)؛ ذخیره normalized.
+**راه‌حل اعمال‌شده:**
+- `Zanjir_Iban_Validator` (IR + 24 رقم، mod-97).
+- فیلد `required` در فرم + validation سرور در `Withdrawal_Service::request()`.
 
 ---
 
@@ -374,11 +379,11 @@ if ( has_shortcode( $content, 'zanjir_dashboard' ) || apply_filters( 'zanjir_for
 7. ~~UI تخفیف per affiliate~~ — **فیکس شد**
 8. ~~Admin error notices + redirect fix~~ — **فیکس شد**
 
-### اسپرینت 3 — reliability (P2)
-9. Cron fallback  
-10. WC missing notice  
-11. Shortcode enqueue fix  
-12. IBAN validation  
+### اسپرینت 3 — reliability (P2) ✅
+9. ~~Cron fallback~~ — **فیکس شد**
+10. ~~WC missing notice~~ — **فیکس شد**
+11. ~~Shortcode enqueue fix~~ — **فیکس شد**
+12. ~~IBAN validation~~ — **فیکس شد**
 
 ### اسپرینت 4 — UX (P3)
 13. Unified admin shell  

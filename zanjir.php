@@ -3,7 +3,7 @@
  * Plugin Name: Zanjir
  * Plugin URI:  https://github.com/mkarim1378/wp-zanjir
  * Description: افزونه بازاریابی چندسطحی برای ووکامرس با پورسانت ماتریسی، مجموعه ضدتقلب و کیف پول داخلی.
- * Version:     2.3.3
+ * Version:     2.3.4
  * Author:      محمد کریم قصبه
  * Author-URI:  https://m-karim.ir
  * License:     GPL-2.0-or-later
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ZANJIR_VERSION', '2.3.3' );
+define( 'ZANJIR_VERSION', '2.3.4' );
 define( 'ZANJIR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ZANJIR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -43,6 +43,7 @@ require_once ZANJIR_PLUGIN_DIR . 'includes/db/class-zanjir-db.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-settings.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-roles.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-national-id-validator.php';
+require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-iban-validator.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/tree/class-zanjir-tree-service.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/commission/class-zanjir-matrix.php';
 require_once ZANJIR_PLUGIN_DIR . 'includes/commission/class-zanjir-money.php';

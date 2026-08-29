@@ -15,6 +15,11 @@ class Zanjir_Commission_Lifecycle {
 	const CRON_HOOK = 'zanjir_check_return_window';
 
 	/**
+	 * Batch cron for due pending commissions when per-order events were missed.
+	 */
+	const BATCH_CRON_HOOK = 'zanjir_process_due_commissions';
+
+	/**
 	 * Register hooks.
 	 *
 	 * @param Zanjir_Loader $loader
@@ -23,6 +28,87 @@ class Zanjir_Commission_Lifecycle {
 		$loader->add_action( 'woocommerce_order_status_completed', $this, 'on_order_status_trigger' );
 		$loader->add_action( 'woocommerce_order_status_processing', $this, 'on_order_status_trigger' );
 		$loader->add_action( self::CRON_HOOK, $this, 'check_return_window' );
+		$loader->add_action( self::BATCH_CRON_HOOK, $this, 'process_due_commissions' );
+		$loader->add_action( 'admin_init', $this, 'maybe_process_due_on_admin' );
+
+		self::maybe_schedule_batch();
+	}
+
+	/**
+	 * Schedule daily batch processing for expired return windows.
+	 */
+	public static function maybe_schedule_batch() {
+		if ( ! wp_next_scheduled( self::BATCH_CRON_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::BATCH_CRON_HOOK );
+		}
+	}
+
+	/**
+	 * Clear batch cron schedule.
+	 */
+	public static function clear_batch_schedule() {
+		wp_clear_scheduled_hook( self::BATCH_CRON_HOOK );
+	}
+
+	/**
+	 * Fallback: process due commissions once per hour when an admin screen loads.
+	 */
+	public function maybe_process_due_on_admin() {
+		if ( ! is_admin() || wp_doing_ajax() ) {
+			return;
+		}
+
+		if ( get_transient( 'zanjir_due_commissions_ran' ) ) {
+			return;
+		}
+
+		set_transient( 'zanjir_due_commissions_ran', 1, HOUR_IN_SECONDS );
+		$this->process_due_commissions();
+	}
+
+	/**
+	 * Transition pending commissions whose return window has ended (batch).
+	 *
+	 * @return int Number of commission rows transitioned.
+	 */
+	public function process_due_commissions() {
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'zanjir_commissions';
+		$now   = current_time( 'mysql', true );
+		$ids   = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT DISTINCT order_id FROM {$table}
+			 WHERE status = 'pending'
+			   AND return_window_ends_at IS NOT NULL
+			   AND return_window_ends_at <= %s",
+			$now
+		) );
+
+		if ( ! $ids ) {
+			return 0;
+		}
+
+		$count = 0;
+		foreach ( $ids as $order_id ) {
+			$order_id = (int) $order_id;
+			$order    = wc_get_order( $order_id );
+			if ( ! $order ) {
+				continue;
+			}
+
+			if ( $order->has_status( 'refunded' ) ) {
+				$count += self::void_commissions( $order_id );
+				continue;
+			}
+
+			if ( ! self::is_order_window_elapsed( $order_id ) ) {
+				continue;
+			}
+
+			$count += $this->transition_to_payable( $order_id );
+		}
+
+		return $count;
 	}
 
 	/**
@@ -135,7 +221,44 @@ class Zanjir_Commission_Lifecycle {
 			return;
 		}
 
+		if ( ! self::is_order_window_elapsed( $order_id ) ) {
+			return;
+		}
+
 		$this->transition_to_payable( $order_id );
+	}
+
+	/**
+	 * Whether every pending commission for an order is past its return window.
+	 *
+	 * @param int $order_id
+	 * @return bool
+	 */
+	public static function is_order_window_elapsed( $order_id ) {
+		$pending = self::get_pending( $order_id );
+		if ( ! $pending ) {
+			return false;
+		}
+
+		$now = current_time( 'mysql', true );
+		foreach ( $pending as $row ) {
+			if ( empty( $row->return_window_ends_at ) || $row->return_window_ends_at > $now ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Whether a single pending commission row is due for payable transition.
+	 *
+	 * @param object $row Commission row.
+	 * @param string $now MySQL datetime (UTC).
+	 * @return bool
+	 */
+	private static function is_commission_due( $row, $now ) {
+		return ! empty( $row->return_window_ends_at ) && $row->return_window_ends_at <= $now;
 	}
 
 	/**
@@ -153,6 +276,10 @@ class Zanjir_Commission_Lifecycle {
 		$count = 0;
 
 		foreach ( $rows as $row ) {
+			if ( ! self::is_commission_due( $row, $now ) ) {
+				continue;
+			}
+
 			/**
 			 * Fires before a commission becomes payable.
 			 *

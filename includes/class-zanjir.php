@@ -92,6 +92,8 @@ class Zanjir {
 	 */
 	private function define_admin_hooks() {
 		if ( is_admin() ) {
+			$this->loader->add_action( 'admin_notices', $this, 'maybe_woocommerce_missing_notice' );
+
 			require_once ZANJIR_PLUGIN_DIR . 'admin/class-zanjir-admin-notices.php';
 			new Zanjir_Admin_Notices( $this->loader );
 
@@ -101,6 +103,29 @@ class Zanjir {
 			require_once ZANJIR_PLUGIN_DIR . 'admin/class-zanjir-admin-reports.php';
 			new Zanjir_Admin_Reports( $this->loader );
 		}
+	}
+
+	/**
+	 * Warn admins when WooCommerce is inactive.
+	 */
+	public function maybe_woocommerce_missing_notice() {
+		if ( ! Zanjir_Roles::can_manage() ) {
+			return;
+		}
+
+		if ( class_exists( 'WooCommerce' ) ) {
+			return;
+		}
+
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		if ( '' === $page || 0 !== strpos( $page, 'zanjir' ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-error"><p>%s</p></div>',
+			esc_html__( 'Zanjir requires WooCommerce to process orders, commissions, and withdrawals. Activate WooCommerce to use affiliate features.', 'zanjir' )
+		);
 	}
 
 	/**
@@ -150,6 +175,7 @@ class Zanjir {
 
 		Zanjir_Recruit_Service::maybe_schedule();
 		Zanjir_Bonus_Service::maybe_schedule();
+		Zanjir_Commission_Lifecycle::maybe_schedule_batch();
 	}
 
 	/**
@@ -177,6 +203,7 @@ class Zanjir {
 		Zanjir_Roles::activate();
 		Zanjir_Recruit_Service::maybe_schedule();
 		Zanjir_Bonus_Service::maybe_schedule();
+		Zanjir_Commission_Lifecycle::maybe_schedule_batch();
 		flush_rewrite_rules();
 	}
 
@@ -186,6 +213,7 @@ class Zanjir {
 	public static function deactivate() {
 		Zanjir_Roles::deactivate();
 		wp_unschedule_hook( Zanjir_Commission_Lifecycle::CRON_HOOK );
+		Zanjir_Commission_Lifecycle::clear_batch_schedule();
 		Zanjir_Recruit_Service::clear_schedule();
 		Zanjir_Bonus_Service::clear_schedule();
 		flush_rewrite_rules();
