@@ -30,8 +30,6 @@ class Zanjir_Commission_Lifecycle {
 		$loader->add_action( self::CRON_HOOK, $this, 'check_return_window' );
 		$loader->add_action( self::BATCH_CRON_HOOK, $this, 'process_due_commissions' );
 		$loader->add_action( 'admin_init', $this, 'maybe_process_due_on_admin' );
-
-		self::maybe_schedule_batch();
 	}
 
 	/**

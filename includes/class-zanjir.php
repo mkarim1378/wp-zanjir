@@ -39,6 +39,7 @@ class Zanjir {
 		$this->define_i18n();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->loader->add_action( 'init', $this, 'ensure_cron_schedules', 20 );
 	}
 
 	/**
@@ -172,6 +173,15 @@ class Zanjir {
 
 		require_once ZANJIR_PLUGIN_DIR . 'public/class-zanjir-public.php';
 		new Zanjir_Public( $this->loader );
+	}
+
+	/**
+	 * Register recurring crons after Action Scheduler is ready (WooCommerce).
+	 */
+	public function ensure_cron_schedules() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return;
+		}
 
 		Zanjir_Recruit_Service::maybe_schedule();
 		Zanjir_Bonus_Service::maybe_schedule();
@@ -201,9 +211,6 @@ class Zanjir {
 		self::instance()->load_textdomain();
 		Zanjir_DB::maybe_upgrade();
 		Zanjir_Roles::activate();
-		Zanjir_Recruit_Service::maybe_schedule();
-		Zanjir_Bonus_Service::maybe_schedule();
-		Zanjir_Commission_Lifecycle::maybe_schedule_batch();
 		flush_rewrite_rules();
 	}
 

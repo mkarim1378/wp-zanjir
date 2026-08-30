@@ -15,7 +15,7 @@ class Zanjir_Admin_Notices {
 	 * @param Zanjir_Loader $loader
 	 */
 	public function __construct( $loader ) {
-		$loader->add_action( 'admin_notices', array( $this, 'render_flash_notices' ) );
+		$loader->add_action( 'admin_notices', $this, 'render_flash_notices' );
 	}
 
 	/**
