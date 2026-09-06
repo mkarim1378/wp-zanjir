@@ -5,9 +5,7 @@
 	margin-block: 1.5rem;
 	margin-inline: auto;
 	padding: 1.25rem 1.5rem;
-	border: 1px solid #dcdcde;
-	background: #fff;
-	color: #1d2327;
+	background: transparent;
 	line-height: 1.6;
 }
 
