@@ -139,6 +139,11 @@ class Zanjir_Public {
 			delete_transient( 'zanjir_reg_success_' . $user_id );
 		}
 
+		$show_labels       = (int) Zanjir_Settings::get( 'register_show_labels', 1 );
+		$show_placeholders = (int) Zanjir_Settings::get( 'register_show_placeholders', 0 );
+		$national_id_text  = __( 'National ID', 'zanjir' );
+		$referral_text     = __( 'Referral code (optional)', 'zanjir' );
+
 		ob_start();
 		?>
 		<div class="zanjir-register">
@@ -151,12 +156,39 @@ class Zanjir_Public {
 			<form method="post">
 				<?php wp_nonce_field( Zanjir_Registration::NONCE_ACTION, Zanjir_Registration::NONCE_FIELD ); ?>
 				<p>
-					<label for="zanjir_national_id"><?php esc_html_e( 'National ID', 'zanjir' ); ?></label><br />
-					<input type="text" id="zanjir_national_id" name="zanjir_national_id" required maxlength="10" autocomplete="off" />
+					<?php if ( $show_labels ) : ?>
+						<label for="zanjir_national_id"><?php echo esc_html( $national_id_text ); ?></label><br />
+					<?php endif; ?>
+					<input
+						type="text"
+						id="zanjir_national_id"
+						name="zanjir_national_id"
+						required
+						maxlength="10"
+						autocomplete="off"
+						<?php if ( $show_placeholders ) : ?>
+							placeholder="<?php echo esc_attr( $national_id_text ); ?>"
+						<?php endif; ?>
+						<?php if ( ! $show_labels ) : ?>
+							aria-label="<?php echo esc_attr( $national_id_text ); ?>"
+						<?php endif; ?>
+					/>
 				</p>
 				<p>
-					<label for="zanjir_referral_code"><?php esc_html_e( 'Referral code (optional)', 'zanjir' ); ?></label><br />
-					<input type="text" id="zanjir_referral_code" name="zanjir_referral_code" />
+					<?php if ( $show_labels ) : ?>
+						<label for="zanjir_referral_code"><?php echo esc_html( $referral_text ); ?></label><br />
+					<?php endif; ?>
+					<input
+						type="text"
+						id="zanjir_referral_code"
+						name="zanjir_referral_code"
+						<?php if ( $show_placeholders ) : ?>
+							placeholder="<?php echo esc_attr( $referral_text ); ?>"
+						<?php endif; ?>
+						<?php if ( ! $show_labels ) : ?>
+							aria-label="<?php echo esc_attr( $referral_text ); ?>"
+						<?php endif; ?>
+					/>
 				</p>
 				<p><button type="submit"><?php esc_html_e( 'Submit registration', 'zanjir' ); ?></button></p>
 			</form>

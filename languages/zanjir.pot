@@ -82,6 +82,30 @@ msgstr ""
 msgid "Referral code length"
 msgstr ""
 
+msgid "Registration form"
+msgstr ""
+
+msgid "Display options for the [zanjir_register] shortcode fields."
+msgstr ""
+
+msgid "Field labels"
+msgstr ""
+
+msgid "Show a label above each registration field."
+msgstr ""
+
+msgid "Field placeholders"
+msgstr ""
+
+msgid "Show placeholder text inside each registration field."
+msgstr ""
+
+msgid "Show"
+msgstr ""
+
+msgid "Hide"
+msgstr ""
+
 msgid "Commission matrix"
 msgstr ""
 

@@ -39,6 +39,8 @@ class Zanjir_Settings {
 			'max_discount'      => 3000,
 			'annual_cap'        => 50000000,
 			'affiliate_code_len'=> 8,
+			'register_show_labels'       => 1,
+			'register_show_placeholders' => 0,
 		);
 	}
 

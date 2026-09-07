@@ -384,6 +384,57 @@
 	outline-offset: 1px;
 }
 
+.zanjir-panel-head--sub {
+	margin-top: 1.5rem;
+}
+
+.zanjir-panel-head--sub h3 {
+	margin: 0 0 0.25rem;
+	font-size: 1rem;
+}
+
+.zanjir-field--radio {
+	gap: 0.5rem;
+}
+
+.zanjir-field--radio .zanjir-field__label {
+	padding: 0;
+	float: none;
+	width: auto;
+}
+
+.zanjir-radio-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 0.25rem;
+}
+
+.zanjir-radio {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin: 0;
+	padding: 0.4rem 0.75rem;
+	border: 1px solid #c9d5ce;
+	border-radius: 999px;
+	background: #fff;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--zanjir-ink);
+	transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.zanjir-radio:has(input:checked) {
+	border-color: var(--zanjir-accent);
+	background: rgba(15, 118, 110, 0.08);
+}
+
+.zanjir-radio input {
+	margin: 0;
+}
+
 .zanjir-toggle {
 	display: flex;
 	align-items: flex-start;

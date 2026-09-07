@@ -82,6 +82,30 @@ msgstr "سقف جذب سالانه (ریال)"
 msgid "Referral code length"
 msgstr "طول کد معرف"
 
+msgid "Registration form"
+msgstr "فرم ثبت‌نام"
+
+msgid "Display options for the [zanjir_register] shortcode fields."
+msgstr "گزینه‌های نمایش فیلدهای شورتکد [zanjir_register]."
+
+msgid "Field labels"
+msgstr "برچسب فیلدها"
+
+msgid "Show a label above each registration field."
+msgstr "نمایش برچسب بالای هر فیلد ثبت‌نام."
+
+msgid "Field placeholders"
+msgstr "متن راهنمای فیلدها"
+
+msgid "Show placeholder text inside each registration field."
+msgstr "نمایش متن راهنما داخل هر فیلد ثبت‌نام."
+
+msgid "Show"
+msgstr "نمایش"
+
+msgid "Hide"
+msgstr "مخفی"
+
 msgid "Commission matrix"
 msgstr "ماتریس پورسانت"
 

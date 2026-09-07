@@ -408,6 +408,36 @@ class Zanjir_Admin {
 									);
 									?>
 								</div>
+								<div class="zanjir-panel-head zanjir-panel-head--sub">
+									<h3><?php esc_html_e( 'Registration form', 'zanjir' ); ?></h3>
+									<p><?php esc_html_e( 'Display options for the [zanjir_register] shortcode fields.', 'zanjir' ); ?></p>
+								</div>
+								<div class="zanjir-field-grid">
+									<?php
+									$this->render_setting_radio(
+										array(
+											'key'         => 'register_show_labels',
+											'label'       => __( 'Field labels', 'zanjir' ),
+											'description' => __( 'Show a label above each registration field.', 'zanjir' ),
+											'options'     => array(
+												'1' => __( 'Show', 'zanjir' ),
+												'0' => __( 'Hide', 'zanjir' ),
+											),
+										)
+									);
+									$this->render_setting_radio(
+										array(
+											'key'         => 'register_show_placeholders',
+											'label'       => __( 'Field placeholders', 'zanjir' ),
+											'description' => __( 'Show placeholder text inside each registration field.', 'zanjir' ),
+											'options'     => array(
+												'1' => __( 'Show', 'zanjir' ),
+												'0' => __( 'Hide', 'zanjir' ),
+											),
+										)
+									);
+									?>
+								</div>
 							</section>
 						</div>
 					</div>
@@ -606,6 +636,44 @@ class Zanjir_Admin {
 	}
 
 	/**
+	 * Radio group card.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	private function render_setting_radio( $args ) {
+		$key     = $args['key'];
+		$value   = (string) (int) Zanjir_Settings::get( $key, 0 );
+		$id      = 'zanjir-setting-' . $key;
+		$options = isset( $args['options'] ) && is_array( $args['options'] ) ? $args['options'] : array();
+		$name    = Zanjir_Settings::OPTION_KEY . '[' . $key . ']';
+		?>
+		<fieldset class="zanjir-field zanjir-field--card zanjir-field--radio">
+			<legend class="zanjir-field__label"><?php echo esc_html( $args['label'] ); ?></legend>
+			<?php if ( ! empty( $args['description'] ) ) : ?>
+				<span class="zanjir-field__help"><?php echo esc_html( $args['description'] ); ?></span>
+			<?php endif; ?>
+			<div class="zanjir-radio-group">
+				<?php foreach ( $options as $opt_value => $opt_label ) : ?>
+					<?php
+					$opt_id = $id . '-' . sanitize_html_class( (string) $opt_value );
+					?>
+					<label class="zanjir-radio" for="<?php echo esc_attr( $opt_id ); ?>">
+						<input
+							id="<?php echo esc_attr( $opt_id ); ?>"
+							type="radio"
+							name="<?php echo esc_attr( $name ); ?>"
+							value="<?php echo esc_attr( (string) $opt_value ); ?>"
+							<?php checked( $value, (string) $opt_value ); ?>
+						/>
+						<span><?php echo esc_html( $opt_label ); ?></span>
+					</label>
+				<?php endforeach; ?>
+			</div>
+		</fieldset>
+		<?php
+	}
+
+	/**
 	 * Sanitize settings before save.
 	 *
 	 * @param array $input Raw input.
@@ -648,6 +716,18 @@ class Zanjir_Admin {
 		$sanitized['max_discount']       = isset( $input['max_discount'] ) ? absint( $input['max_discount'] ) : (int) $current['max_discount'];
 		$sanitized['annual_cap']         = isset( $input['annual_cap'] ) ? absint( $input['annual_cap'] ) : (int) ( isset( $current['annual_cap'] ) ? $current['annual_cap'] : $defaults['annual_cap'] );
 		$sanitized['affiliate_code_len'] = isset( $input['affiliate_code_len'] ) ? absint( $input['affiliate_code_len'] ) : (int) ( isset( $current['affiliate_code_len'] ) ? $current['affiliate_code_len'] : $defaults['affiliate_code_len'] );
+
+		if ( isset( $input['register_show_labels'] ) ) {
+			$sanitized['register_show_labels'] = '0' === (string) $input['register_show_labels'] ? 0 : 1;
+		} else {
+			$sanitized['register_show_labels'] = (int) ( isset( $current['register_show_labels'] ) ? $current['register_show_labels'] : $defaults['register_show_labels'] );
+		}
+
+		if ( isset( $input['register_show_placeholders'] ) ) {
+			$sanitized['register_show_placeholders'] = '1' === (string) $input['register_show_placeholders'] ? 1 : 0;
+		} else {
+			$sanitized['register_show_placeholders'] = (int) ( isset( $current['register_show_placeholders'] ) ? $current['register_show_placeholders'] : $defaults['register_show_placeholders'] );
+		}
 
 		if ( isset( $input['matrix'] ) && is_array( $input['matrix'] ) ) {
 			$matrix_rows = array();
