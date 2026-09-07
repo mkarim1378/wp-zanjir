@@ -41,6 +41,8 @@ class Zanjir_Settings {
 			'affiliate_code_len'=> 8,
 			'register_show_labels'       => 1,
 			'register_show_placeholders' => 0,
+			'dashboard_page_id'          => 0,
+			'register_page_id'           => 0,
 		);
 	}
 

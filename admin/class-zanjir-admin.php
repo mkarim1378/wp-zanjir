@@ -409,6 +409,28 @@ class Zanjir_Admin {
 									?>
 								</div>
 								<div class="zanjir-panel-head zanjir-panel-head--sub">
+									<h3><?php esc_html_e( 'Affiliate pages', 'zanjir' ); ?></h3>
+									<p><?php esc_html_e( 'Map WordPress pages used for registration and the dashboard access gate.', 'zanjir' ); ?></p>
+								</div>
+								<div class="zanjir-field-grid">
+									<?php
+									$this->render_setting_page(
+										array(
+											'key'         => 'dashboard_page_id',
+											'label'       => __( 'Dashboard page', 'zanjir' ),
+											'description' => __( 'Guests and non-approved affiliates are redirected away from this page. Leave empty to disable the gate.', 'zanjir' ),
+										)
+									);
+									$this->render_setting_page(
+										array(
+											'key'         => 'register_page_id',
+											'label'       => __( 'Registration page', 'zanjir' ),
+											'description' => __( 'Public signup landing. Non-approved users hitting the dashboard are sent here.', 'zanjir' ),
+										)
+									);
+									?>
+								</div>
+								<div class="zanjir-panel-head zanjir-panel-head--sub">
 									<h3><?php esc_html_e( 'Registration form', 'zanjir' ); ?></h3>
 									<p><?php esc_html_e( 'Display options for the [zanjir_register] shortcode fields.', 'zanjir' ); ?></p>
 								</div>
@@ -636,6 +658,39 @@ class Zanjir_Admin {
 	}
 
 	/**
+	 * Page dropdown card.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	private function render_setting_page( $args ) {
+		$key   = $args['key'];
+		$value = (int) Zanjir_Settings::get( $key, 0 );
+		$id    = 'zanjir-setting-' . $key;
+		$name  = Zanjir_Settings::OPTION_KEY . '[' . $key . ']';
+		?>
+		<div class="zanjir-field zanjir-field--card">
+			<label class="zanjir-field__label" for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $args['label'] ); ?></label>
+			<?php if ( ! empty( $args['description'] ) ) : ?>
+				<span class="zanjir-field__help"><?php echo esc_html( $args['description'] ); ?></span>
+			<?php endif; ?>
+			<?php
+			wp_dropdown_pages(
+				array(
+					'id'                => $id,
+					'name'              => $name,
+					'class'             => 'zanjir-field__input',
+					'show_option_none'  => __( '— Select —', 'zanjir' ),
+					'option_none_value' => '0',
+					'selected'          => $value,
+					'post_status'       => array( 'publish', 'private', 'draft' ),
+				)
+			);
+			?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Radio group card.
 	 *
 	 * @param array $args Field arguments.
@@ -729,6 +784,13 @@ class Zanjir_Admin {
 			$sanitized['register_show_placeholders'] = (int) ( isset( $current['register_show_placeholders'] ) ? $current['register_show_placeholders'] : $defaults['register_show_placeholders'] );
 		}
 
+		$sanitized['dashboard_page_id'] = $this->sanitize_page_id(
+			isset( $input['dashboard_page_id'] ) ? $input['dashboard_page_id'] : ( isset( $current['dashboard_page_id'] ) ? $current['dashboard_page_id'] : $defaults['dashboard_page_id'] )
+		);
+		$sanitized['register_page_id'] = $this->sanitize_page_id(
+			isset( $input['register_page_id'] ) ? $input['register_page_id'] : ( isset( $current['register_page_id'] ) ? $current['register_page_id'] : $defaults['register_page_id'] )
+		);
+
 		if ( isset( $input['matrix'] ) && is_array( $input['matrix'] ) ) {
 			$matrix_rows = array();
 			foreach ( $input['matrix'] as $row ) {
@@ -773,6 +835,25 @@ class Zanjir_Admin {
 		Zanjir_Settings::flush_cache();
 
 		return $sanitized;
+	}
+
+	/**
+	 * Sanitize a WordPress page ID setting.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return int
+	 */
+	private function sanitize_page_id( $value ) {
+		$id = absint( $value );
+		if ( $id <= 0 ) {
+			return 0;
+		}
+
+		if ( 'page' !== get_post_type( $id ) ) {
+			return 0;
+		}
+
+		return $id;
 	}
 
 	/**

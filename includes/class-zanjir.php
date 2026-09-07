@@ -173,6 +173,9 @@ class Zanjir {
 
 		require_once ZANJIR_PLUGIN_DIR . 'public/class-zanjir-public.php';
 		new Zanjir_Public( $this->loader );
+
+		require_once ZANJIR_PLUGIN_DIR . 'includes/class-zanjir-access-gate.php';
+		new Zanjir_Access_Gate( $this->loader );
 	}
 
 	/**

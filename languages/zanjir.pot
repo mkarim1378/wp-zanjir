@@ -379,6 +379,54 @@ msgstr ""
 msgid "Please log in to view your affiliate dashboard."
 msgstr ""
 
+msgid "Log in"
+msgstr ""
+
+msgid "Your affiliate registration is pending admin approval."
+msgstr ""
+
+msgid "Your affiliate registration was rejected. Contact support if you need a review."
+msgstr ""
+
+msgid "Your affiliate account is suspended. Contact support for details."
+msgstr ""
+
+msgid "You are already an approved affiliate."
+msgstr ""
+
+msgid "Go to dashboard"
+msgstr ""
+
+msgid "Go to registration"
+msgstr ""
+
+msgid "No approved affiliate account is linked to this user. Dashboard data is only shown for approved affiliates."
+msgstr ""
+
+msgid "Affiliate pages"
+msgstr ""
+
+msgid "Map WordPress pages used for registration and the dashboard access gate."
+msgstr ""
+
+msgid "Dashboard page"
+msgstr ""
+
+msgid "Guests and non-approved affiliates are redirected away from this page. Leave empty to disable the gate."
+msgstr ""
+
+msgid "Registration page"
+msgstr ""
+
+msgid "Public signup landing. Non-approved users hitting the dashboard are sent here."
+msgstr ""
+
+msgid "— Select —"
+msgstr ""
+
+msgid "Suspended"
+msgstr ""
+
 msgid "National ID"
 msgstr ""
 

@@ -379,6 +379,54 @@ msgstr "برای ثبت‌نام به‌عنوان افیلیت وارد شوی�
 msgid "Please log in to view your affiliate dashboard."
 msgstr "برای مشاهده داشبورد افیلیت وارد شوید."
 
+msgid "Log in"
+msgstr "ورود"
+
+msgid "Your affiliate registration is pending admin approval."
+msgstr "ثبت‌نام افیلیت شما در انتظار تأیید مدیر است."
+
+msgid "Your affiliate registration was rejected. Contact support if you need a review."
+msgstr "ثبت‌نام افیلیت شما رد شده است. برای بررسی دوباره با پشتیبانی تماس بگیرید."
+
+msgid "Your affiliate account is suspended. Contact support for details."
+msgstr "حساب افیلیت شما تعلیق شده است. برای جزئیات با پشتیبانی تماس بگیرید."
+
+msgid "You are already an approved affiliate."
+msgstr "شما قبلاً به‌عنوان افیلیت تأییدشده ثبت شده‌اید."
+
+msgid "Go to dashboard"
+msgstr "رفتن به داشبورد"
+
+msgid "Go to registration"
+msgstr "رفتن به ثبت‌نام"
+
+msgid "No approved affiliate account is linked to this user. Dashboard data is only shown for approved affiliates."
+msgstr "هیچ حساب افیلیت تأییدشده‌ای به این کاربر متصل نیست. داده‌های داشبورد فقط برای افیلیت‌های تأییدشده نمایش داده می‌شود."
+
+msgid "Affiliate pages"
+msgstr "برگه‌های افیلیت"
+
+msgid "Map WordPress pages used for registration and the dashboard access gate."
+msgstr "برگه‌های وردپرس برای ثبت‌نام و گیت دسترسی داشبورد را مشخص کنید."
+
+msgid "Dashboard page"
+msgstr "برگه داشبورد"
+
+msgid "Guests and non-approved affiliates are redirected away from this page. Leave empty to disable the gate."
+msgstr "مهمان‌ها و افیلیت‌های تأییدنشده از این برگه هدایت می‌شوند. برای خاموش کردن گیت خالی بگذارید."
+
+msgid "Registration page"
+msgstr "برگه ثبت‌نام"
+
+msgid "Public signup landing. Non-approved users hitting the dashboard are sent here."
+msgstr "لندینگ عمومی ثبت‌نام. کاربران تأییدنشده که به داشبورد می‌آیند به اینجا فرستاده می‌شوند."
+
+msgid "— Select —"
+msgstr "— انتخاب —"
+
+msgid "Suspended"
+msgstr "تعلیق‌شده"
+
 msgid "National ID"
 msgstr "کد ملی"
 

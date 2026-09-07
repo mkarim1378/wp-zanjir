@@ -47,6 +47,27 @@ class Zanjir_Public {
 	}
 
 	/**
+	 * Whether the current singular page is a configured Zanjir page.
+	 *
+	 * @return bool
+	 */
+	private function is_configured_zanjir_page() {
+		if ( ! is_singular( 'page' ) ) {
+			return false;
+		}
+
+		$page_id = (int) get_queried_object_id();
+		if ( $page_id <= 0 ) {
+			return false;
+		}
+
+		$dash_id = (int) Zanjir_Settings::get( 'dashboard_page_id', 0 );
+		$reg_id  = (int) Zanjir_Settings::get( 'register_page_id', 0 );
+
+		return ( $dash_id > 0 && $page_id === $dash_id ) || ( $reg_id > 0 && $page_id === $reg_id );
+	}
+
+	/**
 	 * Enqueue dashboard/registration styles (idempotent).
 	 */
 	private function enqueue_public_assets() {
@@ -82,6 +103,11 @@ class Zanjir_Public {
 			return;
 		}
 
+		if ( $this->is_configured_zanjir_page() ) {
+			$this->enqueue_public_assets();
+			return;
+		}
+
 		if ( ! is_singular() ) {
 			return;
 		}
@@ -107,6 +133,63 @@ class Zanjir_Public {
 	}
 
 	/**
+	 * Build a paragraph with an optional link.
+	 *
+	 * @param string $message Plain message.
+	 * @param string $url     Optional URL.
+	 * @param string $label   Optional link label.
+	 * @return string
+	 */
+	private function message_with_link( $message, $url = '', $label = '' ) {
+		$html = '<p class="zanjir-notice">' . esc_html( $message );
+		if ( $url && $label ) {
+			$html .= ' <a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+		}
+		$html .= '</p>';
+		return $html;
+	}
+
+	/**
+	 * Status message when the current user already has an affiliate row.
+	 *
+	 * @param object $affiliate Affiliate row.
+	 * @return string
+	 */
+	private function render_register_status_message( $affiliate ) {
+		$status = isset( $affiliate->status ) ? (string) $affiliate->status : '';
+
+		switch ( $status ) {
+			case 'pending':
+				return $this->message_with_link(
+					__( 'Your affiliate registration is pending admin approval.', 'zanjir' )
+				);
+			case 'rejected':
+				return $this->message_with_link(
+					__( 'Your affiliate registration was rejected. Contact support if you need a review.', 'zanjir' )
+				);
+			case 'suspended':
+				return $this->message_with_link(
+					__( 'Your affiliate account is suspended. Contact support for details.', 'zanjir' )
+				);
+			case 'approved':
+				$dash_url = class_exists( 'Zanjir_Access_Gate' ) ? Zanjir_Access_Gate::dashboard_url() : '';
+				return $this->message_with_link(
+					__( 'You are already an approved affiliate.', 'zanjir' ),
+					$dash_url,
+					$dash_url ? __( 'Go to dashboard', 'zanjir' ) : ''
+				);
+			default:
+				return $this->message_with_link(
+					sprintf(
+						/* translators: %s: status */
+						__( 'You are already registered (status: %s).', 'zanjir' ),
+						Zanjir_I18n::label( $status )
+					)
+				);
+		}
+	}
+
+	/**
 	 * Affiliate registration form.
 	 *
 	 * @return string
@@ -115,19 +198,21 @@ class Zanjir_Public {
 		$this->enqueue_public_assets();
 
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to register as an affiliate.', 'zanjir' ) . '</p>';
+			$redirect = get_permalink();
+			$login    = class_exists( 'Zanjir_Access_Gate' )
+				? Zanjir_Access_Gate::login_url( $redirect ? $redirect : '' )
+				: wp_login_url( $redirect ? $redirect : '' );
+			return $this->message_with_link(
+				__( 'Please log in to register as an affiliate.', 'zanjir' ),
+				$login,
+				__( 'Log in', 'zanjir' )
+			);
 		}
 
-		$user_id = get_current_user_id();
+		$user_id  = get_current_user_id();
 		$existing = Zanjir_Registration::get_affiliate_by_user( $user_id );
 		if ( $existing ) {
-			return '<p>' . esc_html(
-				sprintf(
-					/* translators: %s: status */
-					__( 'You are already registered (status: %s).', 'zanjir' ),
-					Zanjir_I18n::label( $existing->status )
-				)
-			) . '</p>';
+			return $this->render_register_status_message( $existing );
 		}
 
 		$error   = get_transient( 'zanjir_reg_error_' . $user_id );
@@ -205,13 +290,58 @@ class Zanjir_Public {
 	public function render_dashboard() {
 		$this->enqueue_public_assets();
 
+		$reg_url = class_exists( 'Zanjir_Access_Gate' ) ? Zanjir_Access_Gate::register_url() : '';
+
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your affiliate dashboard.', 'zanjir' ) . '</p>';
+			$redirect = get_permalink();
+			$login    = class_exists( 'Zanjir_Access_Gate' )
+				? Zanjir_Access_Gate::login_url( $redirect ? $redirect : '' )
+				: wp_login_url( $redirect ? $redirect : '' );
+			return $this->message_with_link(
+				__( 'Please log in to view your affiliate dashboard.', 'zanjir' ),
+				$login,
+				__( 'Log in', 'zanjir' )
+			);
 		}
 
 		$affiliate = Zanjir_Registration::get_affiliate_by_user( get_current_user_id() );
+
+		if ( Zanjir_Roles::can_manage() && ( ! $affiliate || 'approved' !== $affiliate->status ) ) {
+			return $this->message_with_link(
+				__( 'No approved affiliate account is linked to this user. Dashboard data is only shown for approved affiliates.', 'zanjir' ),
+				$reg_url,
+				$reg_url ? __( 'Go to registration', 'zanjir' ) : ''
+			);
+		}
+
 		if ( ! $affiliate || 'approved' !== $affiliate->status ) {
-			return '<p>' . esc_html__( 'Approved affiliate account required.', 'zanjir' ) . '</p>';
+			if ( $affiliate && 'pending' === $affiliate->status ) {
+				return $this->message_with_link(
+					__( 'Your affiliate registration is pending admin approval.', 'zanjir' ),
+					$reg_url,
+					$reg_url ? __( 'Go to registration', 'zanjir' ) : ''
+				);
+			}
+			if ( $affiliate && 'rejected' === $affiliate->status ) {
+				return $this->message_with_link(
+					__( 'Your affiliate registration was rejected. Contact support if you need a review.', 'zanjir' ),
+					$reg_url,
+					$reg_url ? __( 'Go to registration', 'zanjir' ) : ''
+				);
+			}
+			if ( $affiliate && 'suspended' === $affiliate->status ) {
+				return $this->message_with_link(
+					__( 'Your affiliate account is suspended. Contact support for details.', 'zanjir' ),
+					$reg_url,
+					$reg_url ? __( 'Go to registration', 'zanjir' ) : ''
+				);
+			}
+
+			return $this->message_with_link(
+				__( 'Approved affiliate account required.', 'zanjir' ),
+				$reg_url,
+				$reg_url ? __( 'Go to registration', 'zanjir' ) : ''
+			);
 		}
 
 		$aff_id       = (int) $affiliate->id;

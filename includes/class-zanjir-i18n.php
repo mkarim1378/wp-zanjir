@@ -50,6 +50,7 @@ class Zanjir_I18n {
 			'ip_seen'        => __( 'IP seen', 'zanjir' ),
 			'critical'       => __( 'Critical', 'zanjir' ),
 			'info'           => __( 'Info', 'zanjir' ),
+			'suspended'      => __( 'Suspended', 'zanjir' ),
 		);
 	}
 }
