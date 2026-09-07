@@ -421,6 +421,12 @@ msgstr ""
 msgid "Public signup landing. Non-approved users hitting the dashboard are sent here."
 msgstr ""
 
+msgid "Login page"
+msgstr ""
+
+msgid "Page used for guest login links (e.g. SMS login / Voorodak account button). Falls back to WooCommerce My Account, then wp-login."
+msgstr ""
+
 msgid "— Select —"
 msgstr ""
 

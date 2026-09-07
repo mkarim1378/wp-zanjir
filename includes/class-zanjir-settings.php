@@ -43,6 +43,7 @@ class Zanjir_Settings {
 			'register_show_placeholders' => 0,
 			'dashboard_page_id'          => 0,
 			'register_page_id'           => 0,
+			'login_page_id'              => 0,
 		);
 	}
 

@@ -428,6 +428,13 @@ class Zanjir_Admin {
 											'description' => __( 'Public signup landing. Non-approved users hitting the dashboard are sent here.', 'zanjir' ),
 										)
 									);
+									$this->render_setting_page(
+										array(
+											'key'         => 'login_page_id',
+											'label'       => __( 'Login page', 'zanjir' ),
+											'description' => __( 'Page used for guest login links (e.g. SMS login / Voorodak account button). Falls back to WooCommerce My Account, then wp-login.', 'zanjir' ),
+										)
+									);
 									?>
 								</div>
 								<div class="zanjir-panel-head zanjir-panel-head--sub">
@@ -789,6 +796,9 @@ class Zanjir_Admin {
 		);
 		$sanitized['register_page_id'] = $this->sanitize_page_id(
 			isset( $input['register_page_id'] ) ? $input['register_page_id'] : ( isset( $current['register_page_id'] ) ? $current['register_page_id'] : $defaults['register_page_id'] )
+		);
+		$sanitized['login_page_id'] = $this->sanitize_page_id(
+			isset( $input['login_page_id'] ) ? $input['login_page_id'] : ( isset( $current['login_page_id'] ) ? $current['login_page_id'] : $defaults['login_page_id'] )
 		);
 
 		if ( isset( $input['matrix'] ) && is_array( $input['matrix'] ) ) {

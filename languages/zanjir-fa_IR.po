@@ -421,6 +421,12 @@ msgstr "برگه ثبت‌نام"
 msgid "Public signup landing. Non-approved users hitting the dashboard are sent here."
 msgstr "لندینگ عمومی ثبت‌نام. کاربران تأییدنشده که به داشبورد می‌آیند به اینجا فرستاده می‌شوند."
 
+msgid "Login page"
+msgstr "برگه ورود"
+
+msgid "Page used for guest login links (e.g. SMS login / Voorodak account button). Falls back to WooCommerce My Account, then wp-login."
+msgstr "برگه‌ای که لینک ورود مهمان به آن می‌رود (مثلاً ورود پیامکی / دکمه حساب Voorodak). در غیر این صورت حساب ووکامرس و سپس wp-login."
+
 msgid "— Select —"
 msgstr "— انتخاب —"
 
