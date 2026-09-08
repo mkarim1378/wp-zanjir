@@ -298,6 +298,12 @@ msgstr "دسترسی غیرمجاز."
 msgid "User"
 msgstr "کاربر"
 
+msgid "Full name"
+msgstr "نام و نام خانوادگی"
+
+msgid "Mobile"
+msgstr "موبایل"
+
 msgid "Type"
 msgstr "نوع"
 

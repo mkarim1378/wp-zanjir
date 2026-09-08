@@ -298,6 +298,12 @@ msgstr ""
 msgid "User"
 msgstr ""
 
+msgid "Full name"
+msgstr ""
+
+msgid "Mobile"
+msgstr ""
+
 msgid "Type"
 msgstr ""
 

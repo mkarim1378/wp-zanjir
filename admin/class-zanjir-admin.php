@@ -1108,7 +1108,9 @@ class Zanjir_Admin {
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'ID', 'zanjir' ); ?></th>
-						<th><?php esc_html_e( 'User', 'zanjir' ); ?></th>
+						<th><?php esc_html_e( 'Full name', 'zanjir' ); ?></th>
+						<th><?php esc_html_e( 'Mobile', 'zanjir' ); ?></th>
+						<th><?php esc_html_e( 'National ID', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Type', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'zanjir' ); ?></th>
 						<th><?php esc_html_e( 'Recruit', 'zanjir' ); ?></th>
@@ -1119,12 +1121,29 @@ class Zanjir_Admin {
 				</thead>
 				<tbody>
 				<?php if ( empty( $rows ) ) : ?>
-					<tr><td colspan="8"><?php esc_html_e( 'No affiliates yet.', 'zanjir' ); ?></td></tr>
+					<tr><td colspan="10"><?php esc_html_e( 'No affiliates yet.', 'zanjir' ); ?></td></tr>
 				<?php else : ?>
 					<?php foreach ( $rows as $row ) : ?>
+						<?php
+						$user_id = (int) $row->user_id;
+						$name    = $this->affiliate_user_display_name( $user_id );
+						$mobile  = $this->affiliate_user_mobile( $user_id );
+						$nid     = $this->affiliate_national_id_plain( $row );
+						$edit    = get_edit_user_link( $user_id );
+						?>
 						<tr>
 							<td><?php echo esc_html( (string) $row->id ); ?></td>
-							<td><?php echo esc_html( (string) $row->user_id ); ?></td>
+							<td>
+								<?php if ( $edit ) : ?>
+									<a href="<?php echo esc_url( $edit ); ?>"><?php echo esc_html( $name ); ?></a>
+								<?php else : ?>
+									<?php echo esc_html( $name ); ?>
+								<?php endif; ?>
+								<br />
+								<span class="description">#<?php echo esc_html( (string) $user_id ); ?></span>
+							</td>
+							<td><?php echo $mobile ? esc_html( $mobile ) : '—'; ?></td>
+							<td><?php echo $nid ? esc_html( $nid ) : '—'; ?></td>
 							<td><?php echo esc_html( Zanjir_I18n::label( $row->type ) ); ?></td>
 							<td><?php echo esc_html( Zanjir_I18n::label( $row->status ) ); ?></td>
 							<td><?php echo ! empty( $row->recruit_enabled ) ? esc_html__( 'yes', 'zanjir' ) : esc_html__( 'no', 'zanjir' ); ?></td>
@@ -1182,6 +1201,105 @@ class Zanjir_Admin {
 			</table>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Full name for an affiliate's WordPress user (admin list).
+	 *
+	 * @param int $user_id WordPress user ID.
+	 * @return string
+	 */
+	private function affiliate_user_display_name( $user_id ) {
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return '—';
+		}
+
+		$first = (string) get_user_meta( $user_id, 'first_name', true );
+		$last  = (string) get_user_meta( $user_id, 'last_name', true );
+		$name  = trim( $first . ' ' . $last );
+
+		if ( '' === $name ) {
+			$first = (string) get_user_meta( $user_id, 'billing_first_name', true );
+			$last  = (string) get_user_meta( $user_id, 'billing_last_name', true );
+			$name  = trim( $first . ' ' . $last );
+		}
+
+		if ( '' === $name ) {
+			$user = get_userdata( $user_id );
+			$name = $user ? (string) $user->display_name : '';
+		}
+
+		return '' !== $name ? $name : ( '#' . $user_id );
+	}
+
+	/**
+	 * Mobile / phone from profile meta (WooCommerce + common Iranian plugins).
+	 *
+	 * @param int $user_id WordPress user ID.
+	 * @return string
+	 */
+	private function affiliate_user_mobile( $user_id ) {
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return '';
+		}
+
+		$keys = array(
+			'billing_phone',
+			'digits_phone',
+			'digits_phone_no',
+			'mobile',
+			'phone',
+		);
+
+		/**
+		 * Meta keys tried for affiliate mobile on the admin list.
+		 *
+		 * @param string[] $keys
+		 * @param int      $user_id
+		 */
+		$keys = apply_filters( 'zanjir_affiliate_user_phone_meta_keys', $keys, $user_id );
+
+		$phone = '';
+		foreach ( (array) $keys as $key ) {
+			$key = (string) $key;
+			if ( '' === $key ) {
+				continue;
+			}
+			$val = (string) get_user_meta( $user_id, $key, true );
+			if ( '' !== $val ) {
+				$phone = $val;
+				break;
+			}
+		}
+
+		/**
+		 * Resolved mobile string for an affiliate user (admin list).
+		 *
+		 * @param string $phone
+		 * @param int    $user_id
+		 */
+		return (string) apply_filters( 'zanjir_affiliate_user_phone', $phone, $user_id );
+	}
+
+	/**
+	 * Decrypt stored national ID for admin review (capability-gated page only).
+	 *
+	 * @param object $row Affiliate DB row.
+	 * @return string Empty when unavailable.
+	 */
+	private function affiliate_national_id_plain( $row ) {
+		if ( empty( $row->national_id_enc ) ) {
+			return '';
+		}
+
+		$raw = Zanjir_National_Id_Validator::decrypt( $row->national_id_enc );
+		if ( ! is_string( $raw ) || '' === $raw ) {
+			return '';
+		}
+
+		return preg_replace( '/\D/', '', $raw );
 	}
 
 	/**
