@@ -1,0 +1,708 @@
+<!--
+  زنجیر — لندینگ داشبورد همکاری
+  جایگذاری: ویجت HTML المنتور (یک ویجت، کل محتوا)
+  شورتکد: [zanjir_dashboard]
+  اگر شورتکد در ویجت HTML اجرا نشد، همان بلوک پنل را با ویجت Shortcode جایگزین کنید.
+  لینک‌های /my-account/ و /affiliate-register/ را با اسلاگ واقعی برگه‌هایتان عوض کنید.
+-->
+
+<style>
+  .znj-dash {
+    --paper: #F6F4EF;
+    --paper-2: #EFEDE6;
+    --card: #FFFFFF;
+    --ink: #14171E;
+    --ink-2: #2B313C;
+    --muted: #646C7C;
+    --line: #E6E2D8;
+    --line-2: #D8D3C6;
+    --brand: #2D2C74;
+    --brand-deep: #1F1E54;
+    --brand-tint: #E7E6F3;
+    --cta: #ED1C24;
+    --cta-deep: #C8151C;
+    --cta-tint: #FDE8E9;
+    --gold: #C8922A;
+    --ok: #138A4A;
+    --ok-tint: #E6F4EC;
+    --radius: 18px;
+    --maxw: 1080px;
+    --shadow: 0 1px 2px rgba(20, 23, 30, 0.04), 0 8px 24px rgba(20, 23, 30, 0.06);
+    --shadow-lg: 0 24px 60px -20px rgba(45, 44, 116, 0.28), 0 12px 28px rgba(20, 23, 30, 0.10);
+
+    direction: rtl;
+    text-align: right;
+    color: var(--ink);
+    background: var(--paper);
+    font-weight: 600;
+    line-height: 1.9;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow: hidden;
+    padding: 0 0 72px;
+    box-sizing: border-box;
+  }
+
+  .znj-dash *,
+  .znj-dash *::before,
+  .znj-dash *::after { box-sizing: border-box; }
+
+  .znj-dash a { color: var(--brand); text-decoration: none; transition: color 0.2s ease; }
+  .znj-dash a:hover { color: var(--brand-deep); }
+
+  .znj-dash__wash {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(820px 460px at 100% -5%, rgba(45, 44, 116, 0.07), transparent 60%),
+      radial-gradient(640px 440px at -5% 6%, rgba(237, 28, 36, 0.05), transparent 55%);
+    z-index: 0;
+  }
+
+  .znj-dash__grid {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.32;
+    -webkit-mask-image: radial-gradient(circle at 50% 0, #000, transparent 70%);
+    mask-image: radial-gradient(circle at 50% 0, #000, transparent 70%);
+    z-index: 0;
+  }
+
+  .znj-dash__inner {
+    position: relative;
+    z-index: 1;
+    width: min(100%, var(--maxw));
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  /* —— Hero —— */
+  .znj-dash__hero {
+    padding: 48px 0 36px;
+    max-width: 680px;
+  }
+
+  .znj-dash__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 16px;
+    padding: 7px 14px;
+    border-radius: 50px;
+    background: var(--brand-tint);
+    color: var(--brand);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .znj-dash__brand {
+    margin: 0 0 8px;
+    font-size: clamp(30px, 5vw, 44px);
+    font-weight: 900;
+    letter-spacing: -0.4px;
+    line-height: 1.15;
+    color: var(--brand);
+  }
+
+  .znj-dash__hero h1 {
+    margin: 0 0 12px;
+    font-size: clamp(26px, 4.5vw, 40px);
+    font-weight: 900;
+    letter-spacing: -0.4px;
+    line-height: 1.3;
+  }
+
+  .znj-dash__hero h1 .hl { color: var(--brand); }
+  .znj-dash__hero h1 .hl2 { color: var(--cta); }
+
+  .znj-dash__lead {
+    margin: 0 0 22px;
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 36em;
+  }
+
+  .znj-dash__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .znj-dash__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 20px;
+    border-radius: 13px;
+    font-size: 14.5px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .znj-dash__btn--cta {
+    background: var(--cta);
+    color: #fff !important;
+    box-shadow: 0 12px 28px -8px rgba(237, 28, 36, 0.55);
+  }
+
+  .znj-dash__btn--cta:hover {
+    background: var(--cta-deep);
+    color: #fff !important;
+    transform: translateY(-2px);
+  }
+
+  .znj-dash__btn--ghost {
+    background: var(--card);
+    color: var(--ink) !important;
+    border: 1.5px solid var(--line-2);
+  }
+
+  .znj-dash__btn--ghost:hover {
+    border-color: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  /* —— Access states —— */
+  .znj-dash__states {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  @media (min-width: 760px) {
+    .znj-dash__states {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .znj-dash__state {
+    padding: 18px 18px 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    border-top: 4px solid var(--brand);
+    box-shadow: var(--shadow);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .znj-dash__state:nth-child(2) { border-top-color: var(--gold); }
+  .znj-dash__state:nth-child(3) { border-top-color: var(--ok); }
+
+  .znj-dash__state:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .znj-dash__state .tag {
+    display: inline-flex;
+    margin-bottom: 10px;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--brand-tint);
+    color: var(--brand);
+  }
+
+  .znj-dash__state:nth-child(2) .tag {
+    background: #F8EFDC;
+    color: #8A6418;
+  }
+
+  .znj-dash__state:nth-child(3) .tag {
+    background: var(--ok-tint);
+    color: var(--ok);
+  }
+
+  .znj-dash__state strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ink-2);
+  }
+
+  .znj-dash__state p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  /* —— Panel block —— */
+  .znj-dash__panel {
+    padding: 28px 22px 24px;
+    border-radius: 24px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .znj-dash__panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .znj-dash__panel-head h2 {
+    margin: 0 0 4px;
+    font-size: clamp(22px, 3.5vw, 28px);
+    font-weight: 900;
+    letter-spacing: -0.3px;
+  }
+
+  .znj-dash__panel-head p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .znj-dash__panel-head .meta {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--brand);
+    background: var(--brand-tint);
+    padding: 6px 12px;
+    border-radius: 50px;
+  }
+
+  /* Shortcode skin */
+  .znj-dash .zanjir-dashboard {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    color: inherit !important;
+    line-height: 1.75 !important;
+  }
+
+  .znj-dash .zanjir-dashboard > h2 {
+    display: none;
+  }
+
+  .znj-dash .zanjir-dashboard > p:has(> strong) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    margin: 0 0 22px;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  .znj-dash .zanjir-dashboard > p > strong {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink-2);
+  }
+
+  .znj-dash .zanjir-dashboard code {
+    display: inline-block !important;
+    max-width: 100%;
+    padding: 8px 12px !important;
+    border-radius: 10px !important;
+    background: var(--brand-tint) !important;
+    color: var(--brand-deep) !important;
+    font-size: 13px !important;
+    font-weight: 600;
+    word-break: break-all;
+    direction: ltr;
+    text-align: left;
+  }
+
+  .znj-dash .zanjir-dashboard > ul {
+    list-style: none;
+    margin: 0 0 28px !important;
+    padding: 0 !important;
+    display: grid;
+    gap: 10px;
+  }
+
+  @media (min-width: 640px) {
+    .znj-dash .zanjir-dashboard > ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .znj-dash .zanjir-dashboard > ul > li {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+
+  .znj-dash .zanjir-dashboard h3 {
+    margin: 8px 0 14px !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: var(--ink);
+  }
+
+  .znj-dash .zanjir-dashboard form {
+    margin: 0 0 28px;
+    padding: 20px 18px 18px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  .znj-dash .zanjir-dashboard label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+
+  .znj-dash .zanjir-dashboard label::after {
+    content: " *";
+    color: var(--cta);
+  }
+
+  .znj-dash .zanjir-dashboard p {
+    margin: 0 0 14px;
+  }
+
+  .znj-dash .zanjir-dashboard input[type="text"],
+  .znj-dash .zanjir-dashboard input[type="number"] {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 48px;
+    padding: 10px 14px !important;
+    border: 1.5px solid var(--line-2) !important;
+    border-radius: 12px !important;
+    background: var(--card) !important;
+    color: var(--ink) !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .znj-dash .zanjir-dashboard input[name="iban"] {
+    direction: ltr;
+    text-align: left;
+  }
+
+  .znj-dash .zanjir-dashboard input:focus {
+    border-color: var(--brand) !important;
+    box-shadow: 0 0 0 4px var(--brand-tint);
+  }
+
+  .znj-dash .zanjir-dashboard button {
+    width: 100%;
+    max-width: 280px;
+    min-height: 50px;
+    padding: 0 18px !important;
+    border: none !important;
+    border-radius: 13px !important;
+    background: var(--cta) !important;
+    color: #fff !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    cursor: pointer;
+    box-shadow: 0 12px 28px -8px rgba(237, 28, 36, 0.55);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .znj-dash .zanjir-dashboard button:hover {
+    background: var(--cta-deep) !important;
+    transform: translateY(-2px);
+  }
+
+  .znj-dash .zanjir-dashboard h3 + ul {
+    list-style: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid;
+    gap: 8px;
+  }
+
+  .znj-dash .zanjir-dashboard h3 + ul > li {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--paper-2);
+    border: 1px dashed var(--line-2);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink-2);
+    direction: ltr;
+    text-align: right;
+  }
+
+  .znj-dash .zanjir-error {
+    margin: 0 0 14px !important;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--cta-tint);
+    color: var(--cta-deep) !important;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .znj-dash .zanjir-success {
+    margin: 0 0 14px !important;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--ok-tint);
+    color: var(--ok) !important;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* —— Guides —— */
+  .znj-dash__guides {
+    margin-top: 48px;
+    display: grid;
+    gap: 16px;
+  }
+
+  @media (min-width: 800px) {
+    .znj-dash__guides {
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: start;
+    }
+  }
+
+  .znj-dash__guide {
+    padding: 24px 22px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .znj-dash__guide h2 {
+    margin: 0 0 8px;
+    font-size: clamp(18px, 2.8vw, 22px);
+    font-weight: 900;
+  }
+
+  .znj-dash__guide > p {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .znj-dash__balances {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .znj-dash__balances li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+
+  .znj-dash__balances .dot {
+    width: 10px;
+    height: 10px;
+    margin-top: 7px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
+
+  .znj-dash__balances li:nth-child(2) .dot { background: #0E8C6A; }
+  .znj-dash__balances li:nth-child(3) .dot { background: var(--gold); }
+  .znj-dash__balances li:nth-child(4) .dot { background: var(--cta); }
+
+  .znj-dash__balances strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink-2);
+  }
+
+  .znj-dash__balances span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .znj-dash__iban-tips {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+
+  .znj-dash__iban-tips li {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--cta-tint);
+    color: var(--cta-deep);
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+
+  .znj-dash__iban-tips li:nth-child(2),
+  .znj-dash__iban-tips li:nth-child(3) {
+    background: var(--brand-tint);
+    color: var(--brand-deep);
+  }
+
+  .znj-dash__foot {
+    margin-top: 48px;
+    padding: 28px;
+    border-radius: 20px;
+    background:
+      radial-gradient(420px 220px at 100% 0%, rgba(45, 44, 116, 0.28), transparent 60%),
+      linear-gradient(155deg, #1a1c24, #14171E 60%, #1F1E54);
+    color: #fff;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .znj-dash__foot h2 {
+    margin: 0 0 8px;
+    font-size: clamp(20px, 3vw, 26px);
+    font-weight: 900;
+    color: #fff;
+  }
+
+  .znj-dash__foot p {
+    margin: 0 0 18px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14.5px;
+  }
+
+  .znj-dash__foot .znj-dash__btn--ghost {
+    background: transparent;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .znj-dash__foot .znj-dash__btn--ghost:hover {
+    border-color: #fff;
+  }
+</style>
+
+<div class="znj-dash" dir="rtl" lang="fa">
+  <div class="znj-dash__wash" aria-hidden="true"></div>
+  <div class="znj-dash__grid" aria-hidden="true"></div>
+
+  <div class="znj-dash__inner">
+    <header class="znj-dash__hero">
+      <p class="znj-dash__eyebrow">Dashboard · Zanjir</p>
+      <p class="znj-dash__brand">کارنو</p>
+      <h1>پنل همکاری؛ <span class="hl">لینک</span>، <span class="hl">موجودی</span> و <span class="hl2">برداشت</span></h1>
+      <p class="znj-dash__lead">این صفحه ابزار روزمرهٔ همکاران تأییدشده است. لینک معرف را بردارید، وضعیت موجودی را ببینید و در صورت نیاز درخواست برداشت بفرستید.</p>
+      <div class="znj-dash__ctas">
+        <a class="znj-dash__btn znj-dash__btn--cta" href="#znj-dash-panel">مشاهدهٔ پنل</a>
+        <a class="znj-dash__btn znj-dash__btn--ghost" href="/my-account/">حساب کاربری</a>
+      </div>
+    </header>
+
+    <section class="znj-dash__states" aria-label="وضعیت دسترسی">
+      <article class="znj-dash__state">
+        <span class="tag">مهمان</span>
+        <strong>اول وارد شوید</strong>
+        <p>بدون ورود، پنل فقط پیام لاگین نشان می‌دهد.</p>
+      </article>
+      <article class="znj-dash__state">
+        <span class="tag">در انتظار</span>
+        <strong>تأیید هنوز نشده</strong>
+        <p>اگر ثبت‌نام کرده‌اید ولی تأیید نیستید، داشبورد کامل باز نمی‌شود.</p>
+      </article>
+      <article class="znj-dash__state">
+        <span class="tag">تأییدشده</span>
+        <strong>دسترسی کامل</strong>
+        <p>لینک معرف، موجودی‌ها و فرم برداشت برای شما فعال است.</p>
+      </article>
+    </section>
+
+    <section class="znj-dash__panel" id="znj-dash-panel" aria-labelledby="znj-dash-panel-title">
+      <div class="znj-dash__panel-head">
+        <div>
+          <h2 id="znj-dash-panel-title">داشبورد همکاری</h2>
+        </div>
+        <span class="meta">LIVE PANEL</span>
+      </div>
+      [zanjir_dashboard]
+    </section>
+
+    <section class="znj-dash__guides" aria-label="راهنما">
+      <div class="znj-dash__guide">
+        <h2>معنای موجودی‌ها</h2>
+        <p>اعداد پنل گیج‌کننده نیستند اگر هر وضعیت را یک‌بار بخوانید.</p>
+        <ul class="znj-dash__balances">
+          <li>
+            <span class="dot" aria-hidden="true"></span>
+            <div>
+              <strong>در انتظار (Pending)</strong>
+              <span>پورسانت هنوز در دورهٔ مرجوعی است.</span>
+            </div>
+          </li>
+          <li>
+            <span class="dot" aria-hidden="true"></span>
+            <div>
+              <strong>قابل پرداخت (Payable)</strong>
+              <span>پنجرهٔ مرجوعی گذشته؛ منتظر تسویهٔ ادمین.</span>
+            </div>
+          </li>
+          <li>
+            <span class="dot" aria-hidden="true"></span>
+            <div>
+              <strong>قابل برداشت (Withdrawable)</strong>
+              <span>بعد از تأیید تسویه آزاد می‌شود.</span>
+            </div>
+          </li>
+          <li>
+            <span class="dot" aria-hidden="true"></span>
+            <div>
+              <strong>قابل درخواست</strong>
+              <span>مبلغی که همین الان می‌توانید درخواست برداشت بدهید.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="znj-dash__guide">
+        <h2>نکته‌های برداشت</h2>
+        <p>قبل از ارسال فرم، این سه مورد را چک کنید.</p>
+        <ul class="znj-dash__iban-tips">
+          <li>مبلغ را به ریال وارد کنید.</li>
+          <li>شبا باید با IR و ۲۴ رقم باشد.</li>
+          <li>درخواست بعد از بررسی ادمین پرداخت می‌شود.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="znj-dash__foot" aria-labelledby="znj-dash-foot-title">
+      <h2 id="znj-dash-foot-title">هنوز همکار نشده‌اید؟</h2>
+      <p>از صفحهٔ ثبت‌نام درخواست بفرستید؛ بعد از تأیید، همین پنل برایتان فعال می‌شود.</p>
+      <a class="znj-dash__btn znj-dash__btn--ghost" href="/affiliate-register/">ثبت‌نام همکاری</a>
+    </section>
+  </div>
+</div>

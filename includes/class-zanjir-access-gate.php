@@ -279,7 +279,11 @@ class Zanjir_Access_Gate {
 	}
 
 	/**
-	 * Redirect guests and non-approved affiliates away from the dashboard page.
+	 * Redirect guests away from the dashboard page.
+	 *
+	 * Logged-in users who are not approved affiliates stay on the page so the
+	 * [zanjir_dashboard] shortcode can show status / registration guidance
+	 * (avoids bouncing them to a misconfigured register URL that can 404).
 	 */
 	public function maybe_gate_dashboard() {
 		$dash_id = (int) Zanjir_Settings::get( 'dashboard_page_id', 0 );
@@ -289,23 +293,12 @@ class Zanjir_Access_Gate {
 
 		nocache_headers();
 
-		if ( Zanjir_Roles::can_manage() ) {
+		if ( Zanjir_Roles::can_manage() || is_user_logged_in() ) {
 			return;
 		}
 
-		if ( ! is_user_logged_in() ) {
-			$dash_url = get_permalink( $dash_id );
-			wp_safe_redirect( self::login_url( $dash_url ? $dash_url : '' ) );
-			exit;
-		}
-
-		$affiliate = Zanjir_Registration::get_affiliate_by_user( get_current_user_id() );
-		if ( $affiliate && 'approved' === $affiliate->status ) {
-			return;
-		}
-
-		$reg_url = self::register_url();
-		wp_safe_redirect( $reg_url ? $reg_url : home_url( '/' ) );
+		$dash_url = get_permalink( $dash_id );
+		wp_safe_redirect( self::login_url( $dash_url ? $dash_url : '' ) );
 		exit;
 	}
 }

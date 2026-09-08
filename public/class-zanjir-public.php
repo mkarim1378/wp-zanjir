@@ -240,6 +240,12 @@ class Zanjir_Public {
 			<?php endif; ?>
 			<form method="post">
 				<?php wp_nonce_field( Zanjir_Registration::NONCE_ACTION, Zanjir_Registration::NONCE_FIELD ); ?>
+				<?php
+				$redirect_back = get_permalink();
+				if ( $redirect_back ) :
+					?>
+					<input type="hidden" name="zanjir_redirect" value="<?php echo esc_url( $redirect_back ); ?>" />
+				<?php endif; ?>
 				<p>
 					<?php if ( $show_labels ) : ?>
 						<label for="zanjir_national_id"><?php echo esc_html( $national_id_text ); ?></label><br />

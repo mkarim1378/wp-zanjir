@@ -1,0 +1,525 @@
+<style>
+.karno-aff {
+    --paper:#FAF6EF; --paper-2:#F1EAD9; --card:#FFFFFF;
+    --ink:#14171E; --ink-2:#2B313C; --muted:#646C7C;
+    --line:#E8E0CE; --line-2:#DBD0B5;
+    --brand:#2D2C74; --brand-deep:#201F54; --brand-tint:#ECEBF6;
+    --cta:#ED1C24; --cta-deep:#C8141A; --cta-tint:#FDEAEB;
+    --gold:#C8922A; --ok:#138A4A; --ok-tint:#E6F4EC;
+    --shadow:0 1px 2px rgba(20,23,30,.04), 0 8px 24px rgba(20,23,30,.06);
+    --shadow-lg:0 24px 60px -20px rgba(45,44,116,.28), 0 12px 28px rgba(20,23,30,.10);
+    --radius:18px; --maxw:1080px;
+    position:relative; isolation:isolate;
+  }
+.karno-aff * {box-sizing:border-box;margin:0;padding:0}
+.karno-aff {color:var(--ink);line-height:1.9;-webkit-font-smoothing:antialiased}
+.karno-aff::before {content:"";position:absolute;inset:0;z-index:-1;}
+.karno-aff::after {content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.32;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(circle at 50% 0,#000,transparent 70%);mask-image:radial-gradient(circle at 50% 0,#000,transparent 70%)}
+.karno-aff .wrap {max-width:var(--maxw);margin-inline:auto;padding-inline:20px}
+.karno-aff a {color:var(--brand);text-decoration:none}
+.karno-aff .mono {font-feature-settings:"tnum"}
+.karno-aff section {padding:74px 0}
+/* hero */
+.karno-aff .hero {padding-top:20px;text-align:center}
+.karno-aff .eyebrow {display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:1.5px;color:var(--brand);text-transform:uppercase;background:var(--brand-tint);padding:6px 13px;border-radius:50px;margin-bottom:18px}
+.karno-aff .hero h1 {font-size:clamp(30px,5.4vw,50px);font-weight:900;line-height:1.3;letter-spacing:-.5px;margin-bottom:16px}
+.karno-aff .hero h1 .hl {color:var(--brand)}
+.karno-aff .hero h1 .hl2 {color:var(--cta)}
+.karno-aff .hero p.sub {font-size:17.5px;color:var(--muted);max-width:620px;margin:0 auto 30px;line-height:1.95}
+.karno-aff .hero-cta {display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
+.karno-aff .btn {display:inline-flex;align-items:center;gap:9px;font-weight:800;font-size:16px;cursor:pointer;border:none;padding:15px 28px;border-radius:13px;transition:transform .18s,box-shadow .25s,background .2s}
+.karno-aff .btn-cta {background:var(--cta);color:#fff;box-shadow:0 10px 24px -8px rgba(237,28,36,.6)}
+.karno-aff .btn-cta:hover {background:var(--cta-deep);transform:translateY(-2px);color:#fff}
+.karno-aff .btn-ghost {background:#fff;color:var(--ink);border:1.5px solid var(--line-2)}
+.karno-aff .btn-ghost:hover {border-color:var(--ink)}
+.karno-aff .founding-note {display:flex;align-items:center;justify-content:center;gap:9px;margin-top:24px;font-size:13.5px;color:var(--ink-2);font-weight:600}
+.karno-aff .founding-note svg {flex:none;color:var(--gold)}
+/* commission hero visual */
+.karno-aff .comm-hero {max-width:760px;margin:46px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.karno-aff .ch-card {background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:var(--shadow-lg);text-align:right;position:relative;overflow:hidden}
+.karno-aff .ch-card.t1 {border-top:4px solid var(--brand)}
+.karno-aff .ch-card.t2 {border-top:4px solid var(--cta)}
+.karno-aff .ch-card .pct {font-weight:800;font-size:40px;color:var(--ink)}
+.karno-aff .ch-card .pct small {font-size:16px;font-weight:600;color:var(--muted)}
+.karno-aff .ch-card h4 {font-size:15.5px;font-weight:800;margin:6px 0 6px}
+.karno-aff .ch-card p {font-size:13px;color:var(--muted);line-height:1.85}
+.karno-aff .ch-card .tag {position:absolute;top:14px;left:14px;font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:50px}
+.karno-aff .ch-card.t1 .tag {background:var(--brand-tint);color:var(--brand)}
+.karno-aff .ch-card.t2 .tag {background:var(--cta-tint);color:var(--cta-deep)}
+/* section heads */
+.karno-aff .s-head {text-align:center;margin-bottom:42px}
+.karno-aff .s-head h2 {font-size:clamp(24px,4vw,34px);font-weight:900;letter-spacing:-.4px;margin-bottom:10px}
+.karno-aff .s-head p {font-size:15.5px;color:var(--muted);max-width:560px;margin:0 auto}
+/* how it works */
+.karno-aff .steps3 {display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.karno-aff .step3 {background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;position:relative}
+.karno-aff .step3 .n {width:38px;height:38px;border-radius:11px;background:var(--ink);color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center;margin-bottom:16px}
+.karno-aff .step3 h3 {font-size:17px;font-weight:800;margin-bottom:8px}
+.karno-aff .step3 p {font-size:14px;color:var(--muted);line-height:1.85}
+@media(min-width:769px) {.karno-aff .step3:not(:last-child)::after {content:"";position:absolute;top:50%;left:-30px;width:24px;height:2px;background:var(--line-2)}}
+/* commission breakdown (detailed) */
+.karno-aff .comm-detail {background:var(--card);border:1px solid var(--line);border-radius:24px;padding:36px;box-shadow:var(--shadow)}
+.karno-aff .comm-grid {display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.karno-aff .cd-box {border:1.5px solid var(--line);border-radius:16px;padding:22px}
+.karno-aff .cd-box.direct {border-color:#c9c8e8;background:var(--brand-tint)}
+.karno-aff .cd-box.sub {border-color:#ffd0d2;background:var(--cta-tint)}
+.karno-aff .cd-box .ic {width:42px;height:42px;border-radius:12px;display:grid;place-items:center;margin-bottom:13px}
+.karno-aff .cd-box.direct .ic {background:var(--brand);color:#fff}
+.karno-aff .cd-box.sub .ic {background:var(--cta);color:#fff}
+.karno-aff .cd-box h4 {font-size:16.5px;font-weight:800;margin-bottom:6px}
+.karno-aff .cd-box .big {font-weight:800;font-size:30px;color:var(--ink);margin-bottom:8px}
+.karno-aff .cd-box p {font-size:13.5px;color:var(--ink-2);line-height:1.85}
+.karno-aff .example {margin-top:24px;background:var(--paper);border:1px dashed var(--line-2);border-radius:14px;padding:18px 20px}
+.karno-aff .example .ex-h {font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.karno-aff .example .ex-row {display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.karno-aff .example .ex-row:last-child {border-bottom:none}
+.karno-aff .example .ex-row b {font-weight:700}
+.karno-aff .example .ex-row.total b {color:var(--ok);font-size:16px}
+.karno-aff .note-mini {font-size:12px;color:var(--muted);margin-top:14px;text-align:center}
+/* benefits */
+.karno-aff .ben-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.karno-aff .ben {background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;transition:transform .25s,box-shadow .25s}
+.karno-aff .ben:hover {transform:translateY(-4px);box-shadow:var(--shadow)}
+.karno-aff .ben .ic {width:46px;height:46px;border-radius:13px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;margin-bottom:14px}
+.karno-aff .ben h3 {font-size:16px;font-weight:800;margin-bottom:7px}
+.karno-aff .ben p {font-size:13.5px;color:var(--muted);line-height:1.85}
+/* who is this for */
+.karno-aff .who-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.karno-aff .who {background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;text-align:center}
+.karno-aff .who .em {font-size:30px;margin-bottom:12px}
+.karno-aff .who h4 {font-size:15.5px;font-weight:800;margin-bottom:6px}
+.karno-aff .who p {font-size:13px;color:var(--muted);line-height:1.8}
+/* payout details */
+.karno-aff .payout-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.karno-aff .pay-card {background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px;text-align:center}
+.karno-aff .pay-card .ic {width:40px;height:40px;border-radius:11px;background:var(--paper-2);color:var(--ink-2);display:grid;place-items:center;margin:0 auto 12px}
+.karno-aff .pay-card .v {font-weight:800;font-size:18px;color:var(--ink);margin-bottom:4px}
+.karno-aff .pay-card .l {font-size:12.5px;color:var(--muted)}
+/* faq */
+.karno-aff .faq {max-width:780px;margin-inline:auto}
+.karno-aff .qa {background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:11px;overflow:hidden}
+.karno-aff .qa[open] {border-color:var(--brand)}
+.karno-aff .qa summary {list-style:none;cursor:pointer;padding:18px 20px;font-size:15.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:13px}
+.karno-aff .qa summary::-webkit-details-marker {display:none}
+.karno-aff .qa .q-ic {flex:none;width:28px;height:28px;border-radius:8px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;font-weight:800;transition:.3s}
+.karno-aff .qa[open] .q-ic {background:var(--brand);color:#fff;transform:rotate(45deg)}
+.karno-aff .qa .ans {padding:0 20px 18px 61px;font-size:14.5px;color:var(--muted);line-height:1.95}
+/* registration form */
+.karno-aff .reg {background:linear-gradient(150deg,var(--ink),#20283a);border-radius:28px;padding:48px 40px;color:#fff;position:relative;overflow:hidden}
+.karno-aff .reg::before {content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:50px 50px;-webkit-mask-image:radial-gradient(circle at 85% 0,#000,transparent 70%);mask-image:radial-gradient(circle at 85% 0,#000,transparent 70%)}
+.karno-aff .reg-grid {position:relative;z-index:2;display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center}
+.karno-aff .reg-tx .eyebrow {background:rgba(255,255,255,.1);color:#b7b6ea}
+.karno-aff .reg-tx h2 {font-size:28px;font-weight:900;line-height:1.4;margin:16px 0 12px;color:#fff}
+.karno-aff .reg-tx p {font-size:15px;color:rgba(255,255,255,.72);line-height:1.95;margin-bottom:20px}
+.karno-aff .reg-points {display:flex;flex-direction:column;gap:11px}
+.karno-aff .reg-points span {display:flex;align-items:center;gap:9px;font-size:13.5px;color:rgba(255,255,255,.85)}
+.karno-aff .reg-points svg {flex:none;color:#7fffb0}
+.karno-aff .reg-form {background:#fff;border-radius:20px;padding:28px;color:var(--ink)}
+.karno-aff .field-row {display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.karno-aff .field {margin-bottom:15px}
+.karno-aff .field.full {grid-column:1/-1}
+.karno-aff label {display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:var(--ink-2)}
+.karno-aff label .req {color:var(--cta)}
+.karno-aff .inp {position:relative}
+.karno-aff .inp input, .karno-aff .inp select {width:100%;font-size:15px;border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;background:var(--paper);transition:.2s}
+.karno-aff .inp input:focus, .karno-aff .inp select:focus {outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 4px var(--brand-tint)}
+.karno-aff .inp input[dir="ltr"] {text-align:right;direction:ltr}
+.karno-aff .err {display:none;font-size:11.5px;color:var(--cta-deep);margin-top:6px}
+.karno-aff .field.invalid .err {display:block}
+.karno-aff .field.invalid .inp input, .karno-aff .field.invalid .inp select {border-color:var(--cta)}
+.karno-aff .reg-submit {width:100%;font-weight:800;font-size:16.5px;color:#fff;background:var(--cta);border:none;border-radius:13px;padding:16px;cursor:pointer;margin-top:4px;transition:.2s}
+.karno-aff .reg-submit:hover {background:var(--cta-deep);transform:translateY(-2px)}
+.karno-aff .reg-note {font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+.karno-aff .reg-ok {display:none;text-align:center;padding:10px 0}
+.karno-aff .reg-ok.show {display:block}
+.karno-aff .reg-ok .big {width:62px;height:62px;border-radius:50%;background:var(--ok-tint);color:var(--ok);display:grid;place-items:center;margin:0 auto 14px}
+.karno-aff .reg-ok h4 {font-size:19px;font-weight:900;margin-bottom:6px}
+.karno-aff .reg-ok p {font-size:14px;color:var(--muted)}
+
+/* ===== GRAVITY FORMS OVERRIDE (affiliate reg form, id 59) ===== */
+#gform_wrapper_59,#gform_wrapper_59 *{box-sizing:border-box}
+#gform_wrapper_59{background:none!important;border:none!important;padding:0!important;margin:0!important;max-width:none!important;text-align:right!important}
+#gform_59 .gform-body,#gform_59 .gform_body{margin:0;padding:0}
+#gform_59 .gform_fields{display:flex!important;flex-direction:column;gap:0;margin:0;padding:0;list-style:none}
+#gform_59 .gfield{margin-bottom:15px!important;padding:0!important;background:none!important;border:none!important}
+#gform_59 .gfield_label,#gform_59 .gform-field-label{display:none!important}
+#gform_59 .ginput_container{margin:0!important;position:relative}
+#gform_59 input[type="text"],
+#gform_59 input[type="tel"],
+#gform_59 select.gfield_select,
+#gform_59 select{
+  width:100%!important;font-size:15px!important;font-family:inherit!important;line-height:1.4!important;
+  border:1.5px solid var(--line)!important;border-radius:12px!important;
+  padding:13px 15px!important;background:var(--paper)!important;color:var(--ink)!important;
+  box-shadow:none!important;outline:none!important;
+  transition:border-color .2s,background .2s,box-shadow .2s!important;
+  -webkit-appearance:none;appearance:none;
+}
+#gform_59 input[type="tel"]{direction:ltr!important;text-align:right!important}
+#gform_59 select.gfield_select,
+#gform_59 select{
+  cursor:pointer!important;
+  padding-left:40px!important;padding-right:15px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;
+  background-position:left 14px center!important;
+  background-size:14px!important;
+  text-align:right!important;direction:rtl!important;
+}
+#gform_59 select.gfield_select.is-placeholder,
+#gform_59 select.gfield_select:invalid{color:var(--muted)!important}
+#gform_59 select.gfield_select option,
+#gform_59 select.gfield_select option:not([value=""]){color:var(--ink)!important}
+#gform_59 select.gfield_select option.gf_placeholder,
+#gform_59 select.gfield_select option[value=""]{color:var(--muted)!important}
+#gform_59 input[type="text"]:focus,
+#gform_59 input[type="tel"]:focus,
+#gform_59 select.gfield_select:focus,
+#gform_59 select:focus{border-color:var(--brand)!important;background-color:#fff!important;box-shadow:0 0 0 4px var(--brand-tint)!important}
+#gform_59 input::placeholder{color:var(--muted)!important;opacity:1!important}
+#gform_59 .gfield_error input,
+#gform_59 .gfield_error select{border-color:var(--cta)!important}
+#gform_59 .validation_message,
+#gform_59 .gfield_validation_message{font-size:11.5px!important;color:var(--cta-deep)!important;margin-top:6px!important;padding:0!important;background:none!important;border:none!important}
+#gform_59 .gform_validation_errors,
+#gform_59 .validation_errors{background:var(--cta-tint)!important;border:1px solid #ffd8c9!important;border-radius:12px!important;padding:12px 16px!important;margin-bottom:14px!important;font-size:13px!important;color:var(--cta-deep)!important;font-weight:600!important}
+#gform_59 .gform-footer,
+#gform_59 .gform_footer{margin:0!important;padding:0!important;border:none!important;background:none!important;text-align:unset!important}
+#gform_submit_button_59{
+  width:100%!important;display:block!important;
+  font-weight:800!important;font-size:16.5px!important;
+  cursor:pointer!important;border:none!important;background:var(--cta)!important;color:#fff!important;
+  padding:16px!important;border-radius:13px!important;margin-top:4px!important;
+  box-shadow:0 10px 24px -8px rgba(237,28,36,.5)!important;
+  transition:transform .18s,box-shadow .25s,background .2s!important;
+  -webkit-appearance:none;appearance:none;
+}
+#gform_submit_button_59:hover{background:var(--cta-deep)!important;transform:translateY(-2px)!important}
+
+@media(max-width:880px) {.karno-aff .steps3, .karno-aff .ben-grid, .karno-aff .who-grid {grid-template-columns:1fr 1fr}
+.karno-aff .payout-grid {grid-template-columns:1fr 1fr}
+.karno-aff .comm-grid {grid-template-columns:1fr}
+.karno-aff .reg-grid {grid-template-columns:1fr}
+.karno-aff .comm-hero {grid-template-columns:1fr}}
+@media(max-width:560px) {.karno-aff .steps3, .karno-aff .ben-grid, .karno-aff .who-grid, .karno-aff .payout-grid {grid-template-columns:1fr}
+.karno-aff .field-row {grid-template-columns:1fr}
+.karno-aff .reg {padding:32px 20px}
+.karno-aff section {padding:54px 0}}
+</style>
+
+<div class="karno-aff" dir="rtl" lang="fa">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">🚀 برنامه همکاری در فروش کارنو — هم‌اکنون در حال راه‌اندازی</span>
+    <h1>با معرفی دوره‌های کارنو، <span class="hl">۲۰٪</span> کمیسیون مستقیم<br>و <span class="hl2">۷.۵٪</span> از فروش زیرمجموعه‌هات بگیر</h1>
+    <p class="sub">لینک یا کد اختصاصی خودت رو بگیر، دوره‌های آکادمی کارنو رو به مخاطبینت معرفی کن و از هر فروش کمیسیون بگیر. می‌خوای بیشتر درآمد کسب کنی؟ تیم خودت رو هم بساز.</p>
+    <div class="hero-cta">
+      <a href="/aff/signup/" class="btn btn-cta">ثبت‌نام در برنامه همکاری در فروش ←</a>
+      <a href="/aff/dashboard/" class="btn btn-ghost">ورود به داشبورد</a>
+    </div>
+    <div class="founding-note">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 15l-5.2 2.8 1-5.8-4.2-4.1 5.8-.8z"/></svg>
+      این برنامه تازه شروع شده — جای خودت رو بین اولین همکاران فروش کارنو رزرو کن.
+    </div>
+
+    <div class="comm-hero">
+      <div class="ch-card t1">
+        <span class="tag">فروش مستقیم</span>
+        <div class="pct">۲۰<small>٪</small></div>
+        <h4>کمیسیون مستقیم</h4>
+        <p>روی هر فروشی که با لینک یا کد اختصاصی خودت انجام بشه.</p>
+      </div>
+      <div class="ch-card t2">
+        <span class="tag">لایه دوم</span>
+        <div class="pct">۷.۵<small>٪</small></div>
+        <h4>کمیسیون زیرمجموعه</h4>
+        <p>وقتی یه همکار فروش دیگه رو زیرمجموعه‌ی خودت بیاری و خودش بفروشه.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>چطور شروع کنم؟</h2>
+      <p>فقط سه قدم فاصله داری تا شروع کسب درآمد از معرفی دوره‌های کارنو.</p>
+    </div>
+    <div class="steps3">
+      <div class="step3">
+        <div class="n">۱</div>
+        <h3>پیش‌ثبت‌نام کن</h3>
+        <p>فرم پایین صفحه رو پر کن. تیم کارنو اطلاعاتت رو بررسی می‌کنه.</p>
+      </div>
+      <div class="step3">
+        <div class="n">۲</div>
+        <h3>لینک و ابزارت رو بگیر</h3>
+        <p>بعد از تایید، لینک/کد اختصاصی و ویدیوی بازاریابی هر دوره در اختیارت قرار می‌گیره.</p>
+      </div>
+      <div class="step3">
+        <div class="n">۳</div>
+        <h3>معرفی کن و کمیسیون بگیر</h3>
+        <p>هر فروشی از طریق لینک یا کدت ثبت بشه، کمیسیونش هرماه برات حساب می‌شه.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMISSION DETAIL -->
+<section id="commission">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>ساختار کمیسیون رو دقیق ببین</h2>
+      <p>یه سیستم دو لایه‌ی شفاف؛ هم از فروش خودت، هم از فروش تیمی که می‌سازی، درآمد داری.</p>
+    </div>
+    <div class="comm-detail">
+      <div class="comm-grid">
+        <div class="cd-box direct">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/><circle cx="12" cy="12" r="4"/></svg></span>
+          <h4>لایه ۱ — فروش مستقیم خودت</h4>
+          <div class="big">۲۰٪</div>
+          <p>هر کسی با لینک یا کد اختصاصی تو خرید کنه، ۲۰٪ از مبلغ فروش مستقیماً به تو تعلق می‌گیره.</p>
+        </div>
+        <div class="cd-box sub">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0112 0"/><circle cx="17.5" cy="9.5" r="2.6"/><path d="M15 20a5 5 0 016.5-4.8"/></svg></span>
+          <h4>لایه ۲ — فروش زیرمجموعه‌ت</h4>
+          <div class="big">۷.۵٪</div>
+          <p>اگه یه همکار فروش دیگه رو معرفی کنی و خودش بفروشه، تو ۷.۵٪ اضافه می‌گیری — بدون اینکه از سهم اون کم بشه.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ex-h">📊 مثال واقعی (بر اساس قیمت دوره برق و انژکتور داخلی)</div>
+        <div class="ex-row"><span>قیمت دوره</span><b>۱۵,۰۰۰,۰۰۰ تومان</b></div>
+        <div class="ex-row"><span>خودت یه نفر رو مستقیم می‌فروشی (۲۰٪)</span><b>۳,۰۰۰,۰۰۰ تومان</b></div>
+        <div class="ex-row"><span>زیرمجموعه‌ت همین دوره رو می‌فروشه (۷.۵٪ برای تو)</span><b>۱,۱۲۵,۰۰۰ تومان</b></div>
+        <div class="ex-row total"><span>جمع درآمد تو از این دو فروش</span><b>۴,۱۲۵,۰۰۰ تومان</b></div>
+      </div>
+      <p class="note-mini">عدد بالا فقط برای یک محصول و یک فروشه؛ هرچی بیشتر معرفی کنی و تیمت بزرگ‌تر بشه، این عدد چندبرابر می‌شه.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section>
+  <div class="wrap">
+    <div class="s-head">
+      <h2>چرا همکار فروش کارنو بشی؟</h2>
+    </div>
+    <div class="ben-grid">
+      <div class="ben">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M8 5v14l11-7z"/></svg></span>
+        <h3>ویدیوی بازاریابی هر محصول</h3>
+        <p>برای معرفی هر دوره، ویدیوی آماده در اختیارت قرار می‌گیره؛ کافیه به مخاطبت برسونی.</p>
+      </div>
+      <div class="ben">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M10 13a5 5 0 007.5.5l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7.5-.5l-2 2a5 5 0 007 7l1-1"/></svg></span>
+        <h3>لینک و کد اختصاصی</h3>
+        <p>هم لینک ردیابی، هم کد معرف اختصاصی؛ هرجور که برای مخاطبت راحت‌تره استفاده کن.</p>
+      </div>
+      <div class="ben">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3>پرداخت ماهانه و شفاف</h3>
+        <p>کمیسیونت هر ماه محاسبه و واریز می‌شه؛ بدون پیچیدگی و بدون ابهام.</p>
+      </div>
+      <div class="ben">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0112 0"/><circle cx="17.5" cy="9.5" r="2.6"/><path d="M15 20a5 5 0 016.5-4.8"/></svg></span>
+        <h3>درآمد تیمی، بدون سقف</h3>
+        <p>هرچی زیرمجموعه‌ی بیشتری بسازی و فعال‌تر باشن، درآمدت بدون محدودیت رشد می‌کنه.</p>
+      </div>
+      <div class="ben">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 19V6a2 2 0 012-2h12v15M4 19a2 2 0 002 2h12"/></svg></span>
+        <h3>سبد محصولات در حال رشد</h3>
+        <p>۶ دوره‌ی تخصصی و یک کتاب همین الان آماده‌ی معرفی‌اند؛ محصولات جدید هم به‌مرور اضافه می‌شن.</p>
+      </div>
+      <div class="ben">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 15l-5.2 2.8 1-5.8-4.2-4.1 5.8-.8z"/></svg></span>
+        <h3>عضو اولین همکاران فروش کارنو باش</h3>
+        <p>این برنامه تازه استارت خورده؛ همین الان وارد شو و جلوتر از بقیه باش.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IS THIS FOR -->
+<section>
+  <div class="wrap">
+    <div class="s-head">
+      <h2>این برنامه برای کیه؟</h2>
+      <p>هرکسی که با حوزه‌ی خودرو یا مخاطب علاقه‌مند به یادگیری در ارتباطه، می‌تونه شروع کنه.</p>
+    </div>
+    <div class="who-grid">
+      <div class="who">
+        <div class="em">🔧</div>
+        <h4>تعمیرکارها و صاحبان تعمیرگاه</h4>
+        <p>دوره‌هایی که خودت می‌شناسی رو به همکارها و شاگردهات معرفی کن.</p>
+      </div>
+      <div class="who">
+        <div class="em">🎬</div>
+        <h4>تأثیرگذاران فضای مجازی حوزه خودرو</h4>
+        <p>محتوای آماده داری، فقط کافیه با مخاطبت به اشتراک بگذاری.</p>
+      </div>
+      <div class="who">
+        <div class="em">📣</div>
+        <h4>هر بازاریاب علاقه‌مند</h4>
+        <p>حتی اگه تخصص فنی نداری، با شبکه‌ی ارتباطی خودت می‌تونی شروع کنی.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAYOUT DETAILS -->
+<section>
+  <div class="wrap">
+    <div class="s-head">
+      <h2>جزئیات پرداخت و ردیابی</h2>
+    </div>
+    <div class="payout-grid">
+      <div class="pay-card">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></span>
+        <div class="v">ماهانه</div>
+        <div class="l">زمان‌بندی واریز کمیسیون</div>
+      </div>
+      <div class="pay-card">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M5 7h14M5 17h14"/></svg></span>
+        <div class="v">۲۰,۰۰۰,۰۰۰ ت</div>
+        <div class="l">حداقل مبلغ برداشت</div>
+      </div>
+      <div class="pay-card">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.5.5l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7.5-.5l-2 2a5 5 0 007 7l1-1"/></svg></span>
+        <div class="v">لینک + کد</div>
+        <div class="l">روش ردیابی فروش</div>
+      </div>
+      <div class="pay-card">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        <div class="v">۳۰ روز</div>
+        <div class="l">طول عمر ردیابی کلیک</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap faq">
+    <div class="s-head">
+      <h2>سوالات متداول</h2>
+    </div>
+    <details class="qa" open>
+      <summary><span class="q-ic">+</span> اگه فروشم به حداقل مبلغ برداشت (۲۰ میلیون) نرسه چی می‌شه؟</summary>
+      <div class="ans">کمیسیونت توی حسابت ذخیره می‌مونه و به ماه بعد منتقل می‌شه؛ هر وقت به سقف ۲۰ میلیون تومان رسید، واریز انجام می‌شه.</div>
+    </details>
+    <details class="qa">
+      <summary><span class="q-ic">+</span> آیا کمیسیون لایه دوم از سهم زیرمجموعه‌م کم می‌شه؟</summary>
+      <div class="ans">نه. ۷.۵٪ که به‌خاطر فروش زیرمجموعه‌ت می‌گیری، جدا و اضافه‌ست؛ زیرمجموعه‌ت همچنان ۲۰٪ کامل خودش رو می‌گیره.</div>
+    </details>
+    <details class="qa">
+      <summary><span class="q-ic">+</span> آیا این ساختار بیشتر از دو لایه می‌ره؟ (مثلاً زیرمجموعه‌ی زیرمجموعه)</summary>
+      <div class="ans">فعلاً ساختار کمیسیون فقط دو لایه‌ست: فروش مستقیم خودت (۲۰٪) و فروش زیرمجموعه‌ی مستقیم خودت (۷.۵٪).</div>
+    </details>
+    <details class="qa">
+      <summary><span class="q-ic">+</span> همه می‌تونن همکار فروش کارنو بشن؟</summary>
+      <div class="ans">بله، ثبت‌نام برای همه بازه؛ بعد از پر کردن فرم، تیم کارنو اطلاعاتت رو بررسی و در صورت تایید باهات تماس می‌گیره.</div>
+    </details>
+    <details class="qa">
+      <summary><span class="q-ic">+</span> بعد از پیش‌ثبت‌نام، چه اتفاقی می‌افته؟</summary>
+      <div class="ans">همین الان در حال راه‌اندازی پنل همکاری در فروشه. به‌محض فعال‌شدن، با اطلاعاتی که پر کردی باهات تماس می‌گیریم و لینک/کد اختصاصیت فعال می‌شه.</div>
+    </details>
+    <details class="qa">
+      <summary><span class="q-ic">+</span> آیا باید مخاطب یا دنبال‌کننده زیادی داشته باشم؟</summary>
+      <div class="ans">نه، الزامی نیست. حتی با شبکه‌ی ارتباطی شخصی (مثل همکارها، شاگردها یا آشناها) هم می‌تونی شروع کنی.</div>
+    </details>
+  </div>
+</section>
+
+<!-- REGISTRATION -->
+<section id="reg">
+  <div class="wrap">
+    <div class="reg">
+      <div class="reg-grid">
+        <div class="reg-tx">
+          <span class="eyebrow">پیش‌ثبت‌نام</span>
+          <h2>جای خودت رو همین الان رزرو کن</h2>
+          <p>پنل همکاری در فروش کارنو در حال راه‌اندازیه. فرم رو پر کن تا به‌محض فعال‌شدن، اولین نفری باشی که خبردار می‌شه و لینک اختصاصیش برات فعال بشه.</p>
+          <div class="reg-points">
+            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> بدون هیچ هزینه‌ای برای عضویت</span>
+            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> اولویت با اولین ثبت‌نام‌کننده‌ها</span>
+            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> ابزار و ویدیوی بازاریابی رایگان</span>
+          </div>
+        </div>
+
+        <div class="reg-form" id="regFormWrap">
+          [gravityforms id="59" title="false" description="false" ajax="true"]
+          <div class="reg-ok" id="regOk">
+            <div class="big"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <h4>پیش‌ثبت‌نامت ثبت شد!</h4>
+            <p>به‌محض فعال‌شدن پنل همکاری در فروش، با همین شماره باهات تماس می‌گیریم.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+<script>
+(function(){
+  var root = document.querySelector('.karno-aff');
+  if(!root) return;
+
+  /* آکاردئون سوالات متداول: هر بار فقط یکی باز باشه */
+  var dets = root.querySelectorAll('.qa');
+  dets.forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if(d.open) dets.forEach(function(o){ if(o!==d) o.open=false; });
+    });
+  });
+
+  /* اسکرول نرم برای لینک‌های داخلی صفحه */
+  root.querySelectorAll('a[href^="#"]').forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    if(!id) return;
+    var target = document.getElementById(id);
+    if(!target) return;
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  /* بعد از ثبت موفق فرم گرویتی (id=59)، پیام تایید نمایش داده می‌شود */
+  var gfWrap59 = document.getElementById('gform_wrapper_59');
+  if(gfWrap59){
+    new MutationObserver(function(){
+      if(gfWrap59.querySelector('#gform_confirmation_wrapper_59, .gform_confirmation_message_59')){
+        var ok = document.getElementById('regOk');
+        if(ok) ok.classList.add('show');
+      }
+    }).observe(gfWrap59, {childList:true, subtree:true});
+  }
+
+  /* رنگ placeholder برای select حوزه فعالیت */
+  function bindSelectPlaceholder(sel){
+    if(!sel || sel.dataset.placeholderBound) return;
+    sel.dataset.placeholderBound = '1';
+    function sync(){
+      if(!sel.value) sel.classList.add('is-placeholder');
+      else sel.classList.remove('is-placeholder');
+    }
+    sel.addEventListener('change', sync);
+    sync();
+  }
+  bindSelectPlaceholder(document.getElementById('input_59_5'));
+  if(typeof jQuery !== 'undefined'){
+    jQuery(document).on('gform_post_render', function(e, formId){
+      if(formId === 59) bindSelectPlaceholder(document.getElementById('input_59_5'));
+    });
+  }
+})();
+</script>

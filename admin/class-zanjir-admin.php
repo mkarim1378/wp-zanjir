@@ -418,14 +418,14 @@ class Zanjir_Admin {
 										array(
 											'key'         => 'dashboard_page_id',
 											'label'       => __( 'Dashboard page', 'zanjir' ),
-											'description' => __( 'Guests and non-approved affiliates are redirected away from this page. Leave empty to disable the gate.', 'zanjir' ),
+											'description' => __( 'Guests are redirected to login. Logged-in non-approved users stay and see status messages from the shortcode. Leave empty to disable the gate.', 'zanjir' ),
 										)
 									);
 									$this->render_setting_page(
 										array(
 											'key'         => 'register_page_id',
 											'label'       => __( 'Registration page', 'zanjir' ),
-											'description' => __( 'Public signup landing. Non-approved users hitting the dashboard are sent here.', 'zanjir' ),
+											'description' => __( 'Public signup landing. Used as the post-submit redirect target for [zanjir_register].', 'zanjir' ),
 										)
 									);
 									$this->render_setting_page(

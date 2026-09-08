@@ -59,8 +59,40 @@ class Zanjir_Registration {
 			set_transient( 'zanjir_reg_success_' . $user_id, __( 'Registration submitted. Waiting for admin approval.', 'zanjir' ), 30 );
 		}
 
-		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : home_url() );
+		wp_safe_redirect( $this->registration_redirect_url() );
 		exit;
+	}
+
+	/**
+	 * Where to send the user after registration form submit.
+	 *
+	 * Prefer the configured register page so status/error messages stay visible
+	 * (Elementor and some hosts strip HTTP referer → home was a bad fallback).
+	 *
+	 * @return string
+	 */
+	private function registration_redirect_url() {
+		if ( class_exists( 'Zanjir_Access_Gate' ) ) {
+			$reg = Zanjir_Access_Gate::register_url();
+			if ( $reg ) {
+				return $reg;
+			}
+		}
+
+		if ( ! empty( $_POST['zanjir_redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$candidate = esc_url_raw( wp_unslash( $_POST['zanjir_redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$valid     = $candidate ? wp_validate_redirect( $candidate, false ) : false;
+			if ( $valid ) {
+				return $valid;
+			}
+		}
+
+		$referer = wp_get_referer();
+		if ( $referer ) {
+			return $referer;
+		}
+
+		return home_url( '/' );
 	}
 
 	/**
